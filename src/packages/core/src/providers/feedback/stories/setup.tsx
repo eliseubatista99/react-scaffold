@@ -1,6 +1,50 @@
 import React from "react";
-import { FeedbackProvider } from "../feedbackProvider";
+import {
+  FeedbackProvider,
+  FeedbackProviderInputProps,
+} from "../feedbackProvider";
 import { useFeedback } from "../useFeedback";
+
+export const exampleModal = (
+  <div
+    style={{
+      width: "80%",
+      maxWidth: "800px",
+      height: "250px",
+      background: "#ffffff",
+      color: "#000000",
+      borderRadius: "8px",
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <p>Example Modal</p>
+  </div>
+);
+
+export const exampleToast = (
+  <div
+    style={{
+      width: "150px",
+      height: "60px",
+      background: "#af4d1d",
+      color: "#ffffff",
+      borderRadius: "24px",
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <p>Example Toast</p>
+  </div>
+);
 
 const FeedbackExampleInnerContent = () => {
   const { showItem, hideItem, isItemVisible, visibleItems } = useFeedback();
@@ -58,63 +102,9 @@ const FeedbackExampleInnerContent = () => {
   );
 };
 
-export const FeedbackExample = () => {
-  const exampleModal = (
-    <div
-      style={{
-        width: "80%",
-        maxWidth: "800px",
-        height: "250px",
-        background: "#ffffff",
-        color: "#000000",
-        borderRadius: "8px",
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <p>Example Modal</p>
-    </div>
-  );
-
-  const exampleToast = (
-    <div
-      style={{
-        width: "150px",
-        height: "60px",
-        background: "#af4d1d",
-        color: "#ffffff",
-        borderRadius: "24px",
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <p>Example Toast</p>
-    </div>
-  );
-
+export const FeedbackStoriesSetup = (props: FeedbackProviderInputProps) => {
   return (
-    <FeedbackProvider
-      items={[
-        {
-          id: "example-modal",
-          type: "modal",
-          content: exampleModal,
-        },
-        {
-          id: "example-toast",
-          type: "toast",
-          content: exampleToast,
-        },
-      ]}
-    >
+    <FeedbackProvider {...props}>
       <FeedbackExampleInnerContent />
     </FeedbackProvider>
   );

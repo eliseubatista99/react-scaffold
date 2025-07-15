@@ -1,13 +1,16 @@
 import React from "react";
-import { NavigationProvider } from "../navigationProvider";
-import { useNavigation } from "../useNavigation";
+import {
+  NavigationProvider,
+  NavigationProviderInputProps,
+  useNavigation,
+} from "../";
 
 const BasicExampleScreen = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div
       style={{
-        width: "390px",
-        height: "844px",
+        width: "100px",
+        height: "200px",
         background: "#ffffff",
         zoom: 0.7,
         margin: "auto",
@@ -20,20 +23,22 @@ const BasicExampleScreen = ({ children }: { children?: React.ReactNode }) => {
   );
 };
 
-const NavigationExampleScreen0 = () => {
+export const NavigationExampleScreen0 = () => {
   return <BasicExampleScreen>Home</BasicExampleScreen>;
 };
 
-const NavigationExampleScreen1 = () => {
+export const NavigationExampleScreen1 = () => {
   return <BasicExampleScreen>Screen1</BasicExampleScreen>;
 };
 
-const NavigationExampleScreen2 = () => {
+export const NavigationExampleScreen2 = () => {
   return <BasicExampleScreen>Screen2</BasicExampleScreen>;
 };
 
 const NavigationExampleInnerContent = () => {
   const { currentPath, history, goBack, goTo } = useNavigation();
+
+  console.log("ZAU", currentPath);
 
   const listHistory = React.useCallback(() => {
     let res = "";
@@ -68,7 +73,12 @@ const NavigationExampleInnerContent = () => {
   return (
     <div
       data-testid="navigation-example"
-      style={{ width: "100%", gap: "12px", alignItems: "center" }}
+      style={{
+        width: "100%",
+        gap: "12px",
+        alignItems: "center",
+        padding: "36px",
+      }}
     >
       <div>
         <p>Current path: {currentPath}</p>
@@ -81,24 +91,9 @@ const NavigationExampleInnerContent = () => {
   );
 };
 
-export const NavigationExample = () => {
+export const NavigationStoriesSetup = (props: NavigationProviderInputProps) => {
   return (
-    <NavigationProvider
-      routes={[
-        {
-          path: "/",
-          render: <NavigationExampleScreen0 />,
-        },
-        {
-          path: "/screen1",
-          render: <NavigationExampleScreen1 />,
-        },
-        {
-          path: "/screen2",
-          render: <NavigationExampleScreen2 />,
-        },
-      ]}
-    >
+    <NavigationProvider {...props}>
       <NavigationExampleInnerContent />
     </NavigationProvider>
   );

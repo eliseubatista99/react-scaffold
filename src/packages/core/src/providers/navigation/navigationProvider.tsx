@@ -71,8 +71,8 @@ export const NavigationProvider = ({
       }}
     >
       <BrowserRouter>
-        <Routes>{routesList}</Routes>
         {children}
+        <Routes>{routesList}</Routes>
       </BrowserRouter>
     </NavigationProviderContext.Provider>
   );
