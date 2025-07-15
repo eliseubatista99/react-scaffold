@@ -30,10 +30,18 @@ export const Example = ({ item }: ExampleProps) => {
         <p>{item.title}</p>
         <p>{expanded ? "⮝" : "⮟"}</p>
       </div>
-      <div style={{ height: "1px", width: "98%", background: "#ffffff" }}></div>
-      {expanded && (
+      <div
+        style={{
+          width: "100%",
+          display: expanded ? "flex" : "none",
+        }}
+      >
+        <div
+          style={{ height: "1px", width: "98%", background: "#ffffff" }}
+        ></div>
+
         <div style={{ width: "100%", padding: "24px" }}>{item.content}</div>
-      )}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import "./App.css";
 
 function App() {
   return (
-    <div>
+    <div style={{ width: "100%", gap: "8px" }}>
       {examples.map((example) => (
         <Example item={example} key={example.title} />
       ))}

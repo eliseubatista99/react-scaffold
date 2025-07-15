@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NavigationProviderContext } from "./navigationContext";
 
 export const useNavigation = () => {
@@ -24,11 +24,9 @@ export const useNavigation = () => {
   const goBack = React.useCallback(
     (steps?: number) => {
       const finalSteps = steps || 1;
-      const resultScreen =
-        navigationContext.history[history.length - 1 - finalSteps];
 
-      navigationContext.popFromHistory(finalSteps);
-      goTo(resultScreen, false);
+      const newLocation = navigationContext.popFromHistory(finalSteps);
+      goTo(newLocation, false);
     },
     [goTo, navigationContext]
   );
@@ -42,6 +40,7 @@ export const useNavigation = () => {
 
   return {
     currentPath: location.pathname,
+    history: navigationContext.history,
     goBack,
     goTo,
     replaceHistory,

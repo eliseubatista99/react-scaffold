@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { NavigationProviderContext } from "./navigationContext";
 
 export interface NavigationProviderRoute {
@@ -16,20 +16,45 @@ export const NavigationProvider = ({
   routes,
   children,
 }: NavigationProviderInputProps) => {
-  const [history, setHistory] = React.useState<string[]>([]);
+  const historyRef = React.useRef<string[]>(["/"]);
+  const [history, setHistory] = React.useState<string[]>(["/"]);
+
+  const updateHistory = React.useCallback((value: string[]) => {
+    historyRef.current = value;
+    setHistory(value);
+  }, []);
 
   const addToHistory = (entry: string) => {
-    setHistory((prevHistory) => [...prevHistory, entry]);
+    updateHistory([...historyRef.current, entry]);
   };
 
   const popFromHistory = (count: number) => {
-    setHistory((prevHistory) =>
-      prevHistory.slice(0, prevHistory.length - count)
-    );
+    let newLocation = "";
+    let newHistory: string[] = [];
+
+    if (historyRef.current.length === 0) {
+      return "/";
+    }
+
+    if (historyRef.current.length <= count) {
+      newLocation = historyRef.current[0];
+      newHistory = [newLocation];
+    } else {
+      newHistory = historyRef.current.slice(
+        0,
+        historyRef.current.length - count
+      );
+
+      newLocation = newHistory[newHistory.length - 1];
+    }
+
+    updateHistory(newHistory);
+
+    return newLocation;
   };
 
   const replaceHistory = (entries: string[]) => {
-    setHistory(entries);
+    updateHistory(entries);
   };
 
   const routesList = routes.map((route) => (
@@ -45,10 +70,10 @@ export const NavigationProvider = ({
         replaceHistory,
       }}
     >
-      <Routes>
-        {routesList}
+      <BrowserRouter>
+        <Routes>{routesList}</Routes>
         {children}
-      </Routes>
+      </BrowserRouter>
     </NavigationProviderContext.Provider>
   );
 };
