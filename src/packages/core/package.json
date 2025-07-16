@@ -1,8 +1,24 @@
 {
-  "name": "@react-scaffold-eliseubatista99/core",
-  "private": true,
+  "name": "@eliseubatista99/react-scaffold-core",
   "version": "0.0.1",
+  "private": true,
+  "description": "A library of packages used for React projects.",
+  "keywords": [
+    "react",
+    "scaffold"
+  ],
+  "homepage": "https://github.com/eliseubatista99/react-scaffold#readme",
+  "bugs": {
+    "url": "https://github.com/eliseubatista99/react-scaffold/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliseubatista99/react-scaffold.git"
+  },
+  "license": "MIT",
+  "author": "eliseubatista99",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
