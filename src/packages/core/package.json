@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "description": "A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "keywords": [
     "react",
     "scaffold"
@@ -17,11 +20,16 @@
   },
   "license": "MIT",
   "author": "eliseubatista99",
-  "type": "module",
-  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "rimraf dist && vite build",
+    "clean": "rm -rf dist",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite"
@@ -40,8 +48,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "rimraf": "^3.0.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
