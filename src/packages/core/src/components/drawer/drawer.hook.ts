@@ -49,7 +49,7 @@ export const useDrawerHelper = ({ onCloseDrawer }: DrawerProps) => {
       );
 
       if (distanceTraveledByPointer >= drawerHeight - 15) {
-        onCloseDrawer();
+        onCloseDrawer?.();
         handleOnPointerUp(e);
       }
     }

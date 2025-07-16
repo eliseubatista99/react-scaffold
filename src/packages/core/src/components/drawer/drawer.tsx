@@ -7,17 +7,15 @@ export interface DrawerHandleProps {
 }
 
 export interface DrawerProps {
-  isVisible: boolean;
   children?: React.ReactNode;
   backgroundStyles?: CSSProperties;
   contentStyles?: CSSProperties;
   handle?: DrawerHandleProps;
-  onCloseDrawer: () => void;
+  onCloseDrawer?: () => void;
 }
 
 export const Drawer = (props: DrawerProps) => {
-  const { isVisible, children, backgroundStyles, contentStyles, handle } =
-    props;
+  const { children, backgroundStyles, contentStyles, handle } = props;
   const {
     drawerParentRef,
     drawerRef,
@@ -29,73 +27,68 @@ export const Drawer = (props: DrawerProps) => {
   } = useDrawerHelper(props);
 
   return (
-    <>
-      {isVisible && (
+    <div
+      ref={drawerParentRef}
+      style={{
+        width: "100vw",
+        minHeight: "100vh",
+        left: 0,
+        top: 0,
+        background: "#00000068",
+        position: "fixed",
+        zIndex: 1000,
+        display: "flex",
+        flexDirection: "column",
+        touchAction: "none",
+        ...backgroundStyles,
+      }}
+      onPointerUp={onDragEnd}
+      onPointerMoveCapture={onDrag}
+    >
+      <div
+        ref={drawerRef}
+        style={{
+          width: "100%",
+          height: "fit-content",
+          minHeight: "80px",
+          maxHeight: "90%",
+          background: "#ffffff",
+          borderTopLeftRadius: "16px",
+          borderTopRightRadius: "16px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+          zIndex: 1001,
+          position: "absolute",
+          bottom: `${drawerBottomDistance}px`,
+          ...contentStyles,
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <div
-          ref={drawerParentRef}
+          ref={handleRef}
           style={{
-            width: "100%",
-            minHeight: "100%",
-            left: 0,
-            top: 0,
-            background: "#00000068",
-            position: "absolute",
-            zIndex: 1000,
             display: "flex",
-            flexDirection: "column",
-            touchAction: "none",
-            ...backgroundStyles,
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            top: "0px",
+            height: "24px",
+            width: "100%",
+            cursor: "pointer",
+            ...handle?.styles,
           }}
-          onPointerUp={onDragEnd}
-          onPointerMoveCapture={onDrag}
+          onPointerDown={onDragStart}
         >
-          <div
-            ref={drawerRef}
-            style={{
-              width: "100%",
-              height: "fit-content",
-              maxHeight: "90%",
-              background: "#ffffff",
-              borderTopLeftRadius: "16px",
-              borderTopRightRadius: "16px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "24px",
-              zIndex: 1001,
-              position: "absolute",
-              bottom: `${drawerBottomDistance}px`,
-              ...contentStyles,
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            {handle && (
-              <div
-                ref={handleRef}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "absolute",
-                  top: "0px",
-                  height: "24px",
-                  width: "100%",
-                  cursor: "pointer",
-                  ...handle.styles,
-                }}
-                onPointerDown={onDragStart}
-              >
-                {handle.render}
-              </div>
-            )}
-
-            {children}
-          </div>
+          {handle?.render}
         </div>
-      )}
-    </>
+
+        {children}
+      </div>
+    </div>
   );
 };
