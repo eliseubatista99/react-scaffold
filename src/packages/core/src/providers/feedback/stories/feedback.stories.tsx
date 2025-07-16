@@ -4,7 +4,7 @@ import { FeedbackProvider } from "../feedbackProvider";
 import { exampleModal, exampleToast, FeedbackStoriesSetup } from "./setup";
 
 const meta = {
-  title: "Providers/Feedback Provider",
+  title: "Core/Providers/Feedback Provider",
   component: FeedbackStoriesSetup,
   parameters: {
     layout: "fullscreen",

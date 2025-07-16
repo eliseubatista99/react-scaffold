@@ -9,7 +9,7 @@ import {
 } from "./setup";
 
 const meta = {
-  title: "Providers/Navigation Provider",
+  title: "Core/Providers/Navigation Provider",
   component: NavigationStoriesSetup,
   parameters: {
     layout: "fullscreen",
