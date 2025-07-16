@@ -1,1 +1,1 @@
-export * from './text.helper'
+export * from "./textHelper";
