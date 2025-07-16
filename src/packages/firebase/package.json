@@ -1,7 +1,7 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "description": "A library of firebase utilites for React projects.",
   "keywords": [
     "react",
