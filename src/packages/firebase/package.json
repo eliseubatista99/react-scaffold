@@ -1,8 +1,8 @@
 {
-  "name": "@eliseubatista99/react-scaffold-core",
+  "name": "@eliseubatista99/react-scaffold-firebase",
   "version": "0.0.1",
   "private": true,
-  "description": "A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.",
+  "description": "A library of firebase utilites for React projects.",
   "keywords": [
     "react",
     "scaffold"
@@ -27,6 +27,7 @@
     "start": "vite"
   },
   "dependencies": {
+    "firebase": "^11.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3"
