@@ -7,4 +7,11 @@ export class PdfHelper {
   ) => {
     return await generatePDF(content, { filename });
   };
+
+  static generatePdfFromHTMLElement = async (
+    content: HTMLElement,
+    filename: string
+  ) => {
+    return await generatePDF(() => content, { filename });
+  };
 }
