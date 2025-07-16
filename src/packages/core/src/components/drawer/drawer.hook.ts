@@ -19,7 +19,7 @@ export const useDrawerHelper = ({ onCloseDrawer }: DrawerProps) => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleOnPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handleOnPointerUp = (_: React.PointerEvent<HTMLDivElement>) => {
     isDragging.current = false;
     dragStartPointerPosition.current = undefined;
     setDrawerBottomDistance(0);
