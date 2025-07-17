@@ -4,39 +4,65 @@ import {
   doc,
   getDocs,
   getFirestore,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { FirebaseAppHelper } from "../../helpers";
 
-export const userFirestore = () => {
+export type FirestoreItem<T> = {
+  id: string;
+  data: T;
+};
+
+export const useFirestore = () => {
   const firestore = () => {
     const app = FirebaseAppHelper.getApp();
 
     return getFirestore(app!);
   };
 
-  const getItem = async <TOutput extends object>(
+  const addItem = async <TOutput extends object>(
     collectionName: string,
-    path: string
+    path: string,
+    item: TOutput
   ) => {
     const collectionRef = collection(firestore(), collectionName);
     const data = doc(collectionRef, path);
 
-    return data as TOutput;
+    await setDoc(data, { ...item });
+  };
+
+  const getItem = async <TOutput extends object>(
+    collectionName: string,
+    path: string
+  ): Promise<FirestoreItem<TOutput> | null> => {
+    const collectionRef = collection(firestore(), collectionName);
+    const data = doc(collectionRef, path);
+
+    if (data === null) {
+      return null;
+    }
+
+    return { id: data.id, data: data as TOutput };
   };
 
   const getItems = async <TOutput extends object>(
     collectionName: string,
     predicate?: (data: TOutput) => boolean
-  ) => {
+  ): Promise<FirestoreItem<TOutput>[]> => {
     const collectionRef = collection(firestore(), collectionName);
 
     const data = await getDocs(collectionRef);
 
-    let mappedData = data.docs.map((doc) => doc as TOutput);
+    const nonNullData = data.docs.filter((doc) => doc.exists());
+
+    let mappedData = nonNullData.map((doc): FirestoreItem<TOutput> => {
+      const docData = doc.data() as TOutput;
+      return { id: doc.id, data: docData };
+    });
 
     if (predicate) {
-      mappedData = mappedData.filter((doc) => predicate(doc));
+      mappedData = mappedData.filter((doc) => predicate(doc.data));
     }
 
     return mappedData;
@@ -77,6 +103,7 @@ export const userFirestore = () => {
   //   };
 
   return {
+    addItem,
     getItem,
     getItems,
     updateItem,

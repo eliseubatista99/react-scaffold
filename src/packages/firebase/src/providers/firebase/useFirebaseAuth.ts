@@ -1,35 +1,92 @@
+import { FirebaseError } from "firebase/app";
 import { useContext } from "react";
 import { FirebaseAuthProviderContext } from "./firebaseAuthContext";
 
 export const useFirebaseAuth = () => {
   const firebaseAuthContext = useContext(FirebaseAuthProviderContext);
 
-  const signUp = async (email: string, password: string, username: string) => {
-    return await firebaseAuthContext!.signUp(email, password, username);
+  const executeFirebaseAuthOperation = async <TOut>(
+    operation: () => Promise<TOut>,
+    onError?: (error: FirebaseError) => void
+  ) => {
+    try {
+      return await operation();
+    } catch (error) {
+      if (onError) {
+        const firebaseError = error as FirebaseError;
+        onError?.(firebaseError);
+      }
+
+      return null;
+    }
   };
 
-  const logIn = async (email: string, password: string) => {
-    return await firebaseAuthContext!.logIn(email, password);
+  const signUp = async (
+    data: {
+      email: string;
+      password: string;
+      username: string;
+    },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.signUp(
+        data.email,
+        data.password,
+        data.username
+      );
+    }, onError);
   };
 
-  const logout = async () => {
-    return await firebaseAuthContext!.logout();
+  const logIn = async (
+    data: { email: string; password: string },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.logIn(data.email, data.password);
+    }, onError);
   };
 
-  const resetPassword = async (email: string) => {
-    return await firebaseAuthContext!.resetPassword(email);
+  const logout = async (onError?: (error: FirebaseError) => void) => {
+    await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.logout();
+    }, onError);
   };
 
-  const updateEmail = async (email: string) => {
-    return await firebaseAuthContext!.updateEmail(email);
+  const resetPassword = async (
+    data: { email: string },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.resetPassword(data.email);
+    }, onError);
   };
 
-  const updatePassword = async (password: string) => {
-    return await firebaseAuthContext!.updatePassword(password);
+  const updateEmail = async (
+    data: { email: string },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.updateEmail(data.email);
+    }, onError);
   };
 
-  const updateName = async (name: string) => {
-    return await firebaseAuthContext!.updateName(name);
+  const updatePassword = async (
+    data: { password: string },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.updatePassword(data.password);
+    }, onError);
+  };
+
+  const updateName = async (
+    data: { name: string },
+    onError?: (error: FirebaseError) => void
+  ) => {
+    return await executeFirebaseAuthOperation(async () => {
+      return await firebaseAuthContext!.updateName(data.name);
+    }, onError);
   };
 
   return {

@@ -24,7 +24,13 @@ export const FirebaseAuthProvider = ({
 }: FirebaseAuthProviderInputProps) => {
   const app = React.useRef<FirebaseApp | null>(null);
   const auth = React.useRef<Auth | null>(null);
-  const currentUser = React.useRef<User | null>(null);
+  const currentUserRef = React.useRef<User | null>(null);
+  const [_, setCurrentUserState] = React.useState<User | null>(null);
+
+  const setCurrentUser = (user: User | null) => {
+    currentUserRef.current = user;
+    setCurrentUserState(user);
+  };
 
   const signUp = async (email: string, password: string, username: string) => {
     const userCredential = await createUserWithEmailAndPassword(
@@ -51,33 +57,33 @@ export const FirebaseAuthProvider = ({
   const resetPassword = async (email: string) => {
     await sendPasswordResetEmail(auth.current!, email);
 
-    return currentUser.current;
+    return currentUserRef.current;
   };
 
   const updateUserEmail = async (email: string) => {
-    if (currentUser.current) {
-      await updateEmail(currentUser.current, email);
+    if (currentUserRef.current) {
+      await updateEmail(currentUserRef.current, email);
     }
 
-    return currentUser.current;
+    return currentUserRef.current;
   };
 
   const updateUserPassword = async (password: string) => {
-    if (currentUser.current) {
-      await updatePassword(currentUser.current, password);
+    if (currentUserRef.current) {
+      await updatePassword(currentUserRef.current, password);
     }
 
-    return currentUser.current;
+    return currentUserRef.current;
   };
 
   const updateUserName = async (name: string) => {
-    if (currentUser.current) {
-      await updateProfile(currentUser.current, {
+    if (currentUserRef.current) {
+      await updateProfile(currentUserRef.current, {
         displayName: name,
       });
     }
 
-    return currentUser.current;
+    return currentUserRef.current;
   };
 
   React.useEffect(() => {
@@ -96,7 +102,7 @@ export const FirebaseAuthProvider = ({
     }
 
     const unsubscribe = auth.current.onAuthStateChanged((user: User | null) => {
-      currentUser.current = user;
+      setCurrentUser(user);
     });
 
     return unsubscribe;
@@ -105,7 +111,7 @@ export const FirebaseAuthProvider = ({
   return (
     <FirebaseAuthProviderContext.Provider
       value={{
-        currentUser: currentUser.current,
+        currentUser: currentUserRef.current,
         signUp,
         logIn,
         logout,
