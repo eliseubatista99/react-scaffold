@@ -8,11 +8,13 @@ export type UsePdfGeneratorStoriesSetupProps = {
 export const UsePdfGeneratorStoriesSetup = (
   props: UsePdfGeneratorStoriesSetupProps
 ) => {
-  const generate = usePdfGenerator();
+  const { generateFromContent } = usePdfGenerator();
 
   return (
     <div style={{ padding: "20px" }}>
-      <button onClick={() => generate(props.content, props.fileName)}>
+      <button
+        onClick={() => generateFromContent(props.content, props.fileName)}
+      >
         Generate
       </button>
     </div>

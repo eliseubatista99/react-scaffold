@@ -7,7 +7,7 @@ A library which provides basic components, hooks, helpers and providers to easil
 ## Installation
 
 ```shell
-npm i @react-scaffold-eliseubatista99/core
+npm i @eliseubatista99/react-scaffold-core
 ```
 
 ## Content

@@ -2,7 +2,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PdfHelper } from "../../helpers";
 
 export const usePdfGenerator = () => {
-  const generate = async (content: React.ReactNode, fileName: string) => {
+  const generateFromContent = async (
+    content: React.ReactNode,
+    fileName: string
+  ) => {
     const output = document.createElement("p");
     const staticElement = renderToStaticMarkup(content);
     output.innerHTML = staticElement;
@@ -15,5 +18,16 @@ export const usePdfGenerator = () => {
     return res;
   };
 
-  return generate;
+  const generateFromRef = async (
+    ref: React.RefObject<any>,
+    fileName: string
+  ) => {
+    const res = await PdfHelper.generatePdfFromRef(ref, fileName);
+    return res;
+  };
+
+  return {
+    generateFromContent,
+    generateFromRef,
+  };
 };
