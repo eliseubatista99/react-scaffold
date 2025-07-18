@@ -40,8 +40,6 @@ export const PdfRendererStoriesSetup = (props: PdfRendererProps) => {
     [currentPageRef, setCurrentPage]
   );
 
-  console.log("ZAU", currentPage);
-
   return (
     <div
       style={{
