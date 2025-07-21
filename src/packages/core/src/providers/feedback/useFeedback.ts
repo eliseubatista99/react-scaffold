@@ -1,18 +1,11 @@
 import { useContext } from "react";
-import {
-  FeedbackProviderContext,
-  type FeedbackItemType,
-} from "./feedbackContext";
+import { FeedbackProviderContext } from "./feedbackContext";
 
 export const useFeedback = () => {
   const feedbackContext = useContext(FeedbackProviderContext);
 
-  const getVisibleItemsOfType = (type: FeedbackItemType) => {
-    return feedbackContext.visibleItems.filter((item) => item.type === type);
-  };
-
   const isItemVisible = (id: string) => {
-    return feedbackContext.visibleItems.some((item) => item.id === id);
+    return feedbackContext.visibleItems.some((item) => item === id);
   };
 
   const showItem = (id: string) => {
@@ -25,7 +18,6 @@ export const useFeedback = () => {
 
   return {
     visibleItems: feedbackContext.visibleItems,
-    getVisibleItemsOfType,
     isItemVisible,
     showItem,
     hideItem,

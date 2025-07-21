@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FeedbackProvider } from "../feedbackProvider";
-import { exampleModal, exampleToast, FeedbackStoriesSetup } from "./setup";
+import { FeedbackStoriesSetup } from "./setup";
 
 const meta = {
   title: "Core/Providers/Feedback Provider",
@@ -10,20 +10,7 @@ const meta = {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
-  args: {
-    items: [
-      {
-        id: "example-modal",
-        type: "modal",
-        content: exampleModal,
-      },
-      {
-        id: "example-toast",
-        type: "toast",
-        content: exampleToast,
-      },
-    ],
-  },
+  args: {},
 } satisfies Meta<typeof FeedbackProvider>;
 
 export default meta;

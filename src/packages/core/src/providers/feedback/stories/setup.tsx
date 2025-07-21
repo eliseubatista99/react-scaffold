@@ -1,4 +1,5 @@
 import React from "react";
+import { Modal } from "../../../components";
 import {
   FeedbackProvider,
   FeedbackProviderInputProps,
@@ -55,9 +56,6 @@ const FeedbackExampleInnerContent = () => {
 
       const onClick = () => {
         showItem(id);
-        setTimeout(() => {
-          hideItem(id);
-        }, 3000);
       };
 
       return (
@@ -80,7 +78,7 @@ const FeedbackExampleInnerContent = () => {
   const listVisibleItems = React.useCallback(() => {
     let res = "";
     visibleItems.forEach((item) => {
-      res += item.id + ", ";
+      res += item + ", ";
     });
 
     res = res.slice(0, -2); // Remove the last comma and space
@@ -89,16 +87,30 @@ const FeedbackExampleInnerContent = () => {
   }, [visibleItems]);
 
   return (
-    <div
-      data-testid="feedback-example"
-      style={{ width: "100%", gap: "12px", alignItems: "center" }}
-    >
-      <div>
-        <p>Visible Items: {listVisibleItems()}</p>
+    <>
+      <div
+        data-testid="feedback-example"
+        style={{ width: "100%", gap: "12px", alignItems: "center" }}
+      >
+        <div>
+          <p>Visible Items: {listVisibleItems()}</p>
+        </div>
+        {interactionButton("example-modal")}
+        {interactionButton("example-toast")}
       </div>
-      {interactionButton("example-modal")}
-      {interactionButton("example-toast")}
-    </div>
+      <Modal
+        id="example-modal"
+        onClickOutsideModal={() => hideItem("example-modal")}
+      >
+        I am a modal
+      </Modal>
+      <Modal
+        id="example-toast"
+        onClickOutsideModal={() => hideItem("example-toast")}
+      >
+        I am a toast
+      </Modal>
+    </>
   );
 };
 

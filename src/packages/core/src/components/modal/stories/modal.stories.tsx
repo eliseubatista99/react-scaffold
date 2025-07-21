@@ -1,18 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Modal } from "../modal";
+import { ModalStoriesSetup } from "./setup";
 
 const meta = {
   title: "Core/Components/Modal",
-  component: Modal,
+  component: ModalStoriesSetup,
   parameters: {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
   args: {
-    backgroundStyles: {
-      width: "600px",
-      height: "600px",
-    },
+    id: "example-modal",
     children: <div>Hello</div>,
   },
 } satisfies Meta<typeof Modal>;

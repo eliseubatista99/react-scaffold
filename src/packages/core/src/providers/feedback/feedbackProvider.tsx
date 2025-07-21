@@ -1,37 +1,34 @@
 import React from "react";
-import { FeedbackProviderContext, type FeedbackItem } from "./feedbackContext";
+import { FeedbackProviderContext } from "./feedbackContext";
 
 export interface FeedbackProviderInputProps {
-  items: FeedbackItem[];
   children?: React.ReactNode;
 }
 
-export const FeedbackProvider = ({
-  items,
-  children,
-}: FeedbackProviderInputProps) => {
-  const visibleItemsRef = React.useRef<FeedbackItem[]>([]);
-  const [visibleItems, setVisibleItems] = React.useState<FeedbackItem[]>([]);
+export const FeedbackProvider = ({ children }: FeedbackProviderInputProps) => {
+  const visibleItemsRef = React.useRef<string[]>([]);
+  const [visibleItems, setVisibleItems] = React.useState<string[]>([]);
 
-  const updateVisibleItems = React.useCallback((value: FeedbackItem[]) => {
+  const updateVisibleItems = React.useCallback((value: string[]) => {
+    console.log("ZAU UPDATING VISIBLE ITEMS", value);
+
     visibleItemsRef.current = value;
     setVisibleItems(value);
   }, []);
 
   const isItemVisible = React.useCallback((id: string) => {
-    return visibleItemsRef.current.some((item) => item.id === id);
+    return visibleItemsRef.current.some((item) => item === id);
   }, []);
 
   const showItem = React.useCallback(
     (id: string) => {
-      const item = items.find((item) => item.id === id);
       const isVisible = isItemVisible(id);
 
-      if (item && !isVisible) {
-        updateVisibleItems([...visibleItemsRef.current, item]);
+      if (!isVisible) {
+        updateVisibleItems([...visibleItemsRef.current, id]);
       }
     },
-    [isItemVisible, items, updateVisibleItems]
+    [isItemVisible, updateVisibleItems]
   );
 
   const hideItem = React.useCallback(
@@ -39,16 +36,11 @@ export const FeedbackProvider = ({
       const isVisible = isItemVisible(id);
       if (isVisible) {
         updateVisibleItems(
-          visibleItemsRef.current.filter((item) => item.id !== id)
+          visibleItemsRef.current.filter((item) => item !== id)
         );
       }
     },
     [isItemVisible, updateVisibleItems]
-  );
-
-  const itemsToRender = React.useCallback(
-    () => items.map((item) => <>{isItemVisible(item.id) && item.content}</>),
-    [isItemVisible, items]
   );
 
   return (
@@ -60,7 +52,6 @@ export const FeedbackProvider = ({
         hideItem,
       }}
     >
-      {itemsToRender()}
       {children}
     </FeedbackProviderContext.Provider>
   );

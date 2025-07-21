@@ -7,6 +7,8 @@ export interface DrawerHandleProps {
 }
 
 export interface DrawerProps {
+  id: string;
+  drawerCloseOffset?: number;
   children?: React.ReactNode;
   backgroundStyles?: CSSProperties;
   contentStyles?: CSSProperties;
@@ -17,6 +19,7 @@ export interface DrawerProps {
 export const Drawer = (props: DrawerProps) => {
   const { children, backgroundStyles, contentStyles, handle } = props;
   const {
+    isVisible,
     drawerParentRef,
     drawerRef,
     handleRef,
@@ -27,68 +30,72 @@ export const Drawer = (props: DrawerProps) => {
   } = useDrawerHelper(props);
 
   return (
-    <div
-      ref={drawerParentRef}
-      style={{
-        width: "100vw",
-        minHeight: "100vh",
-        left: 0,
-        top: 0,
-        background: "#00000068",
-        position: "fixed",
-        zIndex: 1000,
-        display: "flex",
-        flexDirection: "column",
-        touchAction: "none",
-        ...backgroundStyles,
-      }}
-      onPointerUp={onDragEnd}
-      onPointerMoveCapture={onDrag}
-    >
-      <div
-        ref={drawerRef}
-        style={{
-          width: "100%",
-          height: "fit-content",
-          minHeight: "80px",
-          maxHeight: "90%",
-          background: "#ffffff",
-          borderTopLeftRadius: "16px",
-          borderTopRightRadius: "16px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "24px",
-          zIndex: 1001,
-          position: "absolute",
-          bottom: `${drawerBottomDistance}px`,
-          ...contentStyles,
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
+    <>
+      {isVisible && (
         <div
-          ref={handleRef}
+          ref={drawerParentRef}
           style={{
+            width: "100vw",
+            minHeight: "100vh",
+            left: 0,
+            top: 0,
+            background: "#00000068",
+            position: "fixed",
+            zIndex: 1000,
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-            top: "0px",
-            height: "24px",
-            width: "100%",
-            cursor: "pointer",
-            ...handle?.styles,
+            flexDirection: "column",
+            touchAction: "none",
+            ...backgroundStyles,
           }}
-          onPointerDown={onDragStart}
+          onPointerUp={onDragEnd}
+          onPointerMoveCapture={onDrag}
         >
-          {handle?.render}
-        </div>
+          <div
+            ref={drawerRef}
+            style={{
+              width: "100%",
+              height: "fit-content",
+              minHeight: "80px",
+              maxHeight: "90%",
+              background: "#ffffff",
+              borderTopLeftRadius: "16px",
+              borderTopRightRadius: "16px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px",
+              zIndex: 1001,
+              position: "absolute",
+              bottom: `${drawerBottomDistance}px`,
+              ...contentStyles,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div
+              ref={handleRef}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "absolute",
+                top: "0px",
+                height: "24px",
+                width: "100%",
+                cursor: "pointer",
+                ...handle?.styles,
+              }}
+              onPointerDown={onDragStart}
+            >
+              {handle?.render}
+            </div>
 
-        {children}
-      </div>
-    </div>
+            {children}
+          </div>
+        </div>
+      )}
+    </>
   );
 };

@@ -1,20 +1,7 @@
 import React from "react";
 
-export type FeedbackItemType =
-  | "none"
-  | "modal"
-  | "drawer"
-  | "skeleton"
-  | "toast";
-
-export interface FeedbackItem {
-  id: string;
-  type: FeedbackItemType;
-  content: React.ReactNode;
-}
-
 export interface FeedbackContextData {
-  visibleItems: FeedbackItem[];
+  visibleItems: string[];
   isItemVisible: (id: string) => boolean;
   showItem: (id: string) => void;
   hideItem: (id: string) => void;

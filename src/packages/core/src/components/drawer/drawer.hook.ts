@@ -1,7 +1,14 @@
 import React from "react";
+import { useFeedback } from "../../providers";
 import type { DrawerProps } from "./drawer";
 
-export const useDrawerHelper = ({ onCloseDrawer }: DrawerProps) => {
+export const useDrawerHelper = ({
+  id,
+  onCloseDrawer,
+  drawerCloseOffset = 15,
+}: DrawerProps) => {
+  const { isItemVisible } = useFeedback();
+
   const isDragging = React.useRef<boolean>(false);
   const drawerParentRef = React.useRef<HTMLDivElement>(null);
   const drawerRef = React.useRef<HTMLDivElement>(null);
@@ -48,7 +55,7 @@ export const useDrawerHelper = ({ onCloseDrawer }: DrawerProps) => {
         distanceTraveledByPointer < 0 ? 0 : -distanceTraveledByPointer
       );
 
-      if (distanceTraveledByPointer >= drawerHeight - 15) {
+      if (distanceTraveledByPointer >= drawerHeight - drawerCloseOffset) {
         onCloseDrawer?.();
         handleOnPointerUp(e);
       }
@@ -56,6 +63,7 @@ export const useDrawerHelper = ({ onCloseDrawer }: DrawerProps) => {
   };
 
   return {
+    isVisible: isItemVisible(id),
     drawerParentRef,
     drawerRef,
     drawerBottomDistance,

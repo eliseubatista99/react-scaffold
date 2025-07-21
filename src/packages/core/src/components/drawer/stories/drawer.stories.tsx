@@ -1,14 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Drawer } from "../drawer";
+import { DrawerStoriesSetup } from "./setup";
 
 const meta = {
   title: "Core/Components/Drawer",
-  component: Drawer,
+  component: DrawerStoriesSetup,
   parameters: {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
   args: {
+    id: "example-drawer",
+    drawerCloseOffset: 20,
     children: <div>Hello</div>,
   },
 } satisfies Meta<typeof Drawer>;
