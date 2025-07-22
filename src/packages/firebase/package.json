@@ -1,0 +1,57 @@
+{
+  "name": "@eliseubatista99/react-scaffold-firebase",
+  "version": "0.1.2",
+  "private": false,
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "description": "A library of firebase utilites for React projects.",
+  "keywords": [
+    "react",
+    "scaffold"
+  ],
+  "homepage": "https://github.com/eliseubatista99/react-scaffold#readme",
+  "bugs": {
+    "url": "https://github.com/eliseubatista99/react-scaffold/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliseubatista99/react-scaffold.git"
+  },
+  "license": "MIT",
+  "author": "eliseubatista99",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "dev": "tsc && vite",
+    "build": "rimraf dist && vite build",
+    "clean": "rm -rf dist",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "eslint": "^9.30.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "rimraf": "^3.0.2",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.35.1",
+    "vite": "^7.0.4",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "peerDependencies": {
+    "firebase": "^11.10.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
