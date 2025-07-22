@@ -23,7 +23,8 @@ export const Modal = ({
       {isItemVisible(id) && (
         <div
           style={{
-            width: "100vw",
+            width: "100%",
+            height: "100%",
             minHeight: "100vh",
             background: "#00000068",
             position: "fixed",
@@ -56,6 +57,7 @@ export const Modal = ({
               justifyContent: "center",
               zIndex: 1001,
               position: "relative",
+              padding: "24px",
               ...contentStyles,
             }}
             onClick={(e) => {

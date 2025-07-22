@@ -13,12 +13,8 @@
     "url": "https://github.com/chromaui/intro-storybook-react-template/issues"
   },
   "license": "MIT",
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "scripts": {
-    "start": "storybook dev -p 6006",
+    "start": "tsc && storybook dev -p 6006",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -46,6 +42,10 @@
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
     "@storybook/addon-docs": "^9.0.17"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "resolutions": {
     "jackspeak": "2.1.1"
