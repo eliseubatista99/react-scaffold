@@ -1,11 +1,13 @@
-import { useResponsive } from "../useResponsive";
+import { useResponsive, UseResponsiveInput } from "../useResponsive";
 
-export const UseResponsiveStoriesSetup = () => {
-  const { device } = useResponsive();
+export const UseResponsiveStoriesSetup = (input?: UseResponsiveInput) => {
+  const { currentSize, currentBreakpoint, currentWidth } = useResponsive(input);
 
   return (
     <div style={{ padding: "20px" }}>
-      <p>{device}</p>
+      <p>CurrentSize: {currentSize}</p>
+      <p>Current Breakpoint: {currentBreakpoint}</p>
+      <p>Current Width: {currentWidth}</p>
     </div>
   );
 };
