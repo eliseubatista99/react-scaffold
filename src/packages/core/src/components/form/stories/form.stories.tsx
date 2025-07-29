@@ -23,7 +23,7 @@ const meta = {
       content: <button>Submit</button>,
     },
     onSubmit: (data) =>
-      alert(Object.keys(data).map((item) => `${item}: ${data[item]}`)),
+      alert(data.map((item) => `${item.name}: ${item.value}`)),
     styles: { width: "50%" },
   },
 } satisfies Meta<typeof Form>;

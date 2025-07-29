@@ -10,8 +10,6 @@ export const FeedbackProvider = ({ children }: FeedbackProviderInputProps) => {
   const [visibleItems, setVisibleItems] = React.useState<string[]>([]);
 
   const updateVisibleItems = React.useCallback((value: string[]) => {
-    console.log("ZAU UPDATING VISIBLE ITEMS", value);
-
     visibleItemsRef.current = value;
     setVisibleItems(value);
   }, []);

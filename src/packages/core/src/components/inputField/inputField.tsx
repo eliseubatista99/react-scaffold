@@ -48,7 +48,7 @@ export const InputField = ({
   rightIcon,
   bottomMessage,
   placeHolder,
-  autoComplete,
+  autoComplete = "off",
   value,
   type = "text",
   onChange,

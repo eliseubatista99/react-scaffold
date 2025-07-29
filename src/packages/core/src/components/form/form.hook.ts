@@ -1,17 +1,10 @@
 import React from "react";
-import { FormProps } from "./form";
+import { FormFieldOutputData, FormProps } from "./form";
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // type runFetchOptions = Record<string, any>;
 
 export type FormFieldValidation = (value: string) => string | undefined;
-
-export interface FormFieldConfiguration {
-  value?: string;
-  validations: FormFieldValidation[];
-}
-
-export type FormConfiguration = Record<string, FormFieldConfiguration>;
 
 // export interface FormFieldOutput {
 //   value?: string;
@@ -24,14 +17,11 @@ export type FormConfiguration = Record<string, FormFieldConfiguration>;
 export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  const handleSubmitForm = React.useCallback(
+  const getFieldsData = React.useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
-      // Preventing the page from reloading
-      event.preventDefault();
-
       var elementIds = Object.keys(event.currentTarget.elements);
       var elementValues = Object.values(event.currentTarget.elements);
-      var result: Record<string, string> = {};
+      var result: FormFieldOutputData[] = [];
 
       for (let i = 0; i < elementIds.length; i++) {
         const key = elementIds[i];
@@ -41,10 +31,24 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
           continue;
         }
 
-        const value = (elementValues[i] as any).value as string;
+        const value = (elementValues[i] as any).value;
 
-        result[key] = value;
+        result.push({
+          name: key,
+          value,
+        });
       }
+
+      return result;
+    },
+    [onSubmit]
+  );
+
+  const handleSubmitForm = React.useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      // Preventing the page from reloading
+      event.preventDefault();
+      const result = getFieldsData(event);
 
       onSubmit?.(result);
     },

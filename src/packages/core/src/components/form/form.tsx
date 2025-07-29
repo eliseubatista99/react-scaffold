@@ -1,7 +1,12 @@
 import React from "react";
 import { useFormHelper } from "./form.hook";
 
-export interface FormField {
+export interface FormFieldOutputData {
+  name: string;
+  value?: unknown;
+}
+
+export interface FormFieldInputData {
   name: string;
   content: JSX.Element;
 }
@@ -12,9 +17,9 @@ export interface FormSubmitButton {
 }
 
 export interface FormProps {
-  fields: FormField[];
+  fields: FormFieldInputData[];
   submitButton: FormSubmitButton;
-  onSubmit: (data: Record<string, string>) => void;
+  onSubmit: (data: FormFieldOutputData[]) => void;
   styles?: React.CSSProperties;
 }
 
@@ -26,7 +31,7 @@ export const Form = (props: FormProps) => {
     return fields.map((f): JSX.Element => {
       return { ...f.content, key: f.name };
     });
-  }, []);
+  }, [fields]);
 
   return (
     <form
