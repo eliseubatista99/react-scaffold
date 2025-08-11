@@ -12,9 +12,11 @@ export interface InputFieldProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;
+  step?: string | number;
   placeHolder?: string;
   autoComplete?: HTMLInputAutoCompleteAttribute;
   value?: string;
+  initialValue?: string;
   type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
   inputStyles?: CSSProperties;
@@ -50,10 +52,12 @@ export const InputField = ({
   placeHolder,
   autoComplete = "off",
   value,
+  initialValue,
   type = "text",
   onChange,
   inputStyles,
   containerProps,
+  step,
 }: InputFieldProps) => {
   const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.currentTarget.value);
@@ -96,6 +100,7 @@ export const InputField = ({
           name={name}
           type={type}
           autoComplete={autoComplete}
+          step={step}
           style={{
             flex: 1,
             border: "none",
@@ -110,6 +115,7 @@ export const InputField = ({
           }}
           placeholder={placeHolder}
           value={value}
+          defaultValue={initialValue}
           onChange={onValueChanged}
         />
         {rightIcon}

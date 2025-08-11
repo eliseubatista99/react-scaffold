@@ -8,6 +8,7 @@ export interface PageLayoutProps {
   header?: PageLayoutHeaderAndFooterProps;
   footer?: PageLayoutHeaderAndFooterProps;
   floatingContent?: React.ReactNode;
+  allowScroll?: boolean;
   containerStyles?: React.CSSProperties;
   pageStyles?: React.CSSProperties;
   children?: React.ReactNode;
@@ -18,6 +19,7 @@ export const PageLayout = ({
   containerStyles,
   pageStyles,
   children,
+  allowScroll = true,
   footer,
   floatingContent,
 }: PageLayoutProps) => {
@@ -45,7 +47,7 @@ export const PageLayout = ({
         style={{
           minHeight: "100%",
           width: "100%",
-          overflowY: "auto",
+          overflowY: allowScroll ? "auto" : "hidden",
           display: "flex",
           flexDirection: "column",
           boxSizing: "border-box",
@@ -79,6 +81,7 @@ export const PageLayout = ({
             minHeight: "fit-content",
             padding: "24px",
             boxSizing: "border-box",
+            overflowY: allowScroll ? undefined : "hidden",
             ...pageStyles,
           }}
         >

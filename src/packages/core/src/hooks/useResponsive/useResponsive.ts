@@ -17,6 +17,7 @@ export const defaultBreakpoints: BreakpointConfiguration = {
 
 export interface UseResponsiveOutput {
   currentWidth: number;
+  currentHeight: number;
   currentBreakpoint: Breakpoint;
   currentSize: Size;
 }
@@ -88,8 +89,9 @@ const getResponsiveOutputFromWindow = (
   breakpoints: BreakpointConfiguration
 ): UseResponsiveOutput => {
   const currentWidth = window.innerWidth;
+  const currentHeight = window.innerHeight;
   const currentBreakpoint = getCurrentBreakpoint(currentWidth, breakpoints);
   const currentSize = getCurrentSize(currentWidth, breakpoints);
 
-  return { currentWidth, currentBreakpoint, currentSize };
+  return { currentWidth, currentHeight, currentBreakpoint, currentSize };
 };
