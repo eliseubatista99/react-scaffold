@@ -24,9 +24,6 @@ export const Drawer = (props: DrawerProps) => {
     drawerRef,
     handleRef,
     drawerBottomDistance,
-    onDragStart,
-    onDrag,
-    onDragEnd,
   } = useDrawerHelper(props);
 
   return (
@@ -48,8 +45,6 @@ export const Drawer = (props: DrawerProps) => {
             touchAction: "none",
             ...backgroundStyles,
           }}
-          onPointerUp={onDragEnd}
-          onPointerMoveCapture={onDrag}
         >
           <div
             ref={drawerRef}
@@ -88,7 +83,6 @@ export const Drawer = (props: DrawerProps) => {
                 cursor: "pointer",
                 ...handle?.styles,
               }}
-              onPointerDown={onDragStart}
             >
               {handle?.render}
             </div>
