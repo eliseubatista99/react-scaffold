@@ -1,3 +1,5 @@
+import { usePageLayoutHelper } from "./pageLayout.hook";
+
 export interface PageLayoutHeaderAndFooterProps {
   content: React.ReactNode;
   visibility?: "always" | "fixed";
@@ -14,15 +16,16 @@ export interface PageLayoutProps {
   children?: React.ReactNode;
 }
 
-export const PageLayout = ({
-  header,
-  containerStyles,
-  pageStyles,
-  children,
-  allowScroll = true,
-  footer,
-  floatingContent,
-}: PageLayoutProps) => {
+export const PageLayout = (props: PageLayoutProps) => {
+  const {
+    containerStyles,
+    pageStyles,
+    children,
+    allowScroll = true,
+    floatingContent,
+  } = props;
+
+  const { footer, header } = usePageLayoutHelper(props);
   return (
     <div
       data-testid="page-container"
@@ -53,9 +56,9 @@ export const PageLayout = ({
           boxSizing: "border-box",
         }}
       >
-        {header && (
+        {header.visible && (
           <div
-            // ref={header.ref}
+            ref={header.ref}
             data-testid="page-header"
             style={{
               width: "100%",
@@ -79,7 +82,9 @@ export const PageLayout = ({
             width: "100%",
             flex: 1,
             minHeight: "fit-content",
-            padding: "24px",
+            marginTop: `${header.height}px`,
+            marginBottom: `${footer.height}px`,
+            padding: "12px 24px",
             boxSizing: "border-box",
             overflowY: allowScroll ? undefined : "hidden",
             ...pageStyles,
@@ -89,9 +94,9 @@ export const PageLayout = ({
         </div>
       </div>
 
-      {footer && (
+      {footer.visible && (
         <div
-          // ref={header.ref}
+          ref={footer.ref}
           data-testid="page-footer"
           style={{
             width: "100%",

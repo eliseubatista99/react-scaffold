@@ -28,8 +28,6 @@ export const useDrag = ({
   const isPointerDownCache = React.useRef<boolean>(false);
   const { pointerPosition, isPointerDown } = usePointer();
 
-  console.log("ZAU pointer pos", pointerPosition);
-
   const dragDataRef = React.useRef<DragData>({
     isDragging: false,
   });
@@ -64,13 +62,13 @@ export const useDrag = ({
 
   const handleOnClick = React.useCallback(
     (e: PointerEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       dragDataRef.current.isDragging = true;
       dragDataRef.current.startPosY = e.clientY;
       dragDataRef.current.startPosX = e.clientX;
 
       const dragDataResult = calculateDragData({ x: e.clientX, y: e.clientY });
-
-      console.log("ZAU click", { dragDataResult });
 
       if (dragDataResult) {
         dragDataRef.current = dragDataResult;
@@ -102,16 +100,18 @@ export const useDrag = ({
 
   const handleOnPointerMove = React.useCallback(
     (_?: PointerEvent) => {
+      console.debug(
+        "useDrag > onPointerMove > Is Dragging >",
+        dragDataRef.current.isDragging
+      );
+
       if (!dragDataRef.current.isDragging) {
         return;
       }
 
       const dragDataResult = calculateDragData(pointerPosition);
-      console.log("ZAU move", {
-        initPosY: dragDataResult?.startPosY,
-        posY: dragDataResult?.posY,
-        distanceY: dragDataResult?.distanceY,
-      });
+
+      console.debug("useDrag > onPointerMove > Drag Result >", dragDataResult);
 
       if (dragDataResult) {
         onDrag?.(dragDataResult);
@@ -133,6 +133,7 @@ export const useDrag = ({
 
     isInitialized.current = true;
     ref.current.onpointerdown = handleOnClick;
+    ref.current.style.touchAction = "none";
   }, [ref?.current, handleOnClick]);
 
   React.useEffect(() => {
