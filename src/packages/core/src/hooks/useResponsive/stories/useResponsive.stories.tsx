@@ -15,6 +15,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const JsonPlaceholder: Story = {
+export const Default: Story = {
   args: {},
+};
+
+export const CustomBreakpoint: Story = {
+  args: {
+    breakpointConfiguration: {
+      xs: 0,
+      sm: 300,
+      md: 320,
+      lg: 340,
+      xl: 360,
+      xxl: 380,
+    },
+  },
 };

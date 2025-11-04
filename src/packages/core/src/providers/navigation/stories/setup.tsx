@@ -38,8 +38,6 @@ export const NavigationExampleScreen2 = () => {
 const NavigationExampleInnerContent = () => {
   const { currentPath, history, goBack, goTo } = useNavigation();
 
-  console.log("ZAU", currentPath);
-
   const listHistory = React.useCallback(() => {
     let res = "";
     history.forEach((item) => {

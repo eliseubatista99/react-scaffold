@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-core",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "private": false,
   "description": "A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.",
   "main": "dist/index.cjs.js",
@@ -47,7 +47,8 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "@emotion/styled": "^11.14.1"
   },
   "peerDependencies": {
     "react": "^19.1.0",
