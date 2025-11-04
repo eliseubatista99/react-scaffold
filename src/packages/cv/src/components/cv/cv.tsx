@@ -12,12 +12,12 @@ export interface CurriculumVitaeProps extends CvTemplateProps {
 export const CurriculumVitae = (props: CurriculumVitaeProps) => {
   const getTemplate = React.useCallback(() => {
     switch (props.template) {
-      case "modern":
-        return <CVTemplateModern {...props} />;
+      case "classic":
+        return <CVTemplateClassic {...props} />;
       case "timeline":
         return <CVTemplateTimeline {...props} />;
       default:
-        return <CVTemplateClassic {...props} />;
+        return <CVTemplateModern {...props} />;
     }
   }, [props]);
 

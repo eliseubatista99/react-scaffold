@@ -32,9 +32,7 @@ export const ExampleCvContent: CvData = {
     pt:
       "Profissional com 2 anos de experiência em desenvolvimento de aplicações em React com TypeScript e 2 anos de experiência em serviços web com .NET." +
       "\nDesempenhou funções de líder de equipa durante 1 ano e meio, coordenando projectos e assegurando a qualidade e pontualidade das entregas." +
-      "\nApresenta um perfil versátil e colaborativo, com experiência na formação e acompanhamento de estagiários, " +
-      "capacitação técnica de equipas e condução de entrevistas técnicas." +
-      "Capaz de responder de forma eficaz às necessidades técnicas e organizacionais da empresa, " +
+      "\nApresenta um perfil versátil e colaborativo, capaz de responder de forma eficaz às necessidades técnicas e organizacionais da empresa, " +
       "contribuindo tanto para o desenvolvimento de software como para a gestão e evolução das equipas.",
   },
 

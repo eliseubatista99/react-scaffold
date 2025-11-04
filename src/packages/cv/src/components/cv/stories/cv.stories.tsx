@@ -20,11 +20,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Classic: Story = {
-  args: {},
+  args: {
+    template: "classic",
+  },
 };
 
 export const ClassicPT: Story = {
   args: {
+    template: "classic",
     language: "pt",
   },
 };
