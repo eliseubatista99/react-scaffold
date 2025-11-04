@@ -142,8 +142,8 @@ const CVTemplateBaseI18nSections: TranslationList = {
     en: "Education",
   },
   "section.skills.title": {
-    pt: "Formação Académica",
-    en: "Competencias Técnicas",
+    pt: "Competências Técnicas",
+    en: "Technical Skills",
   },
   "section.languages.title": {
     pt: "Idiomas",
