@@ -45,6 +45,12 @@ export const useTemplateHelper = ({
         summary: {
           title: t("section.professionalSummary.title"),
         },
+        links: {
+          title: t("section.links.title"),
+        },
+        contacts: {
+          title: t("section.contacts.title"),
+        },
         experience: {
           title: t("section.experience.title"),
         },

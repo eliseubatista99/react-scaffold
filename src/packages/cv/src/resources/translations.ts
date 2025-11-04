@@ -133,6 +133,14 @@ const CVTemplateBaseI18nSections: TranslationList = {
     pt: "Resumo Profissional",
     en: "Professional Summary",
   },
+  "section.contacts.title": {
+    pt: "Contactos",
+    en: "Contacts",
+  },
+  "section.links.title": {
+    pt: "Links",
+    en: "Links",
+  },
   "section.experience.title": {
     pt: "Experiência Profissional",
     en: "Professional Experience",
