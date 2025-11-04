@@ -5,9 +5,9 @@ import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./timeline.i18n";
 import { templateStyles as styles } from "./timeline.styles";
 
-export const CVTemplateTimeline = ({ data, language }: CvTemplateProps) => {
-  const { i18n, getSocialUrl } = useTemplateHelper({
-    language,
+export const CVTemplateTimeline = (props: CvTemplateProps) => {
+  const { i18n, getSocialUrl, formatPhone, data } = useTemplateHelper({
+    ...props,
     translations: templateI18n,
   });
 

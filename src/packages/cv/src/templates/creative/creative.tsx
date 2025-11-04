@@ -5,10 +5,10 @@ import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./creative.i18n";
 import { templateStyles as styles } from "./creative.styles";
 
-export const CVTemplateCreative = ({ data, language }: CvTemplateProps) => {
-  const { i18n, languageLevelToPercent, getSocialUrl, formatPhone } =
+export const CVTemplateCreative = (props: CvTemplateProps) => {
+  const { i18n, getSocialUrl, formatPhone, data, languageLevelToPercent } =
     useTemplateHelper({
-      language,
+      ...props,
       translations: templateI18n,
     });
 

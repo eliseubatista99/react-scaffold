@@ -1,3 +1,5 @@
+import { Translation } from "@eliseubatista99/react-scaffold-core";
+
 /**
  * Interface for personal information data
  */
@@ -5,7 +7,7 @@ export interface PersonalInfo {
   /** Full name of the person */
   name: string;
   /** Desired job role or position */
-  desiredRole?: string;
+  desiredRole?: Translation;
   /** City of residence */
   city: string;
   /** Postal code */
@@ -34,8 +36,6 @@ export interface Link {
   type: LinkType;
   /** URL or username value */
   value: string;
-  /** Custom name for the platform (when type is "Other") */
-  customName?: string;
 }
 
 export type Month =
@@ -57,7 +57,7 @@ export type Month =
  */
 export interface Experience {
   /** Job title or role */
-  role: string;
+  role: Translation;
   /** Company name */
   company: string;
   /** Start month (abbreviated) */
@@ -71,11 +71,11 @@ export interface Experience {
   /** Whether this is the current job */
   current: boolean;
   /** Technologies used in this role */
-  tech: string;
+  tech: Translation;
   /** Activities and responsibilities */
-  activities: string;
+  activities: Translation;
   /** Achievements and results with metrics */
-  results: string;
+  results: Translation;
 }
 
 export type EducationType =
@@ -97,7 +97,7 @@ export interface Education {
   /** Status of education (completed, in progress, etc.) */
   status: EducationStatus;
   /** Course or degree name */
-  course: string;
+  course: Translation;
   /** Educational institution */
   institution: string;
   /** Start month (abbreviated) */
@@ -109,7 +109,7 @@ export interface Education {
   /** End year */
   endYear: string;
   /** Description of education and achievements */
-  description: string;
+  description: Translation;
 }
 
 export type LanguageLevel = "a1" | "a2" | "b1" | "b2" | "c1" | "c2" | "native";
@@ -119,7 +119,7 @@ export type LanguageLevel = "a1" | "a2" | "b1" | "b2" | "c1" | "c2" | "native";
  */
 export interface Language {
   /** Language name */
-  name: string;
+  name: Translation;
   /** Proficiency level */
   level: LanguageLevel;
 }
@@ -129,7 +129,7 @@ export interface Language {
  */
 export interface Certification {
   /** Certification name */
-  name: string;
+  name: Translation;
   /** Issuing organization or institution */
   issuer: string;
   /** Date of completion */
@@ -139,7 +139,7 @@ export interface Certification {
   /** URL for certificate validation */
   validationLink: string;
   /** Description of certification content */
-  description: string;
+  description: Translation;
 }
 
 /**
@@ -149,13 +149,13 @@ export interface Project {
   /** Project name */
   name: string;
   /** Project description */
-  description: string;
+  description: Translation;
   /** Project URL or repository link */
   link: string;
   /** Source code repository URL (e.g., GitHub) */
   sourceCode?: string;
   /** Technologies used in the project */
-  tech: string;
+  tech: Translation;
   /** Year of project completion */
   year: string;
 }
@@ -167,7 +167,7 @@ export interface Volunteer {
   /** Organization name */
   organization: string;
   /** Role or position in the organization */
-  role: string;
+  role: Translation;
   /** Start month (abbreviated) */
   startMonth: Month;
   /** Start year */
@@ -179,9 +179,9 @@ export interface Volunteer {
   /** Whether this is the current volunteer position */
   current: boolean;
   /** Description of volunteer activities and responsibilities */
-  description: string;
+  description: Translation;
   /** Impact and achievements in the volunteer role */
-  impact: string;
+  impact: Translation;
 }
 
 /**
@@ -193,13 +193,13 @@ export interface CvData {
   /** Social media and portfolio links */
   links?: Link[];
   /** Professional summary */
-  resume?: string;
+  resume?: Translation;
   /** Professional experience entries */
   experiences?: Experience[];
   /** Education entries */
   education?: Education[];
   /** Technical skills */
-  skills?: string;
+  skills?: Translation;
   /** Language proficiency entries */
   languages?: Language[];
   /** Certification entries */

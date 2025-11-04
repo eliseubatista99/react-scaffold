@@ -1,9 +1,10 @@
 import {
-  Language,
   TranslationList,
   useTranslations,
 } from "@eliseubatista99/react-scaffold-core";
+import React from "react";
 import {
+  CvTemplateProps,
   EducationStatus,
   EducationType,
   LanguageLevel,
@@ -12,12 +13,12 @@ import {
   Month,
 } from "../types";
 
-interface TemplateHelperProps {
-  language?: Language;
+interface TemplateHelperProps extends CvTemplateProps {
   translations: TranslationList;
 }
 
 export const useTemplateHelper = ({
+  data,
   language,
   translations,
 }: TemplateHelperProps) => {
@@ -128,15 +129,73 @@ export const useTemplateHelper = ({
   };
 
   const formatPhone = (countryCode: string, phone: string) => {
-    return countryCode && phone
+    return data.personalInfo?.countryCode && data.personalInfo?.phone
       ? `${countryCode.match(/\(([^)]+)\)/)?.[1] || countryCode} ${phone}`
       : phone;
   };
 
+  const getData = React.useCallback(() => {
+    return {
+      personalInfo: {
+        ...data.personalInfo,
+        desiredRole: getTranslation(data.personalInfo?.desiredRole),
+      },
+      links: data.links,
+      resume: getTranslation(data.resume),
+      experiences: data.experiences?.map((item) => {
+        return {
+          ...item,
+          role: getTranslation(item.role),
+          tech: getTranslation(item.tech),
+          activities: getTranslation(item.activities),
+          results: getTranslation(item.results),
+        };
+      }),
+      education: data.education?.map((item) => {
+        return {
+          ...item,
+          course: getTranslation(item.course),
+          description: getTranslation(item.description),
+        };
+      }),
+      skills: getTranslation(data.skills),
+      languages: data.languages?.map((item) => {
+        return {
+          ...item,
+          name: getTranslation(item.name),
+        };
+      }),
+      certifications: data.certifications?.map((item) => {
+        return {
+          ...item,
+          name: getTranslation(item.name),
+          description: getTranslation(item.description),
+        };
+      }),
+      volunteers: data.volunteers?.map((item) => {
+        return {
+          ...item,
+          role: getTranslation(item.role),
+          description: getTranslation(item.description),
+          impact: getTranslation(item.impact),
+        };
+      }),
+      projects: data.projects?.map((item) => {
+        return {
+          ...item,
+          description: getTranslation(item.description),
+          tech: getTranslation(item.tech),
+        };
+      }),
+    };
+  }, [data]);
+
   return {
+    getTranslation,
     i18n: getI18n(),
     languageLevelToPercent,
     getSocialUrl,
     formatPhone,
+    data: getData(),
   };
 };

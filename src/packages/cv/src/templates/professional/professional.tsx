@@ -5,9 +5,9 @@ import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./professional.i18n";
 import { templateStyles as base } from "./professional.styles";
 
-export const CVTemplateProfessional = ({ data, language }: CvTemplateProps) => {
-  const { i18n, getSocialUrl } = useTemplateHelper({
-    language,
+export const CVTemplateProfessional = (props: CvTemplateProps) => {
+  const { i18n, getSocialUrl, formatPhone, data } = useTemplateHelper({
+    ...props,
     translations: templateI18n,
   });
 

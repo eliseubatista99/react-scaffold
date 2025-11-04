@@ -7,8 +7,8 @@ export declare type TranslationList = {
 };
 
 export interface UseTranslationsOutput {
-  t: (key: string) => string;
-  getTranslation: (translation: Translation) => string;
+  t: (key: string) => string | undefined;
+  getTranslation: (translation?: Translation) => string | undefined;
 }
 
 export interface UseTranslationsInput {
@@ -22,13 +22,23 @@ export const useTranslations = (
   const translations = input.translations;
   const language = input.language;
 
-  const getTranslation = (translation: Translation) => {
+  const getTranslation = (translation?: Translation) => {
+    if (!translation) {
+      return undefined;
+    }
+
     return translation[language];
   };
 
   const t = (key: string) => {
     if (translations[key]) {
-      return getTranslation(translations[key]);
+      const result = getTranslation(translations[key]);
+
+      if (result == undefined) {
+        return key;
+      }
+
+      return result;
     }
 
     return key;

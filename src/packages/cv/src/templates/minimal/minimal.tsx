@@ -5,9 +5,9 @@ import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./minimal.i18n";
 import { templateStyles as styles } from "./minimal.styles";
 
-export const CVTemplateMinimal = ({ data, language }: CvTemplateProps) => {
-  const { i18n, getSocialUrl, formatPhone } = useTemplateHelper({
-    language,
+export const CVTemplateMinimal = (props: CvTemplateProps) => {
+  const { i18n, getSocialUrl, formatPhone, data } = useTemplateHelper({
+    ...props,
     translations: templateI18n,
   });
 
