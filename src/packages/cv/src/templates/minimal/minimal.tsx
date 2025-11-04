@@ -1,5 +1,4 @@
 import { Link, Page, Text, View } from "@react-pdf/renderer";
-import { LinkHelper } from "../../helpers";
 import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
@@ -7,7 +6,7 @@ import { templateI18n } from "./minimal.i18n";
 import { templateStyles as styles } from "./minimal.styles";
 
 export const CVTemplateMinimal = ({ data, language }: CvTemplateProps) => {
-  const { i18n } = useTemplateHelper({
+  const { i18n, getSocialUrl, formatPhone } = useTemplateHelper({
     language,
     translations: templateI18n,
   });
@@ -55,7 +54,7 @@ export const CVTemplateMinimal = ({ data, language }: CvTemplateProps) => {
                 {data.links.map((l, i) => (
                   <Link
                     key={i}
-                    src={LinkHelper.getSocialUrl(l)}
+                    src={getSocialUrl(l)}
                     style={[styles.linkItem, styles.link]}
                   >
                     {i18n.global.link(l.type)}

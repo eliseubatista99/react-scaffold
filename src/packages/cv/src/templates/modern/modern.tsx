@@ -1,6 +1,5 @@
 import { Link, Page, Text, View } from "@react-pdf/renderer";
 import React from "react";
-import { LinkHelper } from "../../helpers";
 import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
@@ -8,7 +7,7 @@ import { templateI18n } from "./modern.i18n";
 import { templateStyles as styles } from "./modern.styles";
 
 export const CVTemplateModern = ({ data, language }: CvTemplateProps) => {
-  const { i18n } = useTemplateHelper({
+  const { i18n, getSocialUrl, formatPhone } = useTemplateHelper({
     language,
     translations: templateI18n,
   });
@@ -17,7 +16,7 @@ export const CVTemplateModern = ({ data, language }: CvTemplateProps) => {
     data.personalInfo?.city,
     data.personalInfo?.postalCode,
     data.personalInfo?.email,
-    LinkHelper.formatPhone(
+    formatPhone(
       data.personalInfo?.countryCode || "",
       data.personalInfo?.phone || ""
     ),
@@ -53,7 +52,7 @@ export const CVTemplateModern = ({ data, language }: CvTemplateProps) => {
               {data.links.map((link, index) => (
                 <Link
                   key={index}
-                  src={LinkHelper.getSocialUrl(link)}
+                  src={getSocialUrl(link)}
                   style={styles.linkItem}
                 >
                   {i18n.global.link(link.type)}: {link.value}
