@@ -1,11 +1,13 @@
 "use client";
 
-import { pdf } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
+import { usePdfGenerator } from "../../hooks";
 import { PdfPreviewProps } from "./pdfPreview";
 
 export const usePdfPreviewHelper = (props: PdfPreviewProps) => {
   const { content, tryAgainDisplay, errorDisplay, loadingDisplay } = props;
+
+  const pdfGenerator = usePdfGenerator();
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,12 +36,13 @@ export const usePdfPreviewHelper = (props: PdfPreviewProps) => {
     setError(null);
     try {
       // Generate a PDF blob from the document
-      const blob = await pdf(content).toBlob();
-      setPdfSize(blob.size);
+      const result = await pdfGenerator.generatePdf(content);
+      setPdfSize(result.size!);
+      setPdfUrl(result.url!);
 
-      // Create a URL from the PDF blob for preview
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
+      if (result.error) {
+        throw result.error;
+      }
     } catch (error) {
       setError(
         `Error generating PDF: ${

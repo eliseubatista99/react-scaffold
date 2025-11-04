@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-pdf",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": false,
   "description": "A library of pdf utilites for React projects.",
   "main": "dist/index.cjs.js",

@@ -18,7 +18,7 @@ export const PdfPreview = (props: PdfPreviewProps) => {
     styles,
   } = props;
 
-  const { loading, error, setError, isMobile, pdfSize, pdfUrl } =
+  const { loading, error, setError, isMobile, pdfUrl } =
     usePdfPreviewHelper(props);
 
   const showLoading = loading;

@@ -1,33 +1,47 @@
-import { renderToStaticMarkup } from "react-dom/server";
-import { PdfHelper } from "../../helpers";
+import { pdf } from "@react-pdf/renderer";
+
+interface GeneratePdfOutput {
+  error?: string;
+  url?: string;
+  size?: number;
+}
 
 export const usePdfGenerator = () => {
-  const generateFromContent = async (
-    content: React.ReactNode,
-    fileName: string
-  ) => {
-    const output = document.createElement("div");
-    const staticElement = renderToStaticMarkup(content);
-    output.innerHTML = staticElement;
-    document.body.appendChild(output);
+  const generatePdf = async (
+    content: JSX.Element
+  ): Promise<GeneratePdfOutput> => {
+    try {
+      // Generate a PDF blob from the document
+      const blob = await pdf(content).toBlob();
 
-    const res = await PdfHelper.generatePdfFromHTMLElement(output, fileName);
+      // Create a URL from the PDF blob for preview
+      const url = URL.createObjectURL(blob);
 
-    document.body.removeChild(output);
-
-    return res;
+      return {
+        error: undefined,
+        url,
+        size: blob.size,
+      };
+    } catch (err) {
+      return {
+        error: err instanceof Error ? err.message : "Unknown",
+        url: undefined,
+        size: undefined,
+      };
+    }
   };
 
-  const generateFromRef = async (
-    ref: React.RefObject<any>,
-    fileName: string
-  ) => {
-    const res = await PdfHelper.generatePdfFromRef(ref, fileName);
-    return res;
+  const downloadPdf = async (url: string) => {
+    const output = document.createElement("a");
+    output.href = url;
+    output.target = "_blank";
+    output.rel = "noopener noreferrer";
+
+    output.click();
   };
 
   return {
-    generateFromContent,
-    generateFromRef,
+    generatePdf,
+    downloadPdf,
   };
 };

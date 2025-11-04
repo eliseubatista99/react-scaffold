@@ -3,13 +3,15 @@ import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./timeline.i18n";
-import { templateStyles as styles } from "./timeline.styles";
+import { getStyles } from "./timeline.styles";
 
 export const CVTemplateTimeline = (props: CvTemplateProps) => {
   const { i18n, getSocialUrl, formatPhone, data } = useTemplateHelper({
     ...props,
     translations: templateI18n,
   });
+
+  const styles = getStyles(props.theme);
 
   return (
     <BaseCVTemplate>
@@ -44,7 +46,7 @@ export const CVTemplateTimeline = (props: CvTemplateProps) => {
                   src={getSocialUrl(l)}
                   style={[styles.linkItem, styles.link]}
                 >
-                  {i18n.global.link(l.type)}
+                  {i18n.global.link(l.type)}: {l.value}
                 </Link>
               ))}
             </View>
