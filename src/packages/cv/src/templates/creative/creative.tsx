@@ -4,327 +4,330 @@ import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./creative.i18n";
-import { templateStyles as base } from "./creative.styles";
+import { templateStyles as styles } from "./creative.styles";
 
 export const CVTemplateCreative = ({ data, language }: CvTemplateProps) => {
-  const { i18n } = useTemplateHelper({
+  const { i18n, languageLevelToPercent } = useTemplateHelper({
     language,
     translations: templateI18n,
   });
 
+  const contactItems = [
+    data.personalInfo?.city,
+    data.personalInfo?.postalCode,
+    data.personalInfo?.email,
+    LinkHelper.formatPhone(
+      data.personalInfo?.countryCode || "",
+      data.personalInfo?.phone || ""
+    ),
+  ].filter(Boolean);
+
   return (
     <BaseCVTemplate>
-      <Page size="A4" style={base.page}>
-        {/* Header */}
-        <View style={base.header}>
-          <Text style={base.name}>{data.personalInfo?.name}</Text>
-          {data.personalInfo?.desiredRole ? (
-            <Text style={base.desiredRole}>
+      <Page size="A4" style={styles.page}>
+        {/* Fixed background strip across all pages (thin) */}
+        <View fixed style={styles.bgStrip} />
+        {/* First page wide strip (non-fixed) overlays thin on page 1 */}
+        <View style={styles.firstPageWideStrip} />
+        {/* Absolute sidebar content (first page only) */}
+        <View style={styles.sidebarContentAbs}>
+          <Text style={styles.name}>{data.personalInfo?.name}</Text>
+          {data.personalInfo?.desiredRole && (
+            <Text style={styles.desiredRole}>
               {data.personalInfo.desiredRole}
             </Text>
-          ) : null}
-          <View style={[base.accentBar, base.accentBar]} />
-
-          {/* Contact */}
-          <View style={base.contactRow}>
-            {data.personalInfo?.city && (
-              <Text style={base.contactItem}>{data.personalInfo.city}</Text>
-            )}
-            {data.personalInfo?.postalCode && (
-              <>
-                <Text style={base.separator}>•</Text>
-                <Text style={base.contactItem}>
-                  {data.personalInfo.postalCode}
-                </Text>
-              </>
-            )}
-            {data.personalInfo?.email && (
-              <>
-                <Text style={base.separator}>•</Text>
-                <Link
-                  src={`mailto:${data.personalInfo.email}`}
-                  style={[base.contactItem, base.linkItem]}
-                >
-                  {data.personalInfo.email}
-                </Link>
-              </>
-            )}
-            {data.personalInfo?.phone && (
-              <>
-                <Text style={base.separator}>•</Text>
-                <Link
-                  src={`tel:${data.personalInfo.phone}`}
-                  style={[base.contactItem, base.linkItem]}
-                >
-                  {data.personalInfo.phone}
-                </Link>
-              </>
-            )}
-          </View>
-
-          {/* Links */}
+          )}
+          <View style={styles.divider} />
+          <Text style={styles.sidebarSectionTitle}>
+            {i18n.sections.contacts.title}
+          </Text>
+          {contactItems.map((item, idx) => (
+            <Text key={idx} style={styles.sidebarText}>
+              {item}
+            </Text>
+          ))}
           {data.links && data.links.length > 0 && (
-            <View style={base.linksRow}>
-              {data.links.map((l, i) => (
+            <View>
+              <View style={styles.divider} />
+              <Text style={styles.sidebarSectionTitle}>
+                {i18n.sections.links.title}
+              </Text>
+              {data.links.map((link, index) => (
                 <Link
-                  key={i}
-                  src={LinkHelper.getSocialUrl(l)}
-                  style={[base.linkItem, base.linkItem]}
+                  key={index}
+                  src={LinkHelper.getSocialUrl(link)}
+                  style={styles.sidebarText}
                 >
-                  {i18n.global.link(l.type)}
+                  {i18n.global.link(link.type)}: {link.value}
                 </Link>
+              ))}
+            </View>
+          )}
+          {data.languages && data.languages.length > 0 && (
+            <View>
+              <View style={styles.divider} />
+              <Text style={styles.sidebarSectionTitle}>
+                {i18n.sections.languages.title}
+              </Text>
+              {data.languages.map((language, index) => (
+                <View key={index} style={{ marginBottom: 10 }}>
+                  <Text style={styles.sidebarText}>
+                    {language.name} (
+                    {i18n.global.language.level(language.level)})
+                  </Text>
+                  <View style={styles.barBg}>
+                    <View
+                      style={{
+                        ...styles.barFill,
+                        width: `${languageLevelToPercent(language.level)}%`,
+                      }}
+                    />
+                  </View>
+                </View>
               ))}
             </View>
           )}
         </View>
 
-        {/* Summary */}
-        {data.resume && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
+        {/* Main content (shifted right) */}
+        <View style={styles.mainWithSidebarOffset}>
+          {/* Professional Summary */}
+          {data.resume && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>
                 {i18n.sections.summary.title}
               </Text>
+              <Text style={styles.summary}>{data.resume}</Text>
             </View>
-            <Text style={base.summary}>{data.resume}</Text>
-          </View>
-        )}
+          )}
 
-        {/* Experience */}
-        {data.experiences && data.experiences.length > 0 && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.experience.title}
-              </Text>
+          {/* Professional Experience */}
+          {data.experiences && data.experiences.length > 0 && (
+            <View style={styles.section}>
+              <View wrap={false}>
+                <Text style={styles.sectionTitle}>
+                  {i18n.sections.experience.title}
+                </Text>
+                {data.experiences.length > 0 && <View style={{ height: 0 }} />}
+              </View>
+              {data.experiences.map((exp, index) => (
+                <View key={index} style={styles.expBlock} wrap={false}>
+                  <View style={styles.roleAndDate}>
+                    <Text style={styles.titleLine}>{exp.role}</Text>
+                    <Text style={styles.metaLine}>
+                      {exp.company} • {i18n.global.time.month(exp.startMonth)}{" "}
+                      {exp.startYear} -{" "}
+                      {exp.current
+                        ? i18n.global.time.current
+                        : `${i18n.global.time.month(exp.endMonth)} ${
+                            exp.endYear
+                          }`}
+                    </Text>
+                  </View>
+                  {exp.tech && <Text style={styles.tech}>{exp.tech}</Text>}
+                  {exp.activities && (
+                    <Text style={styles.activities}>{exp.activities}</Text>
+                  )}
+                  {exp.results && (
+                    <Text style={styles.results}>{exp.results}</Text>
+                  )}
+                </View>
+              ))}
             </View>
-            {data.experiences.map((exp, i) => (
-              <View key={i} style={base.expBlock}>
-                <View style={base.roleAndDate}>
-                  <View style={base.roleAndCompany}>
-                    <Text style={base.jobRole}>{exp.role}</Text>
-                    {exp.company && (
-                      <>
-                        <Text style={base.companySeparator}> • </Text>
-                        <Text style={base.companyName}>{exp.company}</Text>
-                      </>
+          )}
+
+          {/* Education */}
+          {data.education && data.education.length > 0 && (
+            <View style={styles.section}>
+              <View wrap={false}>
+                <Text style={styles.sectionTitle}>
+                  {i18n.sections.education.title}
+                </Text>
+                {data.education.length > 0 && <View style={{ height: 0 }} />}
+              </View>
+              {data.education.map((edu, index) => (
+                <View key={index} style={styles.eduBlock} wrap={false}>
+                  <View style={styles.roleAndDate}>
+                    <Text style={styles.eduTitle}>{edu.course}</Text>
+                    <Text style={styles.dateRange}>
+                      {i18n.global.time.month(edu.startMonth)} {edu.startYear} -{" "}
+                      {i18n.global.time.month(edu.endMonth)} {edu.endYear}
+                    </Text>
+                  </View>
+                  <Text style={styles.eduInst}>{edu.institution}</Text>
+                  {edu.description && (
+                    <Text style={styles.eduDesc}>{edu.description}</Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Skills */}
+          {data.skills && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>
+                {i18n.sections.skills.title}
+              </Text>
+              <View style={styles.skillsGrid}>
+                {data.skills.split(",").map((skill, index) => (
+                  <Text key={index} style={styles.skillText}>
+                    {skill.trim()}
+                  </Text>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Certifications */}
+          {data.certifications && data.certifications.length > 0 && (
+            <View style={styles.section}>
+              <View wrap={false}>
+                <Text style={styles.sectionTitle}>
+                  {i18n.sections.certification.title}
+                </Text>
+                {data.certifications.length > 0 && (
+                  <View style={{ height: 0 }} />
+                )}
+              </View>
+              {data.certifications.map((cert, index) => {
+                const isLast = index === data.certifications!.length - 1;
+                return (
+                  <View
+                    key={index}
+                    wrap={false}
+                    style={{
+                      ...styles.certBlock,
+                      marginBottom: isLast ? 0 : styles.certBlock.marginBottom,
+                      paddingBottom: isLast
+                        ? 0
+                        : styles.certBlock.paddingBottom,
+                    }}
+                  >
+                    <View style={styles.roleAndDate}>
+                      <Text style={styles.certName}>{cert.name}</Text>
+                      <Text style={styles.certDate}>{cert.completionDate}</Text>
+                    </View>
+                    <Text style={styles.certIssuer}>{cert.issuer}</Text>
+                    {cert.validationLink && (
+                      <Link src={cert.validationLink} style={styles.certLink}>
+                        {i18n.sections.certification.action}
+                      </Link>
+                    )}
+                    {cert.description && (
+                      <Text style={styles.certDesc}>{cert.description}</Text>
                     )}
                   </View>
-                  <Text style={base.dateRange}>
-                    {exp.startMonth && exp.startYear
-                      ? `${i18n.global.time.month(exp.startMonth)} ${
-                          exp.startYear
-                        }`
-                      : ""}
-                    {exp.startMonth &&
-                    exp.startYear &&
-                    (exp.endMonth || exp.endYear || exp.current)
-                      ? " - "
-                      : ""}
-                    {exp.current
-                      ? i18n.global.time.current
-                      : exp.endMonth && exp.endYear
-                      ? `${i18n.global.time.month(exp.endMonth)} ${exp.endYear}`
-                      : ""}
-                  </Text>
-                </View>
-                {exp.tech && (
-                  <Text style={[base.tech, base.tech]}>{exp.tech}</Text>
-                )}
-                {exp.activities && (
-                  <Text style={base.activities}>• {exp.activities}</Text>
-                )}
-                {exp.results && (
-                  <Text style={base.results}>• {exp.results}</Text>
-                )}
+                );
+              })}
+            </View>
+          )}
+
+          {/* Volunteer Work */}
+          {data.volunteers && data.volunteers.length > 0 && (
+            <View style={styles.section}>
+              <View wrap={false}>
+                <Text style={styles.sectionTitle}>
+                  {i18n.sections.volunteer.title}
+                </Text>
+                {data.volunteers.length > 0 && <View style={{ height: 0 }} />}
               </View>
-            ))}
-          </View>
-        )}
-
-        {/* Education */}
-        {data.education && data.education.length > 0 && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.education.title}
-              </Text>
-            </View>
-            {data.education.map((edu, i) => (
-              <View key={i} style={base.eduBlock}>
-                <View style={base.roleAndDate}>
-                  <Text style={base.eduTitle}>{edu.course}</Text>
-                  <Text style={base.dateRange}>
-                    {edu.startMonth && edu.startYear
-                      ? `${i18n.global.time.month(edu.startMonth)} ${
-                          edu.startYear
-                        }`
-                      : ""}
-                    {edu.startMonth &&
-                    edu.startYear &&
-                    (edu.endMonth || edu.endYear)
-                      ? " - "
-                      : ""}
-                    {edu.endMonth && edu.endYear
-                      ? `${i18n.global.time.month(edu.endMonth)} ${edu.endYear}`
-                      : ""}
-                  </Text>
-                </View>
-                <Text style={base.eduInst}>{edu.institution}</Text>
-                {edu.description && (
-                  <Text style={base.eduDesc}>• {edu.description}</Text>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Skills & Languages */}
-        {(data.skills || (data.languages && data.languages.length > 0)) && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.skillsAndLanguages.title}
-              </Text>
-            </View>
-            <View style={base.skillsLangRow}>
-              {data.skills ? (
-                <View style={base.skillsCol}>
-                  <Text style={base.skillText}>{data.skills}</Text>
-                </View>
-              ) : null}
-              {data.languages && data.languages.length > 0 ? (
-                <View style={base.langCol}>
-                  {data.languages.map((lg, i) => (
-                    <Text key={i} style={base.langItem}>
-                      {lg.name} — {i18n.global.language.level(lg.level)}
-                    </Text>
-                  ))}
-                </View>
-              ) : null}
-            </View>
-          </View>
-        )}
-
-        {/* Projects */}
-        {data.projects && data.projects.length > 0 && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.projects.title}
-              </Text>
-            </View>
-            {data.projects.map((proj, i) => (
-              <View key={i} style={base.projBlock}>
-                <View style={base.roleAndDate}>
-                  <Text style={base.projName}>{proj.name}</Text>
-                  <Text style={base.projYear}>{proj.year}</Text>
-                </View>
-                {proj.tech && (
-                  <Text style={[base.projTech, base.projTech]}>
-                    {proj.tech}
-                  </Text>
-                )}
-                {proj.description && (
-                  <Text style={base.projDesc}>• {proj.description}</Text>
-                )}
-                {proj.link && (
-                  <Link src={proj.link} style={[base.projLink, base.projLink]}>
-                    {i18n.sections.projects.action}
-                  </Link>
-                )}
-                {proj.sourceCode && (
-                  <Link
-                    src={proj.sourceCode}
-                    style={[base.projLink, base.projLink]}
+              {data.volunteers.map((vol, index) => {
+                const isLast = index === data.volunteers!.length - 1;
+                return (
+                  <View
+                    key={index}
+                    wrap={false}
+                    style={{
+                      ...styles.volBlock,
+                      marginBottom: isLast ? 0 : styles.volBlock.marginBottom,
+                      paddingBottom: isLast ? 0 : styles.volBlock.paddingBottom,
+                    }}
                   >
-                    {i18n.sections.projects.source}
-                  </Link>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Certifications */}
-        {data.certifications && data.certifications.length > 0 && (
-          <View style={base.section}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.certification.action}
-              </Text>
+                    <View style={styles.roleAndDate}>
+                      <Text style={styles.volRole}>{vol.role}</Text>
+                      <Text style={styles.dateRange}>
+                        {vol.startMonth && vol.startYear
+                          ? `${i18n.global.time.month(vol.startMonth)} ${
+                              vol.startYear
+                            }`
+                          : ""}
+                        {vol.startMonth &&
+                        vol.startYear &&
+                        (vol.endMonth || vol.endYear || vol.current)
+                          ? " - "
+                          : ""}
+                        {vol.current
+                          ? i18n.global.time.current
+                          : vol.endMonth && vol.endYear
+                          ? `${i18n.global.time.month(vol.endMonth)} ${
+                              vol.endYear
+                            }`
+                          : ""}
+                      </Text>
+                    </View>
+                    <Text style={styles.volOrg}>{vol.organization}</Text>
+                    {vol.description && (
+                      <Text style={styles.volDesc}>{vol.description}</Text>
+                    )}
+                    {vol.impact && (
+                      <Text style={styles.volImpact}>{vol.impact}</Text>
+                    )}
+                  </View>
+                );
+              })}
             </View>
-            {data.certifications.map((cert, i) => (
-              <View key={i} style={base.certBlock}>
-                <View style={base.roleAndDate}>
-                  <Text style={base.certName}>{cert.name}</Text>
-                  <Text style={base.certDate}>{cert.completionDate}</Text>
-                </View>
-                <Text style={base.certIssuer}>{cert.issuer}</Text>
-                {cert.validationLink && (
-                  <Link
-                    src={cert.validationLink}
-                    style={[base.certLink, base.certLink]}
+          )}
+
+          {/* Projects */}
+          {data.projects && data.projects.length > 0 && (
+            <View style={{ ...styles.section, marginBottom: 0 }}>
+              <View wrap={false}>
+                <Text style={styles.sectionTitle}>
+                  {i18n.sections.projects.title}
+                </Text>
+                {data.projects.length > 0 && <View style={{ height: 0 }} />}
+              </View>
+              {data.projects.map((proj, index) => {
+                const isLast = index === data.projects!.length - 1;
+                return (
+                  <View
+                    key={index}
+                    wrap={false}
+                    style={{
+                      ...styles.projBlock,
+                      marginBottom: isLast ? 0 : styles.projBlock.marginBottom,
+                      paddingBottom: isLast
+                        ? 0
+                        : styles.projBlock.paddingBottom,
+                    }}
                   >
-                    {i18n.sections.certification.action}
-                  </Link>
-                )}
-                {cert.description && (
-                  <Text style={base.certDesc}>{cert.description}</Text>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Volunteer */}
-        {data.volunteers && data.volunteers.length > 0 && (
-          <View style={{ ...base.section, marginBottom: 0 }}>
-            <View style={base.sectionHeader}>
-              <View style={[base.sectionAccent, base.sectionAccent]} />
-              <Text style={base.sectionTitle}>
-                {i18n.sections.volunteer.title}
-              </Text>
+                    <View style={styles.roleAndDate}>
+                      <Text style={styles.projName}>{proj.name}</Text>
+                      <Text style={styles.projYear}>{proj.year}</Text>
+                    </View>
+                    {proj.tech && (
+                      <Text style={styles.projTech}>{proj.tech}</Text>
+                    )}
+                    {proj.description && (
+                      <Text style={styles.projDesc}>{proj.description}</Text>
+                    )}
+                    {proj.link && (
+                      <Link src={proj.link} style={styles.projLink}>
+                        {i18n.sections.projects.action}
+                      </Link>
+                    )}
+                    {proj.sourceCode && (
+                      <Link src={proj.sourceCode} style={styles.projLink}>
+                        {i18n.sections.projects.source}
+                      </Link>
+                    )}
+                  </View>
+                );
+              })}
             </View>
-            {data.volunteers.map((vol, i) => (
-              <View key={i} style={base.volBlock}>
-                <View style={base.roleAndDate}>
-                  <Text style={base.volRole}>{vol.role}</Text>
-                  <Text style={base.dateRange}>
-                    {vol.startMonth && vol.startYear
-                      ? `${i18n.global.time.month(vol.startMonth)} ${
-                          vol.startYear
-                        }`
-                      : ""}
-                    {vol.startMonth &&
-                    vol.startYear &&
-                    (vol.endMonth || vol.endYear || vol.current)
-                      ? " - "
-                      : ""}
-                    {vol.current
-                      ? i18n.global.time.current
-                      : vol.endMonth && vol.endYear
-                      ? `${i18n.global.time.month(vol.endMonth)} ${vol.endYear}`
-                      : ""}
-                  </Text>
-                </View>
-                <Text style={base.volOrg}>{vol.organization}</Text>
-                {vol.description && (
-                  <Text style={base.volDesc}>• {vol.description}</Text>
-                )}
-                {vol.impact && (
-                  <Text style={base.volImpact}>• {vol.impact}</Text>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
+          )}
+        </View>
       </Page>
     </BaseCVTemplate>
   );
