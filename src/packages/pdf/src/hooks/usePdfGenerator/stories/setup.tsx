@@ -1,22 +1,32 @@
+import React from "react";
 import { usePdfGenerator } from "../usePdfGenerator.hook";
 
 export type UsePdfGeneratorStoriesSetupProps = {
-  content: React.ReactNode;
+  content: JSX.Element;
   fileName: string;
 };
 
 export const UsePdfGeneratorStoriesSetup = (
   props: UsePdfGeneratorStoriesSetupProps
 ) => {
-  const { generateFromContent } = usePdfGenerator();
+  const { generatePdf, downloadPdf } = usePdfGenerator();
+
+  const [generatedUrl, setGeneratedUrl] = React.useState<string>("");
 
   return (
     <div style={{ padding: "20px" }}>
       <button
-        onClick={() => generateFromContent(props.content, props.fileName)}
+        onClick={async () => {
+          const res = await generatePdf(props.content);
+          setGeneratedUrl(res.url || "");
+        }}
       >
         Generate
       </button>
+
+      {generatedUrl && (
+        <button onClick={() => downloadPdf(generatedUrl)}>Download</button>
+      )}
     </div>
   );
 };

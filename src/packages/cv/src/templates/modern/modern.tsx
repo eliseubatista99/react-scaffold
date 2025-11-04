@@ -4,13 +4,15 @@ import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
 import { templateI18n } from "./modern.i18n";
-import { templateStyles as styles } from "./modern.styles";
+import { getStyles } from "./modern.styles";
 
 export const CVTemplateModern = (props: CvTemplateProps) => {
   const { i18n, getSocialUrl, formatPhone, data } = useTemplateHelper({
     ...props,
     translations: templateI18n,
   });
+
+  const styles = getStyles(props.theme);
 
   const contactItems = [
     data.personalInfo?.city,

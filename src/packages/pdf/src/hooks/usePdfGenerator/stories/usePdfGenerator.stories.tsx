@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { PdfGeneratorExampleContent } from "./exampleContent";
 import { UsePdfGeneratorStoriesSetup } from "./setup";
-import { ViteHomepage } from "./viteHomepage";
 
 const meta = {
   title: "Pdf/Hooks/usePdfGenerator",
@@ -12,7 +12,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     fileName: "test.pdf",
-    content: <ViteHomepage />,
+    content: <PdfGeneratorExampleContent />,
   },
 } satisfies Meta<typeof UsePdfGeneratorStoriesSetup>;
 

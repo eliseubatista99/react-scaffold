@@ -7,6 +7,6 @@ export interface CvTemplateProps {
   data: CvData;
 }
 
-export type CvTheme = {
-  highlightColor: string;
-};
+export interface CvTheme {
+  color: string;
+}

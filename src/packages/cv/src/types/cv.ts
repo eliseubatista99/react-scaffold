@@ -1,5 +1,7 @@
 import { Translation } from "@eliseubatista99/react-scaffold-core";
 
+export type CVTemplateType = "classic" | "modern" | "timeline";
+
 /**
  * Interface for personal information data
  */
