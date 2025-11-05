@@ -16,7 +16,7 @@
   "scripts": {
     "start": "tsc && storybook dev -p 6006",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build & storybook build",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
