@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@storybook/addon-docs": "^9.0.17",
     "@storybook/addon-links": "^9.0.17",
     "@storybook/react-vite": "^9.0.17",
     "@types/react": "^18.3.3",
@@ -45,8 +46,7 @@
     "storybook": "^9.0.17",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1",
-    "@storybook/addon-docs": "^9.0.17"
+    "vite": "^5.4.1"
   },
   "resolutions": {
     "jackspeak": "2.1.1"
@@ -56,5 +56,5 @@
       "plugin:storybook/recommended"
     ]
   },
-  "packageManager": "yarn@4.5.0"
+  "packageManager": "yarn@4.10.3"
 }
