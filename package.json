@@ -23,11 +23,11 @@
     "init-msw": "msw init public/",
     "clean-vite": "vite --force"
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
   "devDependencies": {
+    "@eliseubatista99/react-scaffold-core": "*",
+    "@eliseubatista99/react-scaffold-cv": "*",
+    "@eliseubatista99/react-scaffold-firebase": "*",
+    "@eliseubatista99/react-scaffold-pdf": "*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@eslint/js": "^9.9.0",
@@ -46,6 +46,8 @@
     "globals": "^15.9.0",
     "msw": "^2.3.0",
     "msw-storybook-addon": "^2.0.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-pdf": "^10.0.1",
     "react-router-dom": "^7.6.3",
     "react-to-pdf": "^2.0.1",

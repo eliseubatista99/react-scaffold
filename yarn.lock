@@ -261,6 +261,57 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eliseubatista99/react-scaffold-core@npm:*":
+  version: 0.1.4
+  resolution: "@eliseubatista99/react-scaffold-core@npm:0.1.4"
+  peerDependencies:
+    react: ^19.1.0
+    react-dom: ^19.1.0
+    react-router-dom: ^7.6.3
+  checksum: 10c0/32579d2ed3364b1625f4ae12c66bb61b0de7834f92b0ace82e392fd98f5c52fede6a3bae4a4b02024973b15ef788c6a51c166bd71a69734b433010fddddef97f
+  languageName: node
+  linkType: hard
+
+"@eliseubatista99/react-scaffold-cv@npm:*":
+  version: 0.1.1
+  resolution: "@eliseubatista99/react-scaffold-cv@npm:0.1.1"
+  peerDependencies:
+    "@eliseubatista99/react-scaffold-core": "*"
+    "@react-pdf/renderer": ^4.3.0
+    react: ^19.1.0
+    react-dom: ^19.1.0
+    react-pdf: ^10.0.1
+    react-router-dom: ^7.6.3
+    react-to-pdf: ^2.0.1
+  checksum: 10c0/3576bd89cadc9bea9390326e7514f153e712e7cadfce82b8107a419140d37a20bf150414a875a24a6549b6ada90366b8d9e74a4bd3e900ddc6d1f233b314884c
+  languageName: node
+  linkType: hard
+
+"@eliseubatista99/react-scaffold-firebase@npm:*":
+  version: 0.1.2
+  resolution: "@eliseubatista99/react-scaffold-firebase@npm:0.1.2"
+  peerDependencies:
+    firebase: ^11.10.0
+    react: ^19.1.0
+    react-dom: ^19.1.0
+  checksum: 10c0/6d1ab4890c3f9768340d32201fd6f9e74a7490bd869459eecd599060ec505e8ac124ab5fe547ee6bbe30a34fc5d864d35b5f2c2d9bd4d125ed4a553e0cffd96d
+  languageName: node
+  linkType: hard
+
+"@eliseubatista99/react-scaffold-pdf@npm:*":
+  version: 0.1.4
+  resolution: "@eliseubatista99/react-scaffold-pdf@npm:0.1.4"
+  peerDependencies:
+    "@react-pdf/renderer": ^4.3.0
+    react: ^19.1.0
+    react-dom: ^19.1.0
+    react-pdf: ^10.0.1
+    react-router-dom: ^7.6.3
+    react-to-pdf: ^2.0.1
+  checksum: 10c0/68349163875e5c1f796a380683b9931505458d7d813613456af45df447fe85bea387856f49c529367424975a4239045c3bd2cd63a72d491270e5d03f5ad1b6b8
+  languageName: node
+  linkType: hard
+
 "@emotion/babel-plugin@npm:^11.13.5":
   version: 11.13.5
   resolution: "@emotion/babel-plugin@npm:11.13.5"
@@ -1599,12 +1650,12 @@ __metadata:
   linkType: hard
 
 "@storybook/icons@npm:^1.2.12":
-  version: 1.4.0
-  resolution: "@storybook/icons@npm:1.4.0"
+  version: 1.6.0
+  resolution: "@storybook/icons@npm:1.6.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-  checksum: 10c0/fd0514fb3fa431a8b5939fe1d9fc336b253ef2c25b34792d2d4ee59e13321108d34f8bf223a0981482f54f83c5ef47ffd1a98c376ca9071011c1b8afe2b01d43
+  checksum: 10c0/bbec9201a78a730195f9cf377b15856dc414a54d04e30d16c379d062425cc617bfd0d6586ba1716012cfbdab461f0c9693a6a52920f9bd09c7b4291fb116f59c
   languageName: node
   linkType: hard
 
@@ -4515,7 +4566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -5324,15 +5375,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react-dom@npm:^18.2.0":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react-dom@npm:^19.1.0":
+  version: 19.2.0
+  resolution: "react-dom@npm:19.2.0"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
+    react: ^19.2.0
+  checksum: 10c0/fa2cae05248d01288e91523b590ce4e7635b1e13f1344e225f850d722a8da037bf0782f63b1c1d46353334e0c696909b82e582f8cad607948fde6f7646cc18d9
   languageName: node
   linkType: hard
 
@@ -5405,6 +5455,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-scaffold-eliseubatista99@workspace:."
   dependencies:
+    "@eliseubatista99/react-scaffold-core": "npm:*"
+    "@eliseubatista99/react-scaffold-cv": "npm:*"
+    "@eliseubatista99/react-scaffold-firebase": "npm:*"
+    "@eliseubatista99/react-scaffold-pdf": "npm:*"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@eslint/js": "npm:^9.9.0"
@@ -5423,8 +5477,8 @@ __metadata:
     globals: "npm:^15.9.0"
     msw: "npm:^2.3.0"
     msw-storybook-addon: "npm:^2.0.3"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
+    react: "npm:^19.1.0"
+    react-dom: "npm:^19.1.0"
     react-pdf: "npm:^10.0.1"
     react-router-dom: "npm:^7.6.3"
     react-to-pdf: "npm:^2.0.1"
@@ -5448,12 +5502,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react@npm:^18.2.0":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react@npm:^19.1.0":
+  version: 19.2.0
+  resolution: "react@npm:19.2.0"
+  checksum: 10c0/1b6d64eacb9324725bfe1e7860cb7a6b8a34bc89a482920765ebff5c10578eb487e6b46b2f0df263bd27a25edbdae2c45e5ea5d81ae61404301c1a7192c38330
   languageName: node
   linkType: hard
 
@@ -5764,12 +5816,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
+"scheduler@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "scheduler@npm:0.27.0"
+  checksum: 10c0/4f03048cb05a3c8fddc45813052251eca00688f413a3cee236d984a161da28db28ba71bd11e7a3dd02f7af84ab28d39fb311431d3b3772fed557945beb00c452
   languageName: node
   linkType: hard
 
