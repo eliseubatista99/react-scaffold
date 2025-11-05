@@ -28,6 +28,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@emotion/styled": "^11.14.1",
     "@eslint/js": "^9.9.0",
     "@storybook/addon-docs": "^9.0.17",
     "@storybook/addon-links": "^9.0.17",
@@ -56,5 +57,5 @@
       "plugin:storybook/recommended"
     ]
   },
-  "packageManager": "yarn@4.5.0"
+  "packageManager": "yarn@4.10.3"
 }
