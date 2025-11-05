@@ -1,29 +1,17 @@
-import React from "react";
-import { CVTemplateClassic } from "../../templates/classic";
-import { CVTemplateModern } from "../../templates/modern";
-import { CVTemplateTimeline } from "../../templates/timeline";
+import { PdfPreview } from "@eliseubatista99/react-scaffold-pdf";
+import { useGetCVDocument } from "../../hooks";
 import { CvTemplateProps, CVTemplateType } from "../../types";
-import { PdfPreview } from "../pdfPreview";
 
 export interface CurriculumVitaeProps extends CvTemplateProps {
   template: CVTemplateType;
 }
 
 export const CurriculumVitae = (props: CurriculumVitaeProps) => {
-  const getTemplate = React.useCallback(() => {
-    switch (props.template) {
-      case "classic":
-        return <CVTemplateClassic {...props} />;
-      case "timeline":
-        return <CVTemplateTimeline {...props} />;
-      default:
-        return <CVTemplateModern {...props} />;
-    }
-  }, [props]);
+  const { getDocument } = useGetCVDocument();
 
   return (
     <PdfPreview
-      content={getTemplate()}
+      content={getDocument(props)}
       mobileDownloadDisplay={(pdfUrl) => (
         <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
           Abrir PDF numa nova aba
