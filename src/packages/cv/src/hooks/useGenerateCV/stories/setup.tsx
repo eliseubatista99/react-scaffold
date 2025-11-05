@@ -9,7 +9,7 @@ export type UseCVGeneratorStoriesSetupProps = {
 export const UseCVGeneratorStoriesSetup = (
   props: UseCVGeneratorStoriesSetupProps
 ) => {
-  const { generateCV, downloadCV } = useCVGenerator();
+  const { generateCV, downloadCV, previewCV } = useCVGenerator();
 
   const [generatedUrl, setGeneratedUrl] = React.useState<string>("");
 
@@ -26,6 +26,10 @@ export const UseCVGeneratorStoriesSetup = (
 
       {generatedUrl && (
         <button onClick={() => downloadCV(props.data)}>Download</button>
+      )}
+
+      {generatedUrl && (
+        <button onClick={() => previewCV(props.data)}>Preview</button>
       )}
     </div>
   );
