@@ -9,7 +9,7 @@ export type UsePdfGeneratorStoriesSetupProps = {
 export const UsePdfGeneratorStoriesSetup = (
   props: UsePdfGeneratorStoriesSetupProps
 ) => {
-  const { generatePdf, downloadPdf } = usePdfGenerator();
+  const { generatePdf, downloadPdf, previewPdf } = usePdfGenerator();
 
   const [generatedUrl, setGeneratedUrl] = React.useState<string>("");
 
@@ -26,6 +26,10 @@ export const UsePdfGeneratorStoriesSetup = (
 
       {generatedUrl && (
         <button onClick={() => downloadPdf(generatedUrl)}>Download</button>
+      )}
+
+      {generatedUrl && (
+        <button onClick={() => previewPdf(generatedUrl)}>Preview</button>
       )}
     </div>
   );

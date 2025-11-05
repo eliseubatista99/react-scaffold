@@ -31,7 +31,15 @@ export const usePdfGenerator = () => {
     }
   };
 
-  const downloadPdf = async (url: string) => {
+  const downloadPdf = async (url: string, name?: string) => {
+    const output = document.createElement("a");
+    output.href = url;
+    output.download = `${name ?? "file"}.pdf`;
+
+    output.click();
+  };
+
+  const previewPdf = async (url: string) => {
     const output = document.createElement("a");
     output.href = url;
     output.target = "_blank";
@@ -43,5 +51,6 @@ export const usePdfGenerator = () => {
   return {
     generatePdf,
     downloadPdf,
+    previewPdf,
   };
 };

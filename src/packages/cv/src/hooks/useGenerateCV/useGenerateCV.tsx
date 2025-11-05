@@ -9,7 +9,7 @@ interface GenerateCVOutput {
 }
 
 export const useCVGenerator = () => {
-  const { generatePdf, downloadPdf } = usePdfGenerator();
+  const { generatePdf, downloadPdf, previewPdf } = usePdfGenerator();
   const { getDocument } = useGetCVDocument();
 
   const generateCV = async (
@@ -29,12 +29,21 @@ export const useCVGenerator = () => {
     const result = await generateCV(data);
 
     if (result.url) {
-      downloadPdf(result.url);
+      downloadPdf(result.url, data.title ?? "CV");
+    }
+  };
+
+  const previewCV = async (data: CurriculumVitaeProps) => {
+    const result = await generateCV(data);
+
+    if (result.url) {
+      previewPdf(result.url);
     }
   };
 
   return {
     generateCV,
     downloadCV,
+    previewCV,
   };
 };
