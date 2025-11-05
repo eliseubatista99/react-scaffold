@@ -7,7 +7,7 @@ export declare type TranslationList = {
 };
 
 export interface UseTranslationsOutput {
-  t: (key: string) => string | undefined;
+  t: (key: string) => string;
   getTranslation: (translation?: Translation) => string | undefined;
 }
 
