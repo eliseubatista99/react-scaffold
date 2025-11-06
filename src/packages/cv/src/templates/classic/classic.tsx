@@ -26,7 +26,7 @@ export const CVTemplateClassic = (props: CvTemplateProps) => {
 
   return (
     <BaseCVTemplate>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} {...props.pageConfigs}>
         {data.personalInfo && (
           <View style={styles.header}>
             <Text style={styles.name}>{data.personalInfo?.name}</Text>

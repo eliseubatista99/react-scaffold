@@ -25,23 +25,9 @@ export const Classic: Story = {
   },
 };
 
-export const ClassicPT: Story = {
-  args: {
-    template: "classic",
-    language: "pt",
-  },
-};
-
 export const Modern: Story = {
   args: {
     template: "modern",
-  },
-};
-
-export const ModernPT: Story = {
-  args: {
-    template: "modern",
-    language: "pt",
   },
 };
 
@@ -51,9 +37,11 @@ export const Timeline: Story = {
   },
 };
 
-export const TimelinePT: Story = {
+export const WithoutWrap: Story = {
   args: {
-    template: "timeline",
-    language: "pt",
+    template: "modern",
+    pageConfigs: {
+      wrap: false,
+    },
   },
 };
