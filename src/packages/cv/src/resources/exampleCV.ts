@@ -28,6 +28,14 @@ export const ExampleCvContent: CvData = {
       "Professional with 2 years of experience in developing React applications with TypeScript and 2 years of experience in building web services with .NET." +
       "\nServed as a team leader for 1.5 years, coordinating projects and ensuring the quality and timely delivery of developments. " +
       "\nA versatile and collaborative professional, experienced in training and mentoring interns, technical upskilling of teams, and conducting technical interviews." +
+      "Capable of addressing the company’s technical and organizational needs, contributing both to software development and to team and project management." +
+      "Professional with 2 years of experience in developing React applications with TypeScript and 2 years of experience in building web services with .NET." +
+      "\nServed as a team leader for 1.5 years, coordinating projects and ensuring the quality and timely delivery of developments. " +
+      "\nA versatile and collaborative professional, experienced in training and mentoring interns, technical upskilling of teams, and conducting technical interviews." +
+      "Capable of addressing the company’s technical and organizational needs, contributing both to software development and to team and project management." +
+      "Professional with 2 years of experience in developing React applications with TypeScript and 2 years of experience in building web services with .NET." +
+      "\nServed as a team leader for 1.5 years, coordinating projects and ensuring the quality and timely delivery of developments. " +
+      "\nA versatile and collaborative professional, experienced in training and mentoring interns, technical upskilling of teams, and conducting technical interviews." +
       "Capable of addressing the company’s technical and organizational needs, contributing both to software development and to team and project management.",
     pt:
       "Profissional com 2 anos de experiência em desenvolvimento de aplicações em React com TypeScript e 2 anos de experiência em serviços web com .NET." +
