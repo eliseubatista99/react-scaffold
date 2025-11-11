@@ -13,6 +13,10 @@ const baseArgs: UseTranslationsInput = {
       pt: "Exemplo de tradução 2",
       en: "Translation example 2",
     },
+    "translation.example.3": {
+      pt: "Exemplo de tradução com valor: {{value}}",
+      en: "Translation example with value: {{value}}",
+    },
   },
 };
 
