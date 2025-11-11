@@ -13,48 +13,64 @@ export interface CarouselSlideProps {
 export interface CarouselProps {
   content: CarouselSlideProps[];
   settings?: Settings;
+  gap?: string;
   styles?: CSSProperties;
 }
 
-const SlideDiv = styled.div`
+const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
+  width: 100%;
+  height: fit-content;
+
+  ${({ styles }) => styles && { ...styles }}
+`;
+
+const SlideDiv = styled.div<{ styles?: React.CSSProperties }>`
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
+  min-width: fit-content;
+  position: relative;
 
-  * {
+  ${({ styles }) => styles && { ...styles }}
+
+  > * {
     box-sizing: border-box;
     display: flex;
   }
 `;
 
-export const Carousel = ({ styles, content, settings }: CarouselProps) => {
+export const Carousel = ({
+  styles,
+  content,
+  settings,
+  gap = "15px",
+}: CarouselProps) => {
   var carouselSettings: Settings = {
     dots: false,
     speed: 500,
     slidesToScroll: 1,
     infinite: false,
     variableWidth: true,
+    arrows: false,
     ...settings,
   };
 
-  const slides = content.map((c) => (
+  const slides = content.map((c, index) => (
     <SlideDiv
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minWidth: "fit-content",
-        position: "relative",
-        boxSizing: "border-box",
+      styles={{
+        paddingLeft: index === 0 ? "0px" : gap,
+        marginLeft: index !== 0 ? "0px" : gap,
         ...c.styles,
       }}
-      className="carousel-slide-item"
+      data-testid="carousel-slide-item"
     >
       {c.content}
     </SlideDiv>
   ));
 
   return (
-    <div style={{ width: "100%", height: "250px", ...styles }}>
+    <ContainerDiv styles={{ ...styles }}>
       <Slider {...carouselSettings}>{slides}</Slider>
-    </div>
+    </ContainerDiv>
   );
 };

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Carousel } from "../carousel";
+import { CarouselStoriesSetup } from "./setup";
 
 const slide = () => ({
   content: (
@@ -7,7 +8,6 @@ const slide = () => ({
       style={{
         width: "200px",
         height: "250px",
-        padding: "1px 7px",
       }}
     >
       <div
@@ -30,17 +30,14 @@ const slide = () => ({
 
 const meta = {
   title: "Core/Components/Carousel",
-  component: Carousel,
+  component: CarouselStoriesSetup,
   parameters: {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
   args: {
     content: [slide(), slide(), slide(), slide(), slide()],
-    settings: {
-      slidesToShow: 2,
-      dots: false,
-    },
+    settings: {},
   },
 } satisfies Meta<typeof Carousel>;
 
@@ -49,4 +46,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {},
+};
+
+export const NoGap: Story = {
+  args: {
+    gap: "0",
+  },
 };
