@@ -1,9 +1,9 @@
 import { type CSSProperties } from "react";
 import Slider, { Settings } from "react-slick";
 
+import styled from "@emotion/styled";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import "./carousel.css";
 
 export interface CarouselSlideProps {
   content: JSX.Element;
@@ -16,6 +16,16 @@ export interface CarouselProps {
   styles?: CSSProperties;
 }
 
+const SlideDiv = styled.div`
+  box-sizing: border-box;
+  display: flex;
+
+  * {
+    box-sizing: border-box;
+    display: flex;
+  }
+`;
+
 export const Carousel = ({ styles, content, settings }: CarouselProps) => {
   var carouselSettings: Settings = {
     dots: false,
@@ -27,7 +37,7 @@ export const Carousel = ({ styles, content, settings }: CarouselProps) => {
   };
 
   const slides = content.map((c) => (
-    <div
+    <SlideDiv
       style={{
         display: "flex",
         flexDirection: "column",
@@ -39,7 +49,7 @@ export const Carousel = ({ styles, content, settings }: CarouselProps) => {
       className="carousel-slide-item"
     >
       {c.content}
-    </div>
+    </SlideDiv>
   ));
 
   return (
