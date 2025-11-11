@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { InputField } from "../../inputField";
 import { Form } from "../form";
 
 const meta = {
@@ -12,11 +13,11 @@ const meta = {
     fields: [
       {
         name: "username",
-        content: <input id="username" />,
+        content: <InputField name={"username"} />,
       },
       {
         name: "password",
-        content: <input id="password" />,
+        content: <InputField name={"password"} type="password" />,
       },
     ],
     submitButton: {
