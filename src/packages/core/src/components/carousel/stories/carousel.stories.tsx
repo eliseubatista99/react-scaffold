@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Carousel } from "../carousel";
-import { CarouselStoriesSetup } from "./setup";
 
 const slide = () => ({
   content: (
@@ -30,7 +29,7 @@ const slide = () => ({
 
 const meta = {
   title: "Core/Components/Carousel",
-  component: CarouselStoriesSetup,
+  component: Carousel,
   parameters: {
     layout: "fullscreen",
   },
@@ -38,6 +37,7 @@ const meta = {
   args: {
     content: [slide(), slide(), slide(), slide(), slide()],
     settings: {},
+    styles: { padding: "10px 24px" },
   },
 } satisfies Meta<typeof Carousel>;
 

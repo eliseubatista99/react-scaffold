@@ -22,6 +22,10 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
   height: fit-content;
 
   ${({ styles }) => styles && { ...styles }}
+
+  .slick-list {
+    overflow: visible;
+  }
 `;
 
 const SlideDiv = styled.div<{ styles?: React.CSSProperties }>`
@@ -59,7 +63,7 @@ export const Carousel = ({
     <SlideDiv
       styles={{
         paddingLeft: index === 0 ? "0px" : gap,
-        marginLeft: index !== 0 ? "0px" : gap,
+        // marginLeft: index !== 0 ? "0px" : margin,
         ...c.styles,
       }}
       data-testid="carousel-slide-item"
