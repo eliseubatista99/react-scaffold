@@ -19,6 +19,7 @@ export interface InputFieldProps {
   initialValue?: string;
   type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
+  onFocus?: () => void;
   inputStyles?: CSSProperties;
   containerProps?: CSSProperties;
 }
@@ -55,12 +56,19 @@ export const InputField = ({
   initialValue,
   type = "text",
   onChange,
+  onFocus,
   inputStyles,
   containerProps,
   step,
 }: InputFieldProps) => {
   const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.currentTarget.value);
+  };
+
+  const handleOnFocus = (
+    event: React.FocusEvent<HTMLInputElement, Element>
+  ) => {
+    onFocus?.();
   };
 
   return (
@@ -117,6 +125,7 @@ export const InputField = ({
           value={value}
           defaultValue={initialValue}
           onChange={onValueChanged}
+          onFocus={handleOnFocus}
         />
         {rightIcon}
       </div>
