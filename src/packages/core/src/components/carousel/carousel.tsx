@@ -85,10 +85,17 @@ export const Carousel = ({
       setSlidesToShow(carouselSettings.slidesToShow);
     }
 
-    const containerWidth = (carouselRef.current?.offsetWidth || 1) + gap;
+    const containerWidth = (carouselRef.current?.offsetWidth || 1) - gap;
     const slideWidth = firstSlideRef.current?.offsetWidth || 1;
 
-    const res = Math.floor(containerWidth / slideWidth);
+    let res = Math.floor(containerWidth / slideWidth);
+
+    if (res < 1) {
+      res = 1;
+    } else if (res > content.length) {
+      res = content.length;
+    }
+
     console.log("Slides to show > ", {
       container: containerWidth,
       slide: slideWidth,
