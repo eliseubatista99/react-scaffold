@@ -2,6 +2,7 @@ import { type CSSProperties } from "react";
 import Slider, { Settings } from "react-slick";
 
 import styled from "@emotion/styled";
+import React from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
@@ -13,7 +14,7 @@ export interface CarouselSlideProps {
 export interface CarouselProps {
   content: CarouselSlideProps[];
   settings?: Settings;
-  gap?: string;
+  gap?: number;
   styles?: CSSProperties;
 }
 
@@ -47,8 +48,12 @@ export const Carousel = ({
   styles,
   content,
   settings,
-  gap = "15px",
+  gap = 15,
 }: CarouselProps) => {
+  const [slidesToShow, setSlidesToShow] = React.useState<number>(1);
+  const carouselRef = React.useRef<HTMLDivElement>(null);
+  const firstSlideRef = React.useRef<HTMLDivElement>(null);
+
   var carouselSettings: Settings = {
     dots: false,
     speed: 500,
@@ -56,13 +61,16 @@ export const Carousel = ({
     infinite: false,
     variableWidth: true,
     arrows: false,
+    rows: 1,
     ...settings,
   };
 
   const slides = content.map((c, index) => (
     <SlideDiv
+      ref={index === 0 ? firstSlideRef : undefined}
       styles={{
-        paddingLeft: index === 0 ? "0px" : gap,
+        paddingRight: `${gap}px`,
+        overflow: "visible",
         // marginLeft: index !== 0 ? "0px" : margin,
         ...c.styles,
       }}
@@ -72,9 +80,33 @@ export const Carousel = ({
     </SlideDiv>
   ));
 
+  const calculateSlidesToShow = () => {
+    if (carouselSettings.slidesToShow) {
+      setSlidesToShow(carouselSettings.slidesToShow);
+    }
+
+    const containerWidth = (carouselRef.current?.offsetWidth || 1) + gap;
+    const slideWidth = firstSlideRef.current?.offsetWidth || 1;
+
+    const res = Math.floor(containerWidth / slideWidth);
+    console.log("Slides to show > ", {
+      container: containerWidth,
+      slide: slideWidth,
+      res,
+    });
+
+    setSlidesToShow(res);
+  };
+
+  React.useEffect(() => {
+    calculateSlidesToShow();
+  }, [carouselRef, firstSlideRef]);
+
   return (
-    <ContainerDiv styles={{ ...styles }}>
-      <Slider {...carouselSettings}>{slides}</Slider>
+    <ContainerDiv ref={carouselRef} styles={{ ...styles }}>
+      <Slider {...carouselSettings} slidesToShow={slidesToShow}>
+        {slides}
+      </Slider>
     </ContainerDiv>
   );
 };

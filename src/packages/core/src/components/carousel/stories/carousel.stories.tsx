@@ -50,6 +50,6 @@ export const Default: Story = {
 
 export const NoGap: Story = {
   args: {
-    gap: "0",
+    gap: 0,
   },
 };
