@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import { usePageLayoutHelper } from "./pageLayout.hook";
 
 export interface PageLayoutHeaderAndFooterProps {
@@ -11,10 +12,33 @@ export interface PageLayoutProps {
   footer?: PageLayoutHeaderAndFooterProps;
   floatingContent?: React.ReactNode;
   allowScroll?: boolean;
+  reserveSpaceForScrollbar?: boolean;
   containerStyles?: React.CSSProperties;
   pageStyles?: React.CSSProperties;
   children?: React.ReactNode;
 }
+
+const PageContainer = styled.div<{ styles?: React.CSSProperties }>`
+  min-height: 100%;
+  max-height: 100%;
+  width: 100%;
+  min-width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+
+  ${({ styles }) => styles && { ...styles }}
+
+  div {
+    box-sizing: border-box;
+    position: relative;
+  }
+`;
 
 export const PageLayout = (props: PageLayoutProps) => {
   const {
@@ -23,70 +47,64 @@ export const PageLayout = (props: PageLayoutProps) => {
     children,
     allowScroll = true,
     floatingContent,
+    reserveSpaceForScrollbar,
   } = props;
 
-  const { footer, header } = usePageLayoutHelper(props);
+  const { footer, header, page } = usePageLayoutHelper(props);
   return (
-    <div
-      data-testid="page-container"
-      style={{
-        minHeight: "100vh",
-        width: "100%",
-        minWidth: "100%",
-        overflow: "hidden",
-        position: "relative",
-        boxSizing: "border-box",
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: "flex",
-        flexDirection: "column",
+    <PageContainer
+      id="page-container"
+      styles={{
         ...containerStyles,
       }}
     >
-      <div
-        data-testid="page-layout"
-        style={{
-          minHeight: "100%",
-          width: "100%",
-          overflowY: allowScroll ? "auto" : "hidden",
-          display: "flex",
-          flexDirection: "column",
-          boxSizing: "border-box",
-        }}
-      >
-        {header.visible && (
-          <div
-            ref={header.ref}
-            data-testid="page-header"
-            style={{
-              width: "100%",
-              zIndex: 99,
-              position: header.visibility === "fixed" ? "relative" : "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              display: "flex",
-              flexDirection: "row",
-              height: "fit-content",
-              boxSizing: "border-box",
-              ...header.styles,
-            }}
-          >
-            {header.content}
-          </div>
-        )}
+      {header.visible && (
         <div
+          ref={header.ref}
+          id="page-header"
           style={{
             width: "100%",
-            flex: 1,
-            minHeight: "fit-content",
-            marginTop: `${header.height}px`,
-            marginBottom: `${footer.height}px`,
-            padding: "12px 24px",
+            zIndex: 99,
+            position: header.visibility === "fixed" ? "relative" : "sticky",
+            top: 0,
+            left: 0,
+            right: 0,
+            display: "flex",
+            flexDirection: "row",
+            height: "fit-content",
             boxSizing: "border-box",
-            overflowY: allowScroll ? undefined : "hidden",
+            ...header.styles,
+          }}
+        >
+          {header.content}
+        </div>
+      )}
+      <div
+        id="page-body"
+        style={{
+          width: "100%",
+          overflow: "hidden",
+          display: "flex",
+          flex: 1,
+          marginTop: `-${header.height}px`,
+          marginBottom: `-${footer.height}px`,
+        }}
+      >
+        <div
+          id="page-content"
+          style={{
+            width: "100%",
+            overflowX: "hidden",
+            overflowY: allowScroll ? "auto" : "hidden",
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            minHeight: "100%",
+            scrollbarGutter: reserveSpaceForScrollbar ? "stable" : undefined,
+            paddingLeft: "0px",
+            paddingRight: "0px",
+            paddingTop: `${header.height}px`,
+            paddingBottom: `${footer.height}px`,
             ...pageStyles,
           }}
         >
@@ -97,11 +115,11 @@ export const PageLayout = (props: PageLayoutProps) => {
       {footer.visible && (
         <div
           ref={footer.ref}
-          data-testid="page-footer"
+          id="page-footer"
           style={{
             width: "100%",
             zIndex: 99,
-            position: footer.visibility === "fixed" ? "relative" : "fixed",
+            position: footer.visibility === "fixed" ? "relative" : "sticky",
             bottom: 0,
             left: 0,
             right: 0,
@@ -115,6 +133,6 @@ export const PageLayout = (props: PageLayoutProps) => {
           {footer.content}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 };

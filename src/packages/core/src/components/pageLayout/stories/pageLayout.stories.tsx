@@ -4,12 +4,16 @@ import { PageLayoutStoriesSetup } from "./setup";
 
 const baseArgs: PageLayoutProps = {
   header: {
-    visibility: "fixed",
+    visibility: "always",
     content: <></>,
   },
   footer: {
-    visibility: "fixed",
+    visibility: "always",
     content: <></>,
+  },
+  pageStyles: {
+    paddingLeft: "24px",
+    paddingRight: "24px",
   },
   children: <div>Hello</div>,
 };
@@ -34,15 +38,7 @@ export const Default: Story = {
 export const WithHeaderAlwaysVisible: Story = {
   args: {
     ...baseArgs,
-    header: baseArgs.header
-      ? {
-          ...baseArgs.header,
-          visibility: "always",
-        }
-      : undefined,
-    pageStyles: {
-      paddingTop: "124px",
-    },
+
     footer: undefined,
   },
 };
@@ -50,6 +46,10 @@ export const WithHeaderAlwaysVisible: Story = {
 export const WithFixedHeader: Story = {
   args: {
     ...baseArgs,
+    header: {
+      ...baseArgs.header,
+      visibility: "fixed",
+    } as any,
     footer: undefined,
   },
 };
@@ -57,15 +57,7 @@ export const WithFixedHeader: Story = {
 export const WithFooterAlwaysVisible: Story = {
   args: {
     ...baseArgs,
-    pageStyles: {
-      paddingBottom: "170px",
-    },
-    footer: baseArgs.footer
-      ? {
-          ...baseArgs.footer,
-          visibility: "always",
-        }
-      : undefined,
+
     header: undefined,
   },
 };
@@ -73,6 +65,10 @@ export const WithFooterAlwaysVisible: Story = {
 export const WithFixedFooter: Story = {
   args: {
     ...baseArgs,
+    footer: {
+      ...baseArgs.footer,
+      visibility: "fixed",
+    } as any,
     header: undefined,
   },
 };

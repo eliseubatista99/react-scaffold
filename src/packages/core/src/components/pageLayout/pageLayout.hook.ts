@@ -24,6 +24,20 @@ export const usePageLayoutHelper = (props: PageLayoutProps) => {
     setFooterHeight(footerRef.current.clientHeight);
   }, [footerRef, footerRef.current]);
 
+  const calculateExtraHeight = React.useCallback(() => {
+    let extra = 0;
+
+    if (props.header?.visibility === "always") {
+      extra = extra + (headerHeight || 0);
+    }
+
+    if (props.footer?.visibility === "always") {
+      extra = extra + (footerHeight || 0);
+    }
+
+    return extra;
+  }, [footerRef, footerRef.current]);
+
   React.useEffect(() => {
     executeHeaderCalculations();
   }, [executeHeaderCalculations, headerRef, headerRef.current]);
@@ -44,6 +58,9 @@ export const usePageLayoutHelper = (props: PageLayoutProps) => {
       visible: props.footer !== undefined,
       height: props.footer?.visibility === "fixed" ? 0 : footerHeight,
       ref: footerRef,
+    },
+    page: {
+      extraHeight: calculateExtraHeight(),
     },
   };
 };

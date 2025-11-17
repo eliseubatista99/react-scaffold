@@ -53,26 +53,28 @@ export const PageLayoutStoriesSetup = ({
     : undefined;
 
   return (
-    <PageLayout {...props} header={header} footer={footer}>
-      <div
-        style={{
-          width: "100%",
-          gap: "16px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {Array.from({ length: 30 }, (_, i) => i + 1).map((i) => (
-          <div
-            style={{
-              background: `rgba(60, 60, 60, ${100 / i})`,
-              width: "300px",
-              height: "100px",
-              maxWidth: "100%",
-            }}
-          />
-        ))}
-      </div>
-    </PageLayout>
+    <div style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
+      <PageLayout {...props} header={header} footer={footer}>
+        <div
+          style={{
+            width: "100%",
+            gap: "16px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {Array.from({ length: 30 }, (_, i) => i + 1).map((i) => (
+            <div
+              style={{
+                background: `rgba(60, 60, 60, ${100 / i})`,
+                width: "300px",
+                height: "100px",
+                maxWidth: "100%",
+              }}
+            />
+          ))}
+        </div>
+      </PageLayout>
+    </div>
   );
 };
