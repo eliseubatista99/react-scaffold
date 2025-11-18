@@ -20,8 +20,8 @@ export const Checkbox = ({
     <div
       onClick={() => onToggle?.(!checked)}
       style={{
-        width: "10px",
-        height: "10px",
+        width: "25px",
+        height: "25px",
         borderRadius: "4px",
         border: "1px solid #969696ff",
         background: checked ? "#000000" : "#ffffff",
