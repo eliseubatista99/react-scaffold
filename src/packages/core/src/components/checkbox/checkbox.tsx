@@ -13,9 +13,14 @@ export const Checkbox = ({
   checked,
   onToggle,
   styles,
+  checkedStyles,
   customCheckedRender,
   customUncheckedRender,
 }: CheckboxProps) => {
+  const finalStyles: React.CSSProperties = checked
+    ? { ...styles, ...checkedStyles }
+    : { ...styles };
+
   return (
     <div
       onClick={() => onToggle?.(!checked)}
@@ -30,7 +35,7 @@ export const Checkbox = ({
         alignItems: "center",
         justifyContent: "center",
         display: "flex",
-        ...styles,
+        ...finalStyles,
       }}
     >
       {checked && customCheckedRender}
