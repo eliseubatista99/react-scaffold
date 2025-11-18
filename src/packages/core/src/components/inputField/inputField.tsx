@@ -92,7 +92,7 @@ export const InputField = ({
           borderRadius: "5px",
           padding: "5px 15px",
           color: "#000000",
-          fontFamily: "Poppins",
+          fontFamily: "inherit",
           fontStyle: "normal",
           fontWeight: 400,
           fontSize: "16px",
