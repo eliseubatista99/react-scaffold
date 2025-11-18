@@ -1,5 +1,6 @@
 export * from "./button";
 export * from "./carousel";
+export * from "./checkbox";
 export * from "./drawer";
 export * from "./form";
 export * from "./image";
