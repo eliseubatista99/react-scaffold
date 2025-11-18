@@ -22,7 +22,7 @@ export const Typography = ({
         fontSize: "16px",
         fontStyle: "normal",
         lineHeight: "normal",
-        color: "#000000",
+        color: "inherit",
         ...styles,
       }}
     >

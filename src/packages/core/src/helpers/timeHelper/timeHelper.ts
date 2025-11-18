@@ -1,3 +1,8 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+
 export class TimeHelper {
   static waitForMilliseconds = (ms: number): Promise<void> => {
     return new Promise((res) => setTimeout(res, ms));
@@ -50,5 +55,54 @@ export class TimeHelper {
     }
 
     return false;
+  };
+
+  static getDateInUTC = (date: string | null | undefined) => {
+    try {
+      const utcDate = dayjs.utc(date);
+
+      const day = utcDate.date();
+      const month = utcDate.month();
+      const year = utcDate.year();
+      const hour = utcDate.hour();
+      const minute = utcDate.minute();
+      const weekday = utcDate.day();
+
+      return {
+        day,
+        month,
+        year,
+        hour,
+        minute,
+        weekday,
+      };
+    } catch (e) {
+      return undefined;
+    }
+  };
+
+  static formatDateLocalTime = (
+    date: string | null | undefined,
+    format?: string
+  ): string => {
+    if (!date) {
+      return "";
+    }
+
+    return dayjs
+      .utc(date)
+      .local()
+      .format(format || "DD/MM/YYYYㆍHH:mm");
+  };
+
+  static formatDateUTC = (
+    date: string | null | undefined,
+    format?: string
+  ): string => {
+    if (!date) {
+      return "";
+    }
+
+    return dayjs.utc(date).format(format || "DD/MM/YYYYㆍHH:mm");
   };
 }
