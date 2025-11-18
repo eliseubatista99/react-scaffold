@@ -27,6 +27,73 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
   .slick-list {
     overflow: visible;
   }
+
+  .slick-dots {
+    position: absolute;
+    bottom: -25px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+    margin: 0 auto;
+    list-style: none;
+    gap: 5px;
+  }
+
+  .slick-dots li {
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .slick-dots li button {
+    font-size: 0;
+    line-height: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 0;
+    height: 20px;
+    cursor: pointer;
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: transparent;
+  }
+
+  .slick-dots li button:before {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: "slick";
+    font-size: 10px;
+    line-height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    content: "•";
+    text-align: center;
+    opacity: 0.25;
+    color: black;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .slick-dots li.slick-active button:before {
+    opacity: 0.75;
+    color: black;
+  }
 `;
 
 const SlideDiv = styled.div<{ styles?: React.CSSProperties }>`
@@ -83,6 +150,7 @@ export const Carousel = ({
   const calculateSlidesToShow = () => {
     if (carouselSettings.slidesToShow) {
       setSlidesToShow(carouselSettings.slidesToShow);
+      return;
     }
 
     const containerWidth = (carouselRef.current?.offsetWidth || 1) - gap;

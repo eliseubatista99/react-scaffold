@@ -53,3 +53,11 @@ export const NoGap: Story = {
     gap: 0,
   },
 };
+
+export const WithDots: Story = {
+  args: {
+    settings: {
+      dots: true,
+    },
+  },
+};
