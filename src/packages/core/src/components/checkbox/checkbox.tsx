@@ -23,7 +23,11 @@ export const Checkbox = ({
 
   return (
     <div
-      onClick={() => onToggle?.(!checked)}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggle?.(!checked);
+      }}
       style={{
         width: "25px",
         height: "25px",

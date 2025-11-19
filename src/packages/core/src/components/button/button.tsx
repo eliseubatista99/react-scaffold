@@ -22,7 +22,11 @@ export const Button = ({ children, onClick, styles }: ButtonProps) => {
         flexDirection: "row",
         ...styles,
       }}
-      onClick={() => onClick?.()}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick?.();
+      }}
     >
       {children}
     </button>

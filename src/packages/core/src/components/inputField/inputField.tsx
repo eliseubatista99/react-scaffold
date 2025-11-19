@@ -68,6 +68,8 @@ export const InputField = ({
   const handleOnFocus = (
     event: React.FocusEvent<HTMLInputElement, Element>
   ) => {
+    event.preventDefault();
+    event.stopPropagation();
     onFocus?.();
   };
 
