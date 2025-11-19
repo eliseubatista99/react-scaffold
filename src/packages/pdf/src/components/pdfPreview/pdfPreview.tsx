@@ -68,7 +68,7 @@ export const PdfPreview = (props: PdfPreviewProps) => {
                 display: "flex",
                 minHeight: "600px",
               }}
-              onLoad={() => console.log("PDF iframe loaded successfully")}
+              onLoad={() => console.debug("PDF iframe loaded successfully")}
               onError={() => {
                 setError("Error loading PDF on iframe");
               }}

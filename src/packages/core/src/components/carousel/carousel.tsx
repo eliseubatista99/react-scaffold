@@ -153,7 +153,7 @@ export const Carousel = ({
       return;
     }
 
-    const containerWidth = (carouselRef.current?.offsetWidth || 1) - gap;
+    const containerWidth = (carouselRef.current?.offsetWidth || gap + 1) - gap;
     const slideWidth = firstSlideRef.current?.offsetWidth || 1;
 
     let res = Math.floor(containerWidth / slideWidth);
@@ -164,7 +164,7 @@ export const Carousel = ({
       res = content.length;
     }
 
-    console.log("Slides to show > ", {
+    console.debug("Slides to show > ", {
       container: containerWidth,
       slide: slideWidth,
       res,
@@ -179,9 +179,11 @@ export const Carousel = ({
 
   return (
     <ContainerDiv ref={carouselRef} styles={{ ...styles }}>
-      <Slider {...carouselSettings} slidesToShow={slidesToShow}>
-        {slides}
-      </Slider>
+      {slides.length > 0 && (
+        <Slider {...carouselSettings} slidesToShow={slidesToShow}>
+          {slides}
+        </Slider>
+      )}
     </ContainerDiv>
   );
 };

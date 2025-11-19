@@ -12,7 +12,7 @@ const meta = {
     name: "example-input-field",
     placeHolder: "This is an example input field",
     onFocus: () => {
-      console.log("InputField > OnFocus");
+      console.debug("InputField > OnFocus");
     },
   },
 } satisfies Meta<typeof InputField>;

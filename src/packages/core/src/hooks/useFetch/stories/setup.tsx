@@ -16,7 +16,7 @@ export const UseFetchStoriesSetup = (props: useFetchStoriesSetupProps) => {
     setIsFetching(true);
     const response = await get<typeof props.type>(props.url);
 
-    console.log("Response from fetch:", response);
+    console.debug("Response from fetch:", response);
     setResponse(response);
 
     setIsFetching(false);
