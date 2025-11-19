@@ -8,24 +8,34 @@ export interface NavigationProviderRoute {
 }
 
 export interface NavigationProviderInputProps {
+  isReady?: boolean;
   routes: NavigationProviderRoute[];
   children?: React.ReactNode;
 }
 
 export const NavigationProvider = ({
+  isReady = true,
   routes,
   children,
 }: NavigationProviderInputProps) => {
-  const historyRef = React.useRef<string[]>(["/"]);
-  const [history, setHistory] = React.useState<string[]>(["/"]);
+  const historyRef = React.useRef<string[]>([]);
+  const [history, setHistory] = React.useState<string[]>([]);
 
   const updateHistory = React.useCallback((value: string[]) => {
     historyRef.current = value;
     setHistory(value);
   }, []);
 
-  const addToHistory = (entry: string) => {
-    updateHistory([...historyRef.current, entry]);
+  const addToHistory = (entry: string, replace = false) => {
+    let newHistory = [...historyRef.current];
+
+    if (replace) {
+      newHistory = newHistory.slice(0, newHistory.length - 1);
+    }
+
+    newHistory = [...newHistory, entry];
+
+    updateHistory(newHistory);
   };
 
   const popFromHistory = (count: number) => {
@@ -71,8 +81,12 @@ export const NavigationProvider = ({
       }}
     >
       <BrowserRouter>
-        {children}
-        <Routes>{routesList}</Routes>
+        {isReady && (
+          <>
+            {children}
+            <Routes>{routesList}</Routes>
+          </>
+        )}
       </BrowserRouter>
     </NavigationProviderContext.Provider>
   );
