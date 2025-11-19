@@ -55,9 +55,7 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
     [onSubmit]
   );
 
-  const submitForm = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const submitForm = (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (formRef.current) {
       formRef.current.requestSubmit();
     }

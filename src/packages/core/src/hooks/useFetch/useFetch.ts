@@ -30,14 +30,13 @@ export const useFetch = () => {
   const runFetch = async <OutputType>(
     endpointUrl: string,
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
-    headers: HeadersInit,
-    options?: runFetchOptions
+    headers?: HeadersInit,
+    body?: BodyInit
   ): Promise<OutputType> => {
-    const fetchUrl = buildUrl(endpointUrl, options);
-
-    const result = await fetch(fetchUrl, {
+    const result = await fetch(endpointUrl, {
       method,
       headers,
+      body,
     });
     const jsonResult = await result.json();
 
@@ -48,7 +47,9 @@ export const useFetch = () => {
     endpointUrl: string,
     options?: runFetchOptions
   ): Promise<OutputType> => {
-    return runFetch(endpointUrl, "GET", {}, options);
+    const fetchUrl = buildUrl(endpointUrl, options);
+
+    return runFetch(fetchUrl, "GET");
   };
 
   const fetchPost = async <OutputType>(
@@ -59,7 +60,7 @@ export const useFetch = () => {
       endpointUrl,
       "POST",
       { "Content-Type": "application/json" },
-      options
+      JSON.stringify(options)
     );
   };
 
@@ -71,7 +72,7 @@ export const useFetch = () => {
       endpointUrl,
       "PUT",
       { "Content-Type": "application/json" },
-      options
+      JSON.stringify(options)
     );
   };
 
@@ -83,7 +84,7 @@ export const useFetch = () => {
       endpointUrl,
       "PATCH",
       { "Content-Type": "application/json" },
-      options
+      JSON.stringify(options)
     );
   };
 
@@ -91,7 +92,9 @@ export const useFetch = () => {
     endpointUrl: string,
     options?: runFetchOptions
   ): Promise<OutputType> => {
-    return runFetch(endpointUrl, "DELETE", {}, options);
+    const fetchUrl = buildUrl(endpointUrl, options);
+
+    return runFetch(fetchUrl, "DELETE");
   };
 
   return {
