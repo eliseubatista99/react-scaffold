@@ -1,23 +1,15 @@
 import styled from "@emotion/styled";
-import {
-  HTMLInputAutoCompleteAttribute,
-  type ChangeEvent,
-  type CSSProperties,
-  type HTMLInputTypeAttribute,
-} from "react";
+import { type ChangeEvent, type CSSProperties } from "react";
 
-export interface InputFieldProps {
+export interface TextAreaFieldProps {
   name: string;
   label?: React.ReactNode;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;
-  step?: string | number;
   placeHolder?: string;
-  autoComplete?: HTMLInputAutoCompleteAttribute;
   value?: string;
   initialValue?: string;
-  type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
   onFocus?: () => void;
   inputStyles?: CSSProperties;
@@ -30,45 +22,46 @@ const ContainerDiv = styled.div`
   flex-direction: column;
   font-family: inherit;
 
-  input:focus {
-    border: none;
-    outline: none;
-    background: none;
+  textarea::-webkit-scrollbar {
+    width: 5px; /* largura da barra */
   }
 
-  input:autofill {
-    background-color: #00000000;
+  textarea::-webkit-scrollbar-track {
+    background: #f0f0f0; /* fundo */
+    border-radius: 10px;
   }
 
-  input:-webkit-autofill {
-    background-color: #00000000;
+  textarea::-webkit-scrollbar-thumb {
+    background: #888; /* cor da barra */
+    border-radius: 10px;
+  }
+
+  textarea::-webkit-scrollbar-thumb:hover {
+    background: #555; /* hover */
   }
 `;
 
-export const InputField = ({
+export const TextAreaField = ({
   name,
   label,
   leftIcon,
   rightIcon,
   bottomMessage,
   placeHolder,
-  autoComplete = "off",
   value,
   initialValue,
-  type = "text",
   onChange,
   onFocus,
   inputStyles,
   containerStyles,
   styles,
-  step,
-}: InputFieldProps) => {
-  const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
+}: TextAreaFieldProps) => {
+  const onValueChanged = (event: ChangeEvent<HTMLTextAreaElement>) => {
     onChange?.(event.currentTarget.value);
   };
 
   const handleOnFocus = (
-    event: React.FocusEvent<HTMLInputElement, Element>
+    event: React.FocusEvent<HTMLTextAreaElement, Element>
   ) => {
     event.preventDefault();
     event.stopPropagation();
@@ -90,30 +83,24 @@ export const InputField = ({
           display: "flex",
           flexDirection: "row",
           width: "100%",
-          height: "47px",
           margin: "8px auto 0 auto",
           border: "2px solid #000000",
           borderRadius: "5px",
-          padding: "5px 15px",
           color: "#000000",
           fontFamily: "inherit",
           fontStyle: "normal",
           fontWeight: 400,
-          fontSize: "16px",
-          lineHeight: "24px",
           outline: "none",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: "10px",
           ...containerStyles,
         }}
       >
         {leftIcon}
-        <input
+        <textarea
           name={name}
-          type={type}
-          autoComplete={autoComplete}
-          step={step}
           style={{
+            resize: "none",
             flex: 1,
             border: "none",
             color: "inherit",
@@ -124,6 +111,7 @@ export const InputField = ({
             lineHeight: "inherit",
             outline: "inherit",
             background: "none",
+            minHeight: "47px",
             ...inputStyles,
           }}
           placeholder={placeHolder}

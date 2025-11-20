@@ -1,21 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { InputField } from "../inputField";
+import { TextAreaField } from "../textAreaField";
 
 const meta = {
-  title: "Core/Components/Input Field",
-  component: InputField,
+  title: "Core/Components/Text Area",
+  component: TextAreaField,
   parameters: {
     layout: "fullscreen",
   },
   tags: ["autodocs"],
   args: {
-    name: "example-input-field",
-    placeHolder: "This is an example input field",
+    name: "example-text-area-field",
+    placeHolder: "This is an example text area field",
     onFocus: () => {
-      console.debug("InputField > OnFocus");
+      console.debug("TextArea > OnFocus");
     },
   },
-} satisfies Meta<typeof InputField>;
+} satisfies Meta<typeof TextAreaField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -44,7 +44,7 @@ export const CountrySearch: Story = {
   args: {
     leftIcon: (
       <p
-        style={{ fontSize: "25px", margin: 0, marginBlock: 0, marginInline: 0 }}
+        style={{ fontSize: "30px", margin: 0, marginBlock: 0, marginInline: 0 }}
       >
         {"🏁"}
       </p>
