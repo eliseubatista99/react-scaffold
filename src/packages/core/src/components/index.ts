@@ -9,5 +9,6 @@ export * from "./loader";
 export * from "./modal";
 export * from "./pageLayout";
 export * from "./svgImage";
+export * from "./textAreaField";
 export * from "./toast";
 export * from "./typography";
