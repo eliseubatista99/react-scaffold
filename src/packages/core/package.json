@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-core",
-  "version": "0.1.66",
+  "version": "0.1.67",
   "private": false,
   "description": "A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.",
   "main": "dist/index.cjs.js",
