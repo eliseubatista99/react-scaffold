@@ -53,6 +53,7 @@ export const Toast = ({
           }}
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
           }}
         >
           {children}
