@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import React from "react";
 import { useFormHelper } from "./form.hook";
 
@@ -23,6 +24,23 @@ export interface FormProps {
   styles?: React.CSSProperties;
 }
 
+const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+
+  ${({ styles }) => styles && { ...styles }}
+
+  > * {
+    pointer-events: none;
+  }
+`;
+
 export const Form = (props: FormProps) => {
   const { fields, styles, submitButton } = props;
   const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
@@ -47,18 +65,14 @@ export const Form = (props: FormProps) => {
       }}
     >
       {mapFields()}
-      <div
+      <SubmitButton
         onClick={submitForm}
-        style={{
-          display: "flex",
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
+        styles={{
           ...submitButton.styles,
         }}
       >
         {submitButton.content}
-      </div>
+      </SubmitButton>
     </form>
   );
 };

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "../../button";
 import { InputField } from "../../inputField";
 import { Form } from "../form";
 
@@ -21,7 +22,15 @@ const meta = {
       },
     ],
     submitButton: {
-      content: <button>Submit</button>,
+      content: (
+        <Button
+          onClick={() => {
+            //click
+          }}
+        >
+          Submit
+        </Button>
+      ),
     },
     onSubmit: (data) =>
       alert(data.map((item) => `${item.name}: ${item.value}`)),

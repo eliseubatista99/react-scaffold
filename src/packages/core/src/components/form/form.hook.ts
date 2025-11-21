@@ -48,6 +48,7 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
     (event: React.FormEvent<HTMLFormElement>) => {
       // Preventing the page from reloading
       event.preventDefault();
+      event.stopPropagation();
       const result = getFieldsData(event);
 
       onSubmit?.(result);
