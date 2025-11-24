@@ -3,28 +3,22 @@ type runFetchOptions = Record<string, any>;
 
 export const useFetch = () => {
   const buildUrl = (baseUrl: string, options?: runFetchOptions) => {
-    let optionsCount = 0;
-    let finalUrl = `${baseUrl}`;
+    if (!options) return baseUrl;
+
+    const params = new URLSearchParams();
 
     for (const key in options) {
-      if (optionsCount === 0) {
-        finalUrl = `${finalUrl}?`;
-      }
-
       const value = options[key];
 
-      //If this is not the first option param, add an &
-      if (optionsCount > 0) {
-        finalUrl = `${finalUrl}&`;
+      if (Array.isArray(value)) {
+        value.forEach((v) => params.append(key, String(v)));
+      } else if (value !== undefined && value !== null) {
+        params.append(key, String(value));
       }
-
-      //add the key and the value
-      finalUrl = `${finalUrl}${key}=${value}`;
-      //Count one more option
-      optionsCount++;
     }
 
-    return finalUrl;
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };
 
   const runFetch = async <OutputType>(
