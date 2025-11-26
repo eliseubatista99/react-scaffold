@@ -20,6 +20,7 @@ export interface InputFieldProps {
   type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
   onFocus?: () => void;
+  onBlur?: () => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
   styles?: CSSProperties;
@@ -58,6 +59,7 @@ export const InputField = ({
   type = "text",
   onChange,
   onFocus,
+  onBlur,
   inputStyles,
   containerStyles,
   styles,
@@ -73,6 +75,10 @@ export const InputField = ({
     event.preventDefault();
     event.stopPropagation();
     onFocus?.();
+  };
+
+  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
+    onBlur?.();
   };
 
   return (
@@ -131,6 +137,7 @@ export const InputField = ({
           defaultValue={initialValue}
           onChange={onValueChanged}
           onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
         />
         {rightIcon}
       </div>

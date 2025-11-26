@@ -12,6 +12,7 @@ export interface TextAreaFieldProps {
   initialValue?: string;
   onChange?: (value: string) => void;
   onFocus?: () => void;
+  onBlur?: () => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
   styles?: CSSProperties;
@@ -52,6 +53,7 @@ export const TextAreaField = ({
   initialValue,
   onChange,
   onFocus,
+  onBlur,
   inputStyles,
   containerStyles,
   styles,
@@ -66,6 +68,12 @@ export const TextAreaField = ({
     event.preventDefault();
     event.stopPropagation();
     onFocus?.();
+  };
+
+  const handleOnBlur = (
+    event: React.FocusEvent<HTMLTextAreaElement, Element>
+  ) => {
+    onBlur?.();
   };
 
   return (
@@ -119,6 +127,7 @@ export const TextAreaField = ({
           defaultValue={initialValue}
           onChange={onValueChanged}
           onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
         />
         {rightIcon}
       </div>
