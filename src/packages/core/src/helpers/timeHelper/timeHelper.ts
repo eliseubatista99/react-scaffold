@@ -57,11 +57,11 @@ export class TimeHelper {
     return false;
   };
 
-  static isSameDate = (d1: Date, d2: Date): boolean => {
+  static isSameDate = (d1: Date | undefined, d2: Date | undefined): boolean => {
     return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
+      d1?.getFullYear() === d2?.getFullYear() &&
+      d1?.getMonth() === d2?.getMonth() &&
+      d1?.getDate() === d2?.getDate()
     );
   };
 
