@@ -39,56 +39,61 @@ export const useFetch = () => {
 
   const fetchGet = async <OutputType>(
     endpointUrl: string,
-    options?: runFetchOptions
+    options?: runFetchOptions,
+    headers?: HeadersInit
   ): Promise<OutputType> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
-    return runFetch(fetchUrl, "GET");
+    return runFetch(fetchUrl, "GET", { ...headers });
   };
 
   const fetchPost = async <OutputType>(
     endpointUrl: string,
-    options?: runFetchOptions
+    options?: runFetchOptions,
+    headers?: HeadersInit
   ): Promise<OutputType> => {
     return runFetch(
       endpointUrl,
       "POST",
-      { "Content-Type": "application/json" },
+      { "Content-Type": "application/json", ...headers },
       JSON.stringify(options)
     );
   };
 
   const fetchPut = async <OutputType>(
     endpointUrl: string,
-    options?: runFetchOptions
+    options?: runFetchOptions,
+    headers?: HeadersInit
   ): Promise<OutputType> => {
     return runFetch(
       endpointUrl,
       "PUT",
-      { "Content-Type": "application/json" },
+      { "Content-Type": "application/json", ...headers },
       JSON.stringify(options)
     );
   };
 
   const fetchPatch = async <OutputType>(
     endpointUrl: string,
-    options?: runFetchOptions
+    options?: runFetchOptions,
+    headers?: HeadersInit
   ): Promise<OutputType> => {
     return runFetch(
       endpointUrl,
       "PATCH",
-      { "Content-Type": "application/json" },
+      { "Content-Type": "application/json", ...headers },
       JSON.stringify(options)
     );
   };
 
   const fetchDelete = async <OutputType>(
     endpointUrl: string,
-    options?: runFetchOptions
+    options?: runFetchOptions,
+    headers?: HeadersInit
   ): Promise<OutputType> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
-    return runFetch(fetchUrl, "DELETE");
+    return runFetch(fetchUrl, "DELETE", { ...headers });
   };
 
   return {
