@@ -18,7 +18,10 @@ export interface FormSubmitButton {
 }
 
 export interface FormProps {
-  fields: FormFieldInputData[];
+  fields: {
+    list: FormFieldInputData[];
+    styles?: React.CSSProperties;
+  };
   submitButton: FormSubmitButton;
   onSubmit: (data: FormFieldOutputData[]) => void;
   styles?: React.CSSProperties;
@@ -46,7 +49,7 @@ export const Form = (props: FormProps) => {
   const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
 
   const mapFields = React.useCallback(() => {
-    return fields.map((f): JSX.Element => {
+    return fields.list.map((f): JSX.Element => {
       return { ...f.content, key: f.name };
     });
   }, [fields]);
@@ -64,7 +67,18 @@ export const Form = (props: FormProps) => {
         ...styles,
       }}
     >
-      {mapFields()}
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          flex: 1,
+          ...fields.styles,
+        }}
+      >
+        {mapFields()}
+      </div>
       <SubmitButton
         onClick={submitForm}
         styles={{

@@ -11,16 +11,18 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    fields: [
-      {
-        name: "username",
-        content: <InputField name={"username"} />,
-      },
-      {
-        name: "password",
-        content: <InputField name={"password"} type="password" />,
-      },
-    ],
+    fields: {
+      list: [
+        {
+          name: "username",
+          content: <InputField name={"username"} />,
+        },
+        {
+          name: "password",
+          content: <InputField name={"password"} type="password" />,
+        },
+      ],
+    },
     submitButton: {
       content: (
         <Button

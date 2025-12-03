@@ -27,7 +27,7 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
         const key = elementIds[i];
 
         // only consider the elements specified in the fields input
-        if (fields.findIndex((field) => field.name === key) === -1) {
+        if (fields.list.findIndex((field) => field.name === key) === -1) {
           continue;
         }
 
