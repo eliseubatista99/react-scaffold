@@ -26,8 +26,6 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
           !!el.getAttribute("name")
       );
 
-      console.debug("ZAU 1", { event, inputs });
-
       const result: FormFieldOutputData[] = [];
 
       for (const input of inputs) {
