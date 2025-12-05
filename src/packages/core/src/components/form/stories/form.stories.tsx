@@ -14,14 +14,117 @@ const meta = {
     fields: {
       list: [
         {
-          name: "username",
-          content: <InputField name={"username"} />,
+          name: "card-number",
+          content: (
+            <InputField
+              name="card-number"
+              label="Card Number"
+              placeHolder="Card Number"
+              styles={{ maxWidth: undefined }}
+              containerStyles={{ marginTop: "15px" }}
+              inputStyles={{ padding: "10px" }}
+            />
+          ),
         },
         {
-          name: "password",
-          content: <InputField name={"password"} type="password" />,
+          name: "date",
+          content: (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "0.6fr 0.4fr",
+                width: "100%",
+                alignItems: "flex-end",
+                gap: "15px",
+              }}
+            >
+              <div style={{ minWidth: "100%" }}>
+                <p>Expiration Date</p>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: "4px",
+                    gridTemplateColumns: "0.4fr 0.6fr",
+                  }}
+                >
+                  <InputField
+                    name="expiration-month"
+                    type="number"
+                    placeHolder="MM"
+                    styles={{ width: undefined, overflow: "hidden" }}
+                    containerStyles={{
+                      maxWidth: "96%",
+                      marginTop: "15px",
+                      padding: 0,
+                    }}
+                    inputStyles={{
+                      padding: "0",
+                      maxWidth: "100%",
+                      textAlign: "center",
+                    }}
+                  />
+
+                  <InputField
+                    name="expiration-year"
+                    type="number"
+                    placeHolder="YYYY"
+                    styles={{
+                      // maxWidth: "96%",
+                      width: undefined,
+                      overflow: "hidden",
+                    }}
+                    containerStyles={{
+                      maxWidth: "96%",
+                      marginTop: "15px",
+                      padding: 0,
+                    }}
+                    inputStyles={{
+                      padding: "0",
+                      maxWidth: "100%",
+                      textAlign: "center",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ minWidth: "100%" }}>
+                <InputField
+                  name="security"
+                  label="Security Code"
+                  placeHolder="Security Code"
+                  styles={{ width: undefined, overflow: "hidden" }}
+                  containerStyles={{
+                    maxWidth: "96%",
+                    marginTop: "15px",
+                    padding: 0,
+                  }}
+                  inputStyles={{
+                    padding: "0",
+                    maxWidth: "100%",
+                    textAlign: "center",
+                  }}
+                />
+              </div>
+            </div>
+          ),
+        },
+        {
+          name: "name",
+          content: (
+            <InputField
+              name="name"
+              label="Card Holder"
+              placeHolder="Card Holder"
+              styles={{ maxWidth: undefined }}
+              containerStyles={{ marginTop: "15px" }}
+              inputStyles={{ padding: "10px" }}
+            />
+          ),
         },
       ],
+      styles: {
+        gap: "20px",
+      },
     },
     submitButton: {
       content: (
@@ -33,10 +136,14 @@ const meta = {
           Submit
         </Button>
       ),
+      styles: {
+        marginTop: "auto",
+      },
     },
-    onSubmit: (data) =>
-      alert(data.map((item) => `${item.name}: ${item.value}`)),
-    styles: { width: "50%" },
+    onSubmit: (data) => {
+      alert(data.map((item) => `${item.name}: ${item.value}`));
+    },
+    styles: { boxSizing: "border-box", width: "90%", padding: "20px" },
   },
 } satisfies Meta<typeof Form>;
 

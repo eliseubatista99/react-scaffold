@@ -19,23 +19,23 @@ export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
 
   const getFieldsData = React.useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
-      var elementIds = Object.keys(event.currentTarget.elements);
-      var elementValues = Object.values(event.currentTarget.elements);
-      var result: FormFieldOutputData[] = [];
+      const inputs = Array.from(event.currentTarget.elements).filter(
+        (
+          el
+        ): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
+          !!el.getAttribute("name")
+      );
 
-      for (let i = 0; i < elementIds.length; i++) {
-        const key = elementIds[i];
+      console.debug("ZAU 1", { event, inputs });
 
-        // only consider the elements specified in the fields input
-        if (fields.list.findIndex((field) => field.name === key) === -1) {
-          continue;
-        }
+      const result: FormFieldOutputData[] = [];
 
-        const value = (elementValues[i] as any).value;
+      for (const input of inputs) {
+        const name = input.name;
 
         result.push({
-          name: key,
-          value,
+          name,
+          value: input.value,
         });
       }
 
