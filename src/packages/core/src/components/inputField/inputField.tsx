@@ -20,6 +20,7 @@ export interface InputFieldProps {
   pattern?: string;
   maxLength?: number;
   type?: HTMLInputTypeAttribute;
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -49,13 +50,8 @@ const ContainerDiv = styled.div`
 `;
 
 export const InputField = (props: InputFieldProps) => {
-  const {
-    props: manipulatedProps,
-    onValueChanged,
-    handleOnBlur,
-    handleOnFocus,
-    handleOnInput,
-  } = useInputFieldHelper(props);
+  const { onValueChanged, handleOnBlur, handleOnFocus } =
+    useInputFieldHelper(props);
 
   const {
     name,
@@ -74,7 +70,8 @@ export const InputField = (props: InputFieldProps) => {
     styles,
     step,
     pattern,
-  } = manipulatedProps;
+    onInput,
+  } = props;
 
   return (
     <ContainerDiv
@@ -121,7 +118,7 @@ export const InputField = (props: InputFieldProps) => {
           onChange={onValueChanged}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
-          onInput={handleOnInput}
+          onInput={onInput}
           pattern={pattern}
           style={{
             flex: 1,

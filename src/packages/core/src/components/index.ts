@@ -7,6 +7,7 @@ export * from "./image";
 export * from "./inputField";
 export * from "./loader";
 export * from "./modal";
+export * from "./numericInputField";
 export * from "./pageLayout";
 export * from "./progressBar";
 export * from "./radioButton";
