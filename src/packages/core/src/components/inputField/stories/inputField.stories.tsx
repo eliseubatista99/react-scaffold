@@ -63,3 +63,10 @@ export const SearchInput: Story = {
     ),
   },
 };
+
+export const Numeric: Story = {
+  args: {
+    type: "number",
+    maxLength: 4,
+  },
+};

@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import {
   HTMLInputAutoCompleteAttribute,
-  type ChangeEvent,
   type CSSProperties,
   type HTMLInputTypeAttribute,
 } from "react";
+import { useInputFieldHelper } from "./inputField.hook";
 
 export interface InputFieldProps {
   name: string;
@@ -17,6 +17,7 @@ export interface InputFieldProps {
   autoComplete?: HTMLInputAutoCompleteAttribute;
   value?: string;
   initialValue?: string;
+  pattern?: string;
   maxLength?: number;
   type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
@@ -47,41 +48,33 @@ const ContainerDiv = styled.div`
   }
 `;
 
-export const InputField = ({
-  name,
-  label,
-  leftIcon,
-  rightIcon,
-  bottomMessage,
-  placeHolder,
-  autoComplete = "off",
-  value,
-  initialValue,
-  type = "text",
-  onChange,
-  onFocus,
-  onBlur,
-  maxLength,
-  inputStyles,
-  containerStyles,
-  styles,
-  step,
-}: InputFieldProps) => {
-  const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange?.(event.currentTarget.value);
-  };
+export const InputField = (props: InputFieldProps) => {
+  const {
+    props: manipulatedProps,
+    onValueChanged,
+    handleOnBlur,
+    handleOnFocus,
+    handleOnInput,
+  } = useInputFieldHelper(props);
 
-  const handleOnFocus = (
-    event: React.FocusEvent<HTMLInputElement, Element>
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-    onFocus?.();
-  };
-
-  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
-    onBlur?.();
-  };
+  const {
+    name,
+    label,
+    leftIcon,
+    rightIcon,
+    bottomMessage,
+    placeHolder,
+    autoComplete = "off",
+    value,
+    initialValue,
+    type = "text",
+    maxLength,
+    inputStyles,
+    containerStyles,
+    styles,
+    step,
+    pattern,
+  } = manipulatedProps;
 
   return (
     <ContainerDiv
@@ -122,6 +115,14 @@ export const InputField = ({
           autoComplete={autoComplete}
           step={step}
           maxLength={maxLength}
+          placeholder={placeHolder}
+          value={value}
+          defaultValue={initialValue}
+          onChange={onValueChanged}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onInput={handleOnInput}
+          pattern={pattern}
           style={{
             flex: 1,
             border: "none",
@@ -135,12 +136,6 @@ export const InputField = ({
             background: "none",
             ...inputStyles,
           }}
-          placeholder={placeHolder}
-          value={value}
-          defaultValue={initialValue}
-          onChange={onValueChanged}
-          onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
         />
         {rightIcon}
       </div>
