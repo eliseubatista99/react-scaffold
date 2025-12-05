@@ -17,6 +17,7 @@ export interface InputFieldProps {
   autoComplete?: HTMLInputAutoCompleteAttribute;
   value?: string;
   initialValue?: string;
+  maxLength?: number;
   type?: HTMLInputTypeAttribute;
   onChange?: (value: string) => void;
   onFocus?: () => void;
@@ -60,6 +61,7 @@ export const InputField = ({
   onChange,
   onFocus,
   onBlur,
+  maxLength,
   inputStyles,
   containerStyles,
   styles,
@@ -119,6 +121,7 @@ export const InputField = ({
           type={type}
           autoComplete={autoComplete}
           step={step}
+          maxLength={maxLength}
           style={{
             flex: 1,
             border: "none",
