@@ -13,6 +13,7 @@ type FormFieldCustomValidation = (
 ) => Promise<string | undefined>;
 
 export interface FormFieldConfiguration {
+  name: string;
   emptyValidation?: {
     allow: boolean;
     errorMessage: string;

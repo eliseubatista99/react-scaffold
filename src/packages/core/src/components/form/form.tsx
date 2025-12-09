@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { FormFieldInputData, FormFieldOutputData } from "../../types";
+import { FormFieldConfiguration, FormFieldOutputData } from "../../types";
 import { useFormHelper } from "./form.hook";
 
 export interface FormSubmitButton {
@@ -9,14 +9,13 @@ export interface FormSubmitButton {
 }
 
 export interface FormProps {
-  fields: {
-    list: FormFieldInputData[];
-    styles?: React.CSSProperties;
-  };
+  children?: React.ReactNode;
+  configurations?: FormFieldConfiguration[];
   submitButton: FormSubmitButton;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
   styles?: React.CSSProperties;
+  childrenStyles?: React.CSSProperties;
 }
 
 const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
@@ -37,14 +36,8 @@ const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
 `;
 
 export const Form = (props: FormProps) => {
-  const { fields, styles, submitButton } = props;
+  const { children, styles, childrenStyles, submitButton } = props;
   const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
-
-  const mapFields = React.useCallback(() => {
-    return fields.list.map((f): JSX.Element => {
-      return { ...f.content, key: f.name };
-    });
-  }, [fields]);
 
   return (
     <form
@@ -66,10 +59,10 @@ export const Form = (props: FormProps) => {
           flexDirection: "column",
           gap: "8px",
           flex: 1,
-          ...fields.styles,
+          ...childrenStyles,
         }}
       >
-        {mapFields()}
+        {children}
       </div>
       <SubmitButton
         onClick={submitForm}

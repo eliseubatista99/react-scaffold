@@ -6,6 +6,8 @@ export const FormStoriesSetup = (props: FormProps) => {
   const [showLoader, setShowLoader] = useState(false);
 
   const onSubmit = async (data: FormFieldOutputData[]) => {
+    console.log("Form > OnSubmit > ", { data });
+
     setShowLoader(false);
   };
 

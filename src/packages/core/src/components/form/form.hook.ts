@@ -2,7 +2,11 @@ import React from "react";
 import { FormFieldOutputData } from "../../types";
 import { FormProps } from "./form";
 
-export const useFormHelper = ({ onPreSubmit, onSubmit, fields }: FormProps) => {
+export const useFormHelper = ({
+  onPreSubmit,
+  onSubmit,
+  configurations,
+}: FormProps) => {
   const formRef = React.useRef<HTMLFormElement>(null);
   const isSubmittingRef = React.useRef<boolean>(false);
 
@@ -30,20 +34,16 @@ export const useFormHelper = ({ onPreSubmit, onSubmit, fields }: FormProps) => {
     data: FormFieldOutputData
   ): Promise<FormFieldOutputData> => {
     try {
-      const field = fields.list.find((f) => f.name === data.name);
+      const configuration = (configurations || []).find(
+        (c) => c.name === data.name
+      );
 
-      if (!field) {
+      if (!configuration) {
         return data;
       }
 
       var stringValue = data.value as string;
       var numericValue = data.value as number;
-
-      var configuration = field.configuration;
-
-      if (!configuration) {
-        return data;
-      }
 
       //Empty validation
       if (
