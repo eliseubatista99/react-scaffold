@@ -9,6 +9,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
+    name: "check",
     checked: false,
     customCheckedRender: (
       <p
@@ -31,7 +32,7 @@ const meta = {
           paddingBottom: "5px",
         }}
       >
-        {"✔"}
+        {"."}
       </p>
     ),
     styles: { width: "50px", height: "50px" },
