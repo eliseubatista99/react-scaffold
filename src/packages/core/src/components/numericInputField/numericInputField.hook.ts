@@ -5,39 +5,83 @@ import { NumericInputFieldProps } from "./numericInputField";
 export const useNumericInputFieldHelper = (props: NumericInputFieldProps) => {
   const prevValue = useRef<string>("");
 
-  function handleDecimals(val: string, decimalScale?: number): string {
-    // Allow only one dot
-    const [intPart, ...decParts] = val.split(".");
-    const [_, ...prevDecParts] = prevValue.current.split(".");
-
-    let decimal = decParts.join("");
-    let prevDecimal = prevDecParts.join("");
-
-    if (decimalScale !== undefined) {
-      if (decimal.length > decimalScale) {
-        decimal = prevDecimal;
-      } else {
-        decimal = decimal.slice(0, decimalScale);
+  function handleNegatives(val: string): string {
+    if (props.allowNegatives) {
+      // Only allow one -
+      val = val.replace(/-/g, (match, offset) => (offset === 0 ? "-" : ""));
+      if (val.indexOf("-") > 0) {
+        val = val.replace(/-/g, "");
+        val = "-" + val;
       }
+    } else {
+      // remove all -
+      val = val.replace(/-/g, "");
     }
 
-    // Allow to end with dot
-    return decimal || val.endsWith(".") ? `${intPart}.${decimal}` : intPart;
+    return val;
   }
 
-  function handleMinAndMax(
-    val: string,
-    min?: number,
-    max?: number,
-    prevValue?: string
-  ): string {
+  function handleDecimals(val: string): string {
+    if (props.allowDecimals) {
+      // If it starts with ".", make it "0."
+      if (val.startsWith(".")) {
+        val = "0" + val;
+      }
+
+      // If the first char is a minus, the second char cant be a dot
+      if (val.length === 2 && val[0] === "-" && val[1] === ".") {
+        val = "-";
+      }
+
+      // Only the first .
+      const firstDot = val.indexOf(".");
+      if (firstDot !== -1) {
+        val =
+          val.slice(0, firstDot + 1) +
+          val.slice(firstDot + 1).replace(/\./g, "");
+      }
+
+      // Allow only one dot
+      const [intPart, ...decParts] = val.split(".");
+      const [_, ...prevDecParts] = prevValue.current.split(".");
+
+      let decimal = decParts.join("");
+      let prevDecimal = prevDecParts.join("");
+
+      if (props.decimalScale !== undefined) {
+        if (decimal.length > props.decimalScale) {
+          decimal = prevDecimal;
+        } else {
+          decimal = decimal.slice(0, props.decimalScale);
+        }
+      }
+
+      // Allow to end with dot
+      val = decimal || val.endsWith(".") ? `${intPart}.${decimal}` : intPart;
+    } else {
+      val = val.replace(/\./g, "");
+    }
+
+    return val;
+  }
+
+  function handleMinAndMax(val: string): string {
     const num = Number(val);
+
+    var maxFinal = props.max;
+
+    if (maxFinal === undefined) {
+      maxFinal = props.maxLength
+        ? Number("9".repeat(props.maxLength))
+        : undefined;
+    }
+
     if (!isNaN(num)) {
       if (
-        (min !== undefined && num < min) ||
-        (max !== undefined && num > max)
+        (props.min !== undefined && num < props.min) ||
+        (maxFinal !== undefined && num > maxFinal)
       ) {
-        return prevValue ?? val;
+        return prevValue.current ?? val;
       }
     }
     return val;
@@ -52,14 +96,11 @@ export const useNumericInputFieldHelper = (props: NumericInputFieldProps) => {
 
     let val = target.value;
 
-    // Remove invalid chars
-    const allowedChars = `0-9${props.allowDecimals ? "\\." : ""}${
-      props.allowNegatives ? "\\-" : ""
-    }`;
-    val = val.replace(new RegExp(`[^${allowedChars}]`, "g"), "");
+    val = val.replace(/[^0-9\.\-]/g, ""); // remove invalid chars
 
-    val = handleDecimals(val, props.decimalScale);
-    val = handleMinAndMax(val, props.min, props.max, prevValue.current);
+    val = handleNegatives(val);
+    val = handleDecimals(val);
+    val = handleMinAndMax(val);
 
     // Calculated the difference in length between the previous value and the new
     const diff = val.length - target.value.length;
@@ -77,7 +118,7 @@ export const useNumericInputFieldHelper = (props: NumericInputFieldProps) => {
     return {
       ...props,
       type: "text",
-      pattern: "^-?d*.?d*$",
+      pattern: "^-?[0-9]*.?[0-9]*$",
       onInput: handleOnInput,
     };
   }, []);

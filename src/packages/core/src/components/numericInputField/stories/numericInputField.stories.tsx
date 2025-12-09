@@ -42,3 +42,9 @@ export const WithMinAndMax: Story = {
     min: -9999,
   },
 };
+
+export const WithMaxLength: Story = {
+  args: {
+    maxLength: 8,
+  },
+};
