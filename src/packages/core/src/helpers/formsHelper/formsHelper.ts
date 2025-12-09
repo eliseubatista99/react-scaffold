@@ -1,12 +1,19 @@
 import { FormFieldOutputData } from "../../types";
 
 export class FormsHelper {
-  static getField = <T>(
-    data: FormFieldOutputData[],
-    name: string
-  ): T | undefined => {
+  static getField = (data: FormFieldOutputData[], name: string) => {
     const field = data.find((d) => d.name === name);
 
+    if (!field) {
+      return undefined;
+    }
+
+    return field;
+  };
+
+  static getFieldValue = <T>(
+    field: FormFieldOutputData | undefined
+  ): T | undefined => {
     if (!field || !field.value) {
       return undefined;
     }
@@ -14,17 +21,16 @@ export class FormsHelper {
     return field.value as T;
   };
 
-  static getFieldOrDefault = <T>(
-    data: FormFieldOutputData[],
-    name: string,
+  static getFieldValueOrDefault = <T>(
+    field: FormFieldOutputData | undefined,
     defaultValue: T
-  ): T | undefined => {
-    const field = FormsHelper.getField<T>(data, name);
+  ): T => {
+    const value = FormsHelper.getFieldValue<T>(field);
 
-    if (field === undefined) {
+    if (!value) {
       return defaultValue;
     }
 
-    return field;
+    return value;
   };
 }
