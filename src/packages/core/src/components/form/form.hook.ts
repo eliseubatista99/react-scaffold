@@ -1,5 +1,6 @@
 import React from "react";
-import { FormFieldOutputData, FormProps } from "./form";
+import { FormFieldOutputData } from "../../types";
+import { FormProps } from "./form";
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // type runFetchOptions = Record<string, any>;

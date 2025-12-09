@@ -1,3 +1,4 @@
+export * from "./formsHelper";
 export * from "./numberHelper";
 export * from "./scrollHelper";
 export * from "./text";
