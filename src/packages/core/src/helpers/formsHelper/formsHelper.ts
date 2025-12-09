@@ -13,4 +13,18 @@ export class FormsHelper {
 
     return field.value as T;
   };
+
+  static getFieldOrDefault = <T>(
+    data: FormFieldOutputData[],
+    name: string,
+    defaultValue: T
+  ): T | undefined => {
+    const field = FormsHelper.getField<T>(data, name);
+
+    if (field === undefined) {
+      return defaultValue;
+    }
+
+    return field;
+  };
 }
