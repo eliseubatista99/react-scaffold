@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Checkbox } from "../checkbox";
+import { CheckboxStoriesSetup } from "./setup";
 
 const meta = {
   title: "Core/Components/Checkbox",
-  component: Checkbox,
+  component: CheckboxStoriesSetup,
   parameters: {
     layout: "fullscreen",
   },
@@ -45,10 +46,4 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {},
-};
-
-export const Checked: Story = {
-  args: {
-    checked: true,
-  },
 };

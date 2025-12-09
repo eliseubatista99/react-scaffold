@@ -43,39 +43,36 @@ export const Checkbox = ({
         }}
       >
         <input
-          name={name}
           type="checkbox"
-          onChange={(e) => {
+          name={name}
+          checked={checked}
+          onChange={(_) => {
+            //
+          }}
+          onClick={(e) => {
             e.stopPropagation();
             onToggle?.(!checked);
           }}
-          checked={checked}
           style={{
-            appearance: "none",
-            width: "25px",
-            height: "25px",
-            borderRadius: "4px",
-            border: "1px solid #969696ff",
-            background: checked ? "#000000" : "#ffffff",
-            overflow: "hidden",
-            objectFit: "contain",
-            alignItems: "center",
-            justifyContent: "center",
-            display: "flex",
-            ...checkboxStyles,
+            position: "absolute",
+            opacity: 0,
+            width: "100%",
+            height: "100%",
+            cursor: "pointer",
           }}
         />
         <div
           style={{
+            width: "25px",
+            height: "25px",
+            borderRadius: "4px",
+            border: "1px solid #969696ff",
+            background: checked ? "#000" : "#fff",
             display: "flex",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
             alignItems: "center",
             justifyContent: "center",
             pointerEvents: "none",
+            ...checkboxStyles,
           }}
         >
           {checked && customCheckedRender}
