@@ -29,7 +29,7 @@ export const Checkbox = ({
         position: "relative",
         display: "flex",
         flexDirection: "row",
-        flex: 1,
+        gap: "10px",
         alignItems: "center",
         ...styles,
       }}
