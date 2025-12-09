@@ -1,12 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { FormFieldOutputData } from "../../types";
+import { FormFieldInputData, FormFieldOutputData } from "../../types";
 import { useFormHelper } from "./form.hook";
-
-export interface FormFieldInputData {
-  name: string;
-  content: JSX.Element;
-}
 
 export interface FormSubmitButton {
   styles?: React.CSSProperties;
@@ -19,7 +14,8 @@ export interface FormProps {
     styles?: React.CSSProperties;
   };
   submitButton: FormSubmitButton;
-  onSubmit: (data: FormFieldOutputData[]) => void;
+  onPreSubmit?: () => void;
+  onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
   styles?: React.CSSProperties;
 }
 

@@ -2,10 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "../../button";
 import { InputField } from "../../inputField";
 import { Form } from "../form";
+import { FormStoriesSetup } from "./setup";
 
 const meta = {
   title: "Core/Components/Form",
-  component: Form,
+  component: FormStoriesSetup,
   parameters: {
     layout: "fullscreen",
   },
@@ -140,8 +141,8 @@ const meta = {
         marginTop: "auto",
       },
     },
-    onSubmit: (data) => {
-      alert(data.map((item) => `${item.name}: ${item.value}`));
+    onSubmit: async (_) => {
+      //
     },
     styles: { boxSizing: "border-box", width: "90%", padding: "20px" },
   },
