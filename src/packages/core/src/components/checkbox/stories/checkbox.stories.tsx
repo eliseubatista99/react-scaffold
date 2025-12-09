@@ -9,6 +9,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
+    label: <p>This is a checkbox</p>,
     name: "check",
     checked: false,
     customCheckedRender: (
@@ -35,7 +36,7 @@ const meta = {
         {"."}
       </p>
     ),
-    styles: { width: "50px", height: "50px" },
+    checkboxStyles: { width: "50px", height: "50px" },
   },
 } satisfies Meta<typeof Checkbox>;
 
