@@ -119,26 +119,31 @@ export const useFormHelper = ({
 
   const handleSubmitForm = React.useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
-      if (isSubmittingRef.current) {
-        return;
+      try {
+        if (isSubmittingRef.current) {
+          return;
+        }
+
+        isSubmittingRef.current = true;
+
+        onPreSubmit?.();
+
+        // Preventing the page from reloading
+        event.preventDefault();
+        event.stopPropagation();
+        let result = getFieldsData(event);
+
+        result = await Promise.all(
+          result.map(async (res) => await validateField(res))
+        );
+
+        isSubmittingRef.current = false;
+
+        onSubmit?.(result);
+      } catch (e) {
+        isSubmittingRef.current = false;
+        console.error("Form > OnSubmit > Error submitting: ", e);
       }
-
-      isSubmittingRef.current = true;
-
-      onPreSubmit?.();
-
-      // Preventing the page from reloading
-      event.preventDefault();
-      event.stopPropagation();
-      let result = getFieldsData(event);
-
-      result = await Promise.all(
-        result.map(async (res) => await validateField(res))
-      );
-
-      isSubmittingRef.current = false;
-
-      onSubmit?.(result);
     },
     [onSubmit, onPreSubmit]
   );
