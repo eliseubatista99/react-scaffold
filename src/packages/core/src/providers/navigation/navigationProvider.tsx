@@ -81,12 +81,10 @@ export const NavigationProvider = ({
       }}
     >
       <BrowserRouter>
-        {isReady && (
-          <>
-            {children}
-            <Routes>{routesList}</Routes>
-          </>
-        )}
+        <>
+          {isReady && <Routes>{routesList}</Routes>}
+          {children}
+        </>
       </BrowserRouter>
     </NavigationProviderContext.Provider>
   );
