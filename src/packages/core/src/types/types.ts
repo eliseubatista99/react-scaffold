@@ -10,7 +10,7 @@ type FormFieldNumericValidation = {
 
 type FormFieldCustomValidation = (
   value: unknown
-) => Promise<string | undefined>;
+) => string | undefined | Promise<string | undefined>;
 
 export interface FormFieldConfiguration {
   name: string;
