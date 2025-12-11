@@ -22,4 +22,9 @@ export class TextHelper {
     const phoneRegex = /^\+?\d{9,15}$/;
     return phoneRegex.test(value);
   };
+
+  static isValidName = (value: string) => {
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/;
+    return nameRegex.test(value);
+  };
 }
