@@ -76,6 +76,10 @@ export const useNavigationParams = () => {
     [searchParams, setSearchParams]
   );
 
+  const removeAll = useCallback(() => {
+    setSearchParams({});
+  }, [searchParams, setSearchParams]);
+
   return {
     getAll: () => allParams,
     get,
@@ -84,5 +88,6 @@ export const useNavigationParams = () => {
     setMany,
     remove,
     removeMany,
+    removeAll,
   };
 };
