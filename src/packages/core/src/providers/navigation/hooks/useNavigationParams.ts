@@ -61,29 +61,38 @@ export const useNavigationParams = () => {
 
   const set = useCallback(
     (key: string, value: any) => {
-      if (value === null || value === undefined) {
-        remove(key);
-        return;
-      }
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
 
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set(key, String(value));
+        if (value == null) {
+          params.delete(key);
+        } else {
+          params.set(key, String(value));
+        }
 
-      setSearchParams(newParams);
+        return params;
+      });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const setMany = useCallback(
-    (params: Record<string, any>) => {
-      const newParams = new URLSearchParams(searchParams);
-      Object.entries(params).forEach(([k, v]) => {
-        if (v === undefined || v === null) return;
-        newParams.set(k, String(v));
+    (values: Record<string, any>) => {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+
+        Object.entries(values).forEach(([key, value]) => {
+          if (value == null) {
+            params.delete(key);
+          } else {
+            params.set(key, String(value));
+          }
+        });
+
+        return params;
       });
-      setSearchParams(newParams);
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   return {
