@@ -63,7 +63,7 @@ const NavigationExampleInnerContent = () => {
 
   const goToButton = React.useCallback(
     (path: string) => {
-      return <button onClick={() => goTo(path)}>Go To {path}</button>;
+      return <button onClick={() => goTo({ path })}>Go To {path}</button>;
     },
     [goTo]
   );

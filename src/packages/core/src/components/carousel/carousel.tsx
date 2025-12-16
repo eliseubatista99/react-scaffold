@@ -2,6 +2,7 @@ import { type CSSProperties } from "react";
 import Slider, { Settings } from "react-slick";
 
 import styled from "@emotion/styled";
+import React from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
@@ -13,7 +14,7 @@ export interface CarouselSlideProps {
 export interface CarouselProps {
   content: CarouselSlideProps[];
   settings?: Settings;
-  gap?: string;
+  gap?: number;
   styles?: CSSProperties;
 }
 
@@ -25,6 +26,73 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
 
   .slick-list {
     overflow: visible;
+  }
+
+  .slick-dots {
+    position: absolute;
+    bottom: -25px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+    margin: 0 auto;
+    list-style: none;
+    gap: 5px;
+  }
+
+  .slick-dots li {
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .slick-dots li button {
+    font-size: 0;
+    line-height: 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 0;
+    height: 20px;
+    cursor: pointer;
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: transparent;
+  }
+
+  .slick-dots li button:before {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: "slick";
+    font-size: 10px;
+    line-height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    content: "•";
+    text-align: center;
+    opacity: 0.25;
+    color: black;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .slick-dots li.slick-active button:before {
+    opacity: 0.75;
+    color: black;
   }
 `;
 
@@ -47,8 +115,12 @@ export const Carousel = ({
   styles,
   content,
   settings,
-  gap = "15px",
+  gap = 15,
 }: CarouselProps) => {
+  const [slidesToShow, setSlidesToShow] = React.useState<number>(1);
+  const carouselRef = React.useRef<HTMLDivElement>(null);
+  const firstSlideRef = React.useRef<HTMLDivElement>(null);
+
   var carouselSettings: Settings = {
     dots: false,
     speed: 500,
@@ -56,13 +128,16 @@ export const Carousel = ({
     infinite: false,
     variableWidth: true,
     arrows: false,
+    rows: 1,
     ...settings,
   };
 
   const slides = content.map((c, index) => (
     <SlideDiv
+      ref={index === 0 ? firstSlideRef : undefined}
       styles={{
-        paddingLeft: index === 0 ? "0px" : gap,
+        paddingRight: `${gap}px`,
+        overflow: "visible",
         // marginLeft: index !== 0 ? "0px" : margin,
         ...c.styles,
       }}
@@ -72,9 +147,43 @@ export const Carousel = ({
     </SlideDiv>
   ));
 
+  const calculateSlidesToShow = () => {
+    if (carouselSettings.slidesToShow) {
+      setSlidesToShow(carouselSettings.slidesToShow);
+      return;
+    }
+
+    const containerWidth = (carouselRef.current?.offsetWidth || gap + 1) - gap;
+    const slideWidth = firstSlideRef.current?.offsetWidth || 1;
+
+    let res = Math.floor(containerWidth / slideWidth);
+
+    if (res < 1) {
+      res = 1;
+    } else if (res > content.length) {
+      res = content.length;
+    }
+
+    console.debug("Slides to show > ", {
+      container: containerWidth,
+      slide: slideWidth,
+      res,
+    });
+
+    setSlidesToShow(res);
+  };
+
+  React.useEffect(() => {
+    calculateSlidesToShow();
+  }, [carouselRef, firstSlideRef]);
+
   return (
-    <ContainerDiv styles={{ ...styles }}>
-      <Slider {...carouselSettings}>{slides}</Slider>
+    <ContainerDiv ref={carouselRef} styles={{ ...styles }}>
+      {slides.length > 0 && (
+        <Slider {...carouselSettings} slidesToShow={slidesToShow}>
+          {slides}
+        </Slider>
+      )}
     </ContainerDiv>
   );
 };

@@ -1,63 +1,154 @@
 import React from "react";
-import { FormFieldOutputData, FormProps } from "./form";
+import { FormFieldOutputData } from "../../types";
+import { FormProps } from "./form";
 
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// type runFetchOptions = Record<string, any>;
-
-export type FormFieldValidation = (value: string) => string | undefined;
-
-// export interface FormFieldOutput {
-//   value?: string;
-//   message?: string;
-//   error?: boolean;
-// }
-
-// export type FormOutput = Record<string, FormFieldOutput>;
-
-export const useFormHelper = ({ onSubmit, fields }: FormProps) => {
+export const useFormHelper = ({
+  onPreSubmit,
+  onSubmit,
+  configurations,
+}: FormProps) => {
   const formRef = React.useRef<HTMLFormElement>(null);
+  const isSubmittingRef = React.useRef<boolean>(false);
 
-  const getFieldsData = React.useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      var elementIds = Object.keys(event.currentTarget.elements);
-      var elementValues = Object.values(event.currentTarget.elements);
-      var result: FormFieldOutputData[] = [];
+  const getFieldsData = (event: React.FormEvent<HTMLFormElement>) => {
+    const inputs = Array.from(event.currentTarget.elements).filter(
+      (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
+        !!el.getAttribute("name")
+    );
 
-      for (let i = 0; i < elementIds.length; i++) {
-        const key = elementIds[i];
+    const result: FormFieldOutputData[] = [];
 
-        // only consider the elements specified in the fields input
-        if (fields.findIndex((field) => field.name === key) === -1) {
-          continue;
-        }
+    for (const input of inputs) {
+      const name = input.name;
 
-        const value = (elementValues[i] as any).value;
+      result.push({
+        name,
+        value: input.value,
+      });
+    }
 
-        result.push({
-          name: key,
-          value,
-        });
+    return result;
+  };
+
+  const validateField = async (
+    data: FormFieldOutputData
+  ): Promise<FormFieldOutputData> => {
+    try {
+      const configuration = (configurations || []).find(
+        (c) => c.name === data.name
+      );
+
+      if (!configuration) {
+        return data;
       }
 
-      return result;
-    },
-    [onSubmit]
-  );
+      var stringValue = data.value as string;
+      var numericValue = data.value as number;
+
+      //Empty validation
+      if (
+        configuration.emptyValidation &&
+        configuration.emptyValidation.allow === false &&
+        !stringValue
+      ) {
+        data.error = configuration.emptyValidation.errorMessage;
+        return data;
+      }
+
+      //Min length validation
+      if (
+        configuration.minLengthValidation &&
+        stringValue.length < configuration.minLengthValidation.value
+      ) {
+        data.error = configuration.minLengthValidation.errorMessage;
+        return data;
+      }
+
+      //Max length validation
+      if (
+        configuration.maxLengthValidation &&
+        stringValue.length > configuration.maxLengthValidation.value
+      ) {
+        data.error = configuration.maxLengthValidation.errorMessage;
+        return data;
+      }
+
+      if (!isNaN(numericValue)) {
+        //Min value validation
+        if (
+          configuration.minValueValidation &&
+          numericValue < configuration.minValueValidation.value
+        ) {
+          data.error = configuration.minValueValidation.errorMessage;
+          return data;
+        }
+
+        //Max value validation
+        if (
+          configuration.maxValueValidation &&
+          numericValue > configuration.maxValueValidation.value
+        ) {
+          data.error = configuration.maxValueValidation.errorMessage;
+          return data;
+        }
+      }
+
+      //Exact value validation
+      if (
+        configuration.exactValueValidation &&
+        configuration.exactValueValidation.value !== data.value
+      ) {
+        data.error = configuration.exactValueValidation.errorMessage;
+        return data;
+      }
+
+      for (let i = 0; i < (configuration.validations || []).length; i++) {
+        const error = await configuration.validations?.[i](data.value);
+
+        if (error) {
+          data.error = error;
+          return data;
+        }
+      }
+    } catch (e) {
+      console.error(`Form > Failed To Validate Field ${data.name}: `, e);
+    }
+
+    return data;
+  };
 
   const handleSubmitForm = React.useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      // Preventing the page from reloading
-      event.preventDefault();
-      const result = getFieldsData(event);
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      try {
+        if (isSubmittingRef.current) {
+          return;
+        }
 
-      onSubmit?.(result);
+        isSubmittingRef.current = true;
+
+        onPreSubmit?.();
+
+        // Preventing the page from reloading
+        event.preventDefault();
+        event.stopPropagation();
+        let result = getFieldsData(event);
+
+        result = await Promise.all(
+          result.map(async (res) => await validateField(res))
+        );
+
+        isSubmittingRef.current = false;
+
+        onSubmit?.(result);
+      } catch (e) {
+        isSubmittingRef.current = false;
+        console.error("Form > OnSubmit > Error submitting: ", e);
+      }
     },
-    [onSubmit]
+    [onSubmit, onPreSubmit]
   );
 
-  const submitForm = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const submitForm = (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (formRef.current) {
       formRef.current.requestSubmit();
     }

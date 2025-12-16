@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-cv",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "private": false,
   "description": "A library of cv templates.",
   "main": "dist/index.cjs.js",
@@ -50,12 +50,12 @@
     "vite": "^7.0.4",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-static-copy": "^3.1.1",
-    "@eliseubatista99/react-scaffold-core": "^0.1.5",
-    "@eliseubatista99/react-scaffold-pdf": "^0.1.5"
+    "@eliseubatista99/react-scaffold-core": "^1.0.0",
+    "@eliseubatista99/react-scaffold-pdf": "^1.0.0"
   },
   "peerDependencies": {
-    "@eliseubatista99/react-scaffold-core": "^0.1.5",
-    "@eliseubatista99/react-scaffold-pdf": "^0.1.5",
+    "@eliseubatista99/react-scaffold-core": "^1.0.0",
+    "@eliseubatista99/react-scaffold-pdf": "^1.0.0",
     "@react-pdf/renderer": "^4.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

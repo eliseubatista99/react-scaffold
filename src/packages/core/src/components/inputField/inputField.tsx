@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import {
   HTMLInputAutoCompleteAttribute,
-  type ChangeEvent,
   type CSSProperties,
   type HTMLInputTypeAttribute,
 } from "react";
+import { useInputFieldHelper } from "./inputField.hook";
 
 export interface InputFieldProps {
   name: string;
@@ -17,10 +17,16 @@ export interface InputFieldProps {
   autoComplete?: HTMLInputAutoCompleteAttribute;
   value?: string;
   initialValue?: string;
+  pattern?: string;
+  maxLength?: number;
   type?: HTMLInputTypeAttribute;
+  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (value: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   inputStyles?: CSSProperties;
-  containerProps?: CSSProperties;
+  containerStyles?: CSSProperties;
+  styles?: CSSProperties;
 }
 
 const ContainerDiv = styled.div`
@@ -43,25 +49,29 @@ const ContainerDiv = styled.div`
   }
 `;
 
-export const InputField = ({
-  name,
-  label,
-  leftIcon,
-  rightIcon,
-  bottomMessage,
-  placeHolder,
-  autoComplete = "off",
-  value,
-  initialValue,
-  type = "text",
-  onChange,
-  inputStyles,
-  containerProps,
-  step,
-}: InputFieldProps) => {
-  const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange?.(event.currentTarget.value);
-  };
+export const InputField = (props: InputFieldProps) => {
+  const { onValueChanged, handleOnBlur, handleOnFocus } =
+    useInputFieldHelper(props);
+
+  const {
+    name,
+    label,
+    leftIcon,
+    rightIcon,
+    bottomMessage,
+    placeHolder,
+    autoComplete = "off",
+    value,
+    initialValue,
+    type = "text",
+    maxLength,
+    inputStyles,
+    containerStyles,
+    styles,
+    step,
+    pattern,
+    onInput,
+  } = props;
 
   return (
     <ContainerDiv
@@ -69,7 +79,7 @@ export const InputField = ({
         width: "100%",
         maxWidth: "357px",
         gap: "8px",
-        ...containerProps,
+        ...styles,
       }}
     >
       {label}
@@ -84,7 +94,7 @@ export const InputField = ({
           borderRadius: "5px",
           padding: "5px 15px",
           color: "#000000",
-          fontFamily: "Poppins",
+          fontFamily: "inherit",
           fontStyle: "normal",
           fontWeight: 400,
           fontSize: "16px",
@@ -92,7 +102,7 @@ export const InputField = ({
           outline: "none",
           alignItems: "center",
           gap: "10px",
-          ...inputStyles,
+          ...containerStyles,
         }}
       >
         {leftIcon}
@@ -101,6 +111,15 @@ export const InputField = ({
           type={type}
           autoComplete={autoComplete}
           step={step}
+          maxLength={maxLength}
+          placeholder={placeHolder}
+          value={value}
+          defaultValue={initialValue}
+          onChange={onValueChanged}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onInput={onInput}
+          pattern={pattern}
           style={{
             flex: 1,
             border: "none",
@@ -112,11 +131,8 @@ export const InputField = ({
             lineHeight: "inherit",
             outline: "inherit",
             background: "none",
+            ...inputStyles,
           }}
-          placeholder={placeHolder}
-          value={value}
-          defaultValue={initialValue}
-          onChange={onValueChanged}
         />
         {rightIcon}
       </div>

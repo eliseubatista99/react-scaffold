@@ -1,15 +1,7 @@
+import styled from "@emotion/styled";
 import React from "react";
+import { FormFieldConfiguration, FormFieldOutputData } from "../../types";
 import { useFormHelper } from "./form.hook";
-
-export interface FormFieldOutputData {
-  name: string;
-  value?: unknown;
-}
-
-export interface FormFieldInputData {
-  name: string;
-  content: JSX.Element;
-}
 
 export interface FormSubmitButton {
   styles?: React.CSSProperties;
@@ -17,21 +9,35 @@ export interface FormSubmitButton {
 }
 
 export interface FormProps {
-  fields: FormFieldInputData[];
+  children?: React.ReactNode;
+  configurations?: FormFieldConfiguration[];
   submitButton: FormSubmitButton;
-  onSubmit: (data: FormFieldOutputData[]) => void;
+  onPreSubmit?: () => void;
+  onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
   styles?: React.CSSProperties;
+  childrenStyles?: React.CSSProperties;
 }
 
-export const Form = (props: FormProps) => {
-  const { fields, styles, submitButton } = props;
-  const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
+const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
 
-  const mapFields = React.useCallback(() => {
-    return fields.map((f): JSX.Element => {
-      return { ...f.content, key: f.name };
-    });
-  }, [fields]);
+  ${({ styles }) => styles && { ...styles }}
+
+  > * {
+    pointer-events: none;
+  }
+`;
+
+export const Form = (props: FormProps) => {
+  const { children, styles, childrenStyles, submitButton } = props;
+  const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
 
   return (
     <form
@@ -46,19 +52,26 @@ export const Form = (props: FormProps) => {
         ...styles,
       }}
     >
-      {mapFields()}
       <div
-        onClick={submitForm}
         style={{
-          display: "flex",
           width: "100%",
-          alignItems: "center",
-          justifyContent: "center",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          flex: 1,
+          ...childrenStyles,
+        }}
+      >
+        {children}
+      </div>
+      <SubmitButton
+        onClick={submitForm}
+        styles={{
           ...submitButton.styles,
         }}
       >
         {submitButton.content}
-      </div>
+      </SubmitButton>
     </form>
   );
 };

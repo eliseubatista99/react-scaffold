@@ -11,6 +11,9 @@ const meta = {
   args: {
     name: "example-input-field",
     placeHolder: "This is an example input field",
+    onFocus: () => {
+      console.debug("InputField > OnFocus");
+    },
   },
 } satisfies Meta<typeof InputField>;
 
@@ -39,12 +42,31 @@ export const WithErrorMessage: Story = {
 
 export const CountrySearch: Story = {
   args: {
-    leftIcon: <p style={{ fontSize: "25px" }}>{"🏁"}</p>,
+    leftIcon: (
+      <p
+        style={{ fontSize: "25px", margin: 0, marginBlock: 0, marginInline: 0 }}
+      >
+        {"🏁"}
+      </p>
+    ),
   },
 };
 
 export const SearchInput: Story = {
   args: {
-    rightIcon: <p style={{ fontSize: "30px" }}>{"⌕"}</p>,
+    rightIcon: (
+      <p
+        style={{ fontSize: "30px", margin: 0, marginBlock: 0, marginInline: 0 }}
+      >
+        {"⌕"}
+      </p>
+    ),
+  },
+};
+
+export const Numeric: Story = {
+  args: {
+    type: "number",
+    maxLength: 4,
   },
 };

@@ -10,13 +10,13 @@ export const UseFetchStoriesSetup = (props: useFetchStoriesSetupProps) => {
   const [isFetching, setIsFetching] = React.useState(false);
   const [response, setResponse] = React.useState<any>(undefined);
 
-  const fetch = useFetch();
+  const { get } = useFetch();
 
   const executeFetch = React.useCallback(async () => {
     setIsFetching(true);
-    const response = await fetch<typeof props.type>(props.url);
+    const response = await get<typeof props.type>(props.url);
 
-    console.log("Response from fetch:", response);
+    console.debug("Response from fetch:", response);
     setResponse(response);
 
     setIsFetching(false);

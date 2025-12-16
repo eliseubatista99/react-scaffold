@@ -22,7 +22,9 @@ export const Image = ({ src, alt = "", onClick, styles }: ImageProps) => {
         objectFit: "cover",
         ...styles,
       }}
-      onClick={() => onClick?.()}
+      onClick={() => {
+        onClick?.();
+      }}
     />
   );
 };
