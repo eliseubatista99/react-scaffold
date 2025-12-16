@@ -33,27 +33,6 @@ export const useNavigationParams = () => {
     [searchParams]
   );
 
-  const set = useCallback(
-    (key: string, value: any) => {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.set(key, String(value));
-      setSearchParams(newParams);
-    },
-    [searchParams, setSearchParams]
-  );
-
-  const setMany = useCallback(
-    (params: Record<string, any>) => {
-      const newParams = new URLSearchParams(searchParams);
-      Object.entries(params).forEach(([k, v]) => {
-        if (v === undefined || v === null) return;
-        newParams.set(k, String(v));
-      });
-      setSearchParams(newParams);
-    },
-    [searchParams, setSearchParams]
-  );
-
   const remove = useCallback(
     (key: string) => {
       const newParams = new URLSearchParams(searchParams);
@@ -79,6 +58,33 @@ export const useNavigationParams = () => {
   const removeAll = useCallback(() => {
     setSearchParams({});
   }, [searchParams, setSearchParams]);
+
+  const set = useCallback(
+    (key: string, value: any) => {
+      if (value === null || value === undefined) {
+        remove(key);
+        return;
+      }
+
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set(key, String(value));
+
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const setMany = useCallback(
+    (params: Record<string, any>) => {
+      const newParams = new URLSearchParams(searchParams);
+      Object.entries(params).forEach(([k, v]) => {
+        if (v === undefined || v === null) return;
+        newParams.set(k, String(v));
+      });
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   return {
     getAll: () => allParams,
