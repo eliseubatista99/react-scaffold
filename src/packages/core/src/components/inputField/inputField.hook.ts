@@ -7,10 +7,8 @@ export const useInputFieldHelper = (props: InputFieldProps) => {
   };
 
   const handleOnFocus = (
-    event: React.FocusEvent<HTMLInputElement, Element>
+    event: React.FocusEvent<HTMLInputElement, Element>,
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
     props.onFocus?.();
   };
 

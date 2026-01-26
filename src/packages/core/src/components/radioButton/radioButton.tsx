@@ -4,7 +4,8 @@ export type RadioButtonProps = {
   checked: boolean;
   customUncheckedRender?: React.ReactNode;
   customCheckedRender?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+
   styles?: CSSProperties;
   checkedStyles?: CSSProperties;
 };
@@ -24,9 +25,7 @@ export const RadioButton = ({
   return (
     <div
       onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onClick?.();
+        onClick?.(e);
       }}
       style={{
         width: "25px",
