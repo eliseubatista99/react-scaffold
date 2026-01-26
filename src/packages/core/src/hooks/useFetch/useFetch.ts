@@ -1,6 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type runFetchOptions = Record<string, any>;
 
+type FetchOutput<TOut> = {
+  result: TOut;
+  statusCode: number;
+};
+
 export const useFetch = () => {
   const buildUrl = (baseUrl: string, options?: runFetchOptions) => {
     if (!options) return baseUrl;
@@ -25,8 +30,8 @@ export const useFetch = () => {
     endpointUrl: string,
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     headers?: HeadersInit,
-    body?: BodyInit
-  ): Promise<OutputType> => {
+    body?: BodyInit,
+  ): Promise<FetchOutput<OutputType>> => {
     const result = await fetch(endpointUrl, {
       method,
       headers,
@@ -34,14 +39,14 @@ export const useFetch = () => {
     });
     const jsonResult = await result.json();
 
-    return jsonResult as OutputType;
+    return { result: jsonResult as OutputType, statusCode: result.status };
   };
 
   const fetchGet = async <OutputType>(
     endpointUrl: string,
     options?: runFetchOptions,
-    headers?: HeadersInit
-  ): Promise<OutputType> => {
+    headers?: HeadersInit,
+  ): Promise<FetchOutput<OutputType>> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
     return runFetch(fetchUrl, "GET", { ...headers });
@@ -50,47 +55,47 @@ export const useFetch = () => {
   const fetchPost = async <OutputType>(
     endpointUrl: string,
     options?: runFetchOptions,
-    headers?: HeadersInit
-  ): Promise<OutputType> => {
+    headers?: HeadersInit,
+  ): Promise<FetchOutput<OutputType>> => {
     return runFetch(
       endpointUrl,
       "POST",
       { "Content-Type": "application/json", ...headers },
-      JSON.stringify(options)
+      JSON.stringify(options),
     );
   };
 
   const fetchPut = async <OutputType>(
     endpointUrl: string,
     options?: runFetchOptions,
-    headers?: HeadersInit
-  ): Promise<OutputType> => {
+    headers?: HeadersInit,
+  ): Promise<FetchOutput<OutputType>> => {
     return runFetch(
       endpointUrl,
       "PUT",
       { "Content-Type": "application/json", ...headers },
-      JSON.stringify(options)
+      JSON.stringify(options),
     );
   };
 
   const fetchPatch = async <OutputType>(
     endpointUrl: string,
     options?: runFetchOptions,
-    headers?: HeadersInit
-  ): Promise<OutputType> => {
+    headers?: HeadersInit,
+  ): Promise<FetchOutput<OutputType>> => {
     return runFetch(
       endpointUrl,
       "PATCH",
       { "Content-Type": "application/json", ...headers },
-      JSON.stringify(options)
+      JSON.stringify(options),
     );
   };
 
   const fetchDelete = async <OutputType>(
     endpointUrl: string,
     options?: runFetchOptions,
-    headers?: HeadersInit
-  ): Promise<OutputType> => {
+    headers?: HeadersInit,
+  ): Promise<FetchOutput<OutputType>> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
     return runFetch(fetchUrl, "DELETE", { ...headers });

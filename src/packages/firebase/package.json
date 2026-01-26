@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",

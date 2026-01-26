@@ -2,20 +2,32 @@
 
 ---
 
-A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
+A library which provides CV related components and utilities, that allow you to build a readable and useful CV.
 
 ## Installation
 
 ```shell
-npm i @eliseubatista99/react-scaffold-pdf
+npm i @eliseubatista99/react-scaffold-cv
+```
+
+@eliseubatista99/react-scaffold-cv is a React library that provides CV related components and utilities, that allow you to build a readable and useful CV.
+
+This library must be used together with the [@eliseubatista99/react-scaffold-pdf](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf) package.
+
+## Installation
+
+```
+npm i @eliseubatista99/react-scaffold-cv
 ```
 
 ## Content
 
-- [Providers](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core/src/providers): Useful providers to handle complex actions like navigation and showing, hiding and managing feedback components;
+- [Components](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/components): Useful to preview your CV in a basic pdf embedded reader
 
-- [Hooks](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core/src/hooks): Hooks that handle atomic actions, like fetching and endpoint.
+- [Hooks](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/hooks): Hooks that handle the creation of the CV document, alongside with the possibility of previewing it or downloading it.
 
-- [Helpers](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core/src/helpers): Classes to help with generic repetitive tasks, like transforming a string into Pascal Case.
+- [Templates](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/templates): Contains the available CV templates, that you can use to render on your own PDF previewer.
 
-- [Components](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core/src/components): Basic, customizable components with pre-configured styles and behaviors.
+## Change Log
+
+Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
