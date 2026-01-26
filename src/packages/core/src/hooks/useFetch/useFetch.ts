@@ -1,9 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type runFetchOptions = Record<string, any>;
 
-type FetchOutput<TOut> = {
-  result: TOut;
+export type FetchOutput<TOut> = {
+  result: TOut | undefined;
   statusCode: number;
+  error?: unknown;
 };
 
 export const useFetch = () => {
@@ -26,6 +27,25 @@ export const useFetch = () => {
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };
 
+  const parseFetchResult = async <OutputType>(
+    result: Response,
+  ): Promise<FetchOutput<OutputType>> => {
+    try {
+      const jsonResult = await result.json();
+
+      return {
+        result: jsonResult as OutputType,
+        statusCode: result.status,
+      };
+    } catch (exception) {
+      return {
+        result: undefined,
+        statusCode: result.status,
+        error: exception,
+      };
+    }
+  };
+
   const runFetch = async <OutputType>(
     endpointUrl: string,
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
@@ -37,9 +57,8 @@ export const useFetch = () => {
       headers,
       body,
     });
-    const jsonResult = await result.json();
 
-    return { result: jsonResult as OutputType, statusCode: result.status };
+    return parseFetchResult<OutputType>(result);
   };
 
   const fetchGet = async <OutputType>(
