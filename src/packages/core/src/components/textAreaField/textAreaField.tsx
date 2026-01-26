@@ -63,15 +63,13 @@ export const TextAreaField = ({
   };
 
   const handleOnFocus = (
-    event: React.FocusEvent<HTMLTextAreaElement, Element>
+    event: React.FocusEvent<HTMLTextAreaElement, Element>,
   ) => {
-    event.preventDefault();
-    event.stopPropagation();
     onFocus?.();
   };
 
   const handleOnBlur = (
-    event: React.FocusEvent<HTMLTextAreaElement, Element>
+    event: React.FocusEvent<HTMLTextAreaElement, Element>,
   ) => {
     onBlur?.();
   };

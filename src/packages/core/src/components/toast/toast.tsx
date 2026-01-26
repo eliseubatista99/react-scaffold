@@ -51,10 +51,6 @@ export const Toast = ({
             border: "solid 3px #000000ff",
             ...styles,
           }}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
         >
           {children}
         </div>

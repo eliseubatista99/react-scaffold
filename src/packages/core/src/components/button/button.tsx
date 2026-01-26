@@ -1,7 +1,7 @@
 import React, { type CSSProperties } from "react";
 
 export type ButtonProps = {
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   children?: React.ReactNode;
   styles?: CSSProperties;
 };
@@ -23,9 +23,7 @@ export const Button = ({ children, onClick, styles }: ButtonProps) => {
         ...styles,
       }}
       onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onClick?.();
+        onClick?.(e);
       }}
     >
       {children}

@@ -19,19 +19,16 @@ export const Typography = ({
         fontFamily: "inherit",
         maxWidth: "100%",
         overflow: "hidden",
-        // whiteSpace: overflowEllipsis ? "nowrap" : "normal", //Old way
-
-        // new way
         display: "-webkit-box",
         WebkitLineClamp: maxNumberOfLines ? maxNumberOfLines : undefined,
         WebkitBoxOrient: "vertical",
         whiteSpace: "unset",
-        // end new way
         textOverflow: overflowEllipsis ? "ellipsis" : undefined,
         fontSize: "16px",
         fontStyle: "normal",
         lineHeight: "normal",
         color: "inherit",
+        pointerEvents: "none",
         ...styles,
       }}
     >
