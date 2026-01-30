@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   NavigationProvider,
   NavigationProviderInputProps,
@@ -37,6 +37,7 @@ export const NavigationExampleScreen2 = () => {
 
 const NavigationExampleInnerContent = () => {
   const { currentPath, history, goBack, goTo } = useNavigation();
+  const [addToHistory, setAddToHistory] = useState(true);
 
   const listHistory = React.useCallback(() => {
     let res = "";
@@ -63,9 +64,13 @@ const NavigationExampleInnerContent = () => {
 
   const goToButton = React.useCallback(
     (path: string) => {
-      return <button onClick={() => goTo({ path })}>Go To {path}</button>;
+      return (
+        <button onClick={() => goTo({ path, addToHistory })}>
+          Go To {path}
+        </button>
+      );
     },
-    [goTo]
+    [goTo, addToHistory],
   );
 
   return (
@@ -81,6 +86,29 @@ const NavigationExampleInnerContent = () => {
       <div>
         <p>Current path: {currentPath}</p>
         <p>History: {listHistory()}</p>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "10px",
+          width: "100%",
+        }}
+      >
+        <p>Add to history</p>
+        <input
+          type="checkbox"
+          name={"addToHistory"}
+          checked={addToHistory}
+          onChange={(_) => {
+            //
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setAddToHistory((prevState) => !prevState);
+          }}
+        />
       </div>
       {backButton()}
       {goToButton("/screen1")}

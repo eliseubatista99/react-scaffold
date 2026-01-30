@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { NavigationProviderContext } from "../navigationContext";
 import { useNavigationParams } from "./useNavigationParams";
 
-type GoToParams = {
+export type GoToParams = {
   path: string;
   addToHistory?: boolean;
   params?: Record<string, unknown>;
@@ -40,22 +40,30 @@ export const useNavigation = () => {
         navigationContext.addToHistory(url);
       } else {
         navigate(url, { replace: true });
-        navigationContext.popFromHistory(1);
-        navigationContext.addToHistory(url);
+
+        if (navigationContext.history.length > 0) {
+          navigationContext.popFromHistory(1);
+
+          navigationContext.addToHistory(url);
+        }
       }
     },
-    [navigate]
+    [navigate, navigationContext.history],
   );
 
   const goBack = React.useCallback(
     (steps?: number) => {
-      const finalSteps = steps || 1;
+      let finalSteps = steps || 1;
+
+      if (navigationContext.history.length < finalSteps) {
+        finalSteps = navigationContext.history.length;
+      }
 
       navigate(-finalSteps);
 
       navigationContext.popFromHistory(finalSteps);
     },
-    [navigate]
+    [navigate],
   );
 
   return {

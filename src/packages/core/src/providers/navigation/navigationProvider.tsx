@@ -42,24 +42,15 @@ export const NavigationProvider = ({
     let newLocation = "";
     let newHistory: string[] = [];
 
-    if (historyRef.current.length === 0) {
+    if (historyRef.current.length === 0 || historyRef.current.length < count) {
       return "/";
     }
 
-    if (historyRef.current.length <= count) {
-      newLocation = historyRef.current[0];
-      newHistory = [newLocation];
-    } else {
-      newHistory = historyRef.current.slice(
-        0,
-        historyRef.current.length - count
-      );
+    newHistory = historyRef.current.slice(0, historyRef.current.length - count);
 
-      newLocation = newHistory[newHistory.length - 1];
-    }
+    newLocation = newHistory[newHistory.length - 1];
 
     updateHistory(newHistory);
-
     return newLocation;
   };
 
