@@ -2,23 +2,25 @@ import { User, UserCredential } from "firebase/auth";
 import React from "react";
 
 export interface FirebaseAuthContextData {
-  currentUser: User | null;
+  currentUser: User | null | undefined;
+  isInitialized: boolean;
   signUp: (
     email: string,
     password: string,
-    username: string
+    username: string,
   ) => Promise<UserCredential>;
   logIn: (email: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<User | null>;
-  updateEmail: (email: string) => Promise<User | null>;
-  updatePassword: (password: string) => Promise<User | null>;
-  updateName: (name: string) => Promise<User | null>;
+  resetPassword: (email: string) => Promise<User | null | undefined>;
+  updateEmail: (email: string) => Promise<User | null | undefined>;
+  updatePassword: (password: string) => Promise<User | null | undefined>;
+  updateName: (name: string) => Promise<User | null | undefined>;
 }
 
 export const FirebaseAuthProviderContext =
   React.createContext<FirebaseAuthContextData>({
     currentUser: null,
+    isInitialized: false,
     signUp: async (): Promise<UserCredential> => {
       throw new Error("signUp function not implemented");
     },

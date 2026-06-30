@@ -7,7 +7,7 @@ export const useFirebaseAuth = () => {
 
   const executeFirebaseAuthOperation = async <TOut>(
     operation: () => Promise<TOut>,
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     try {
       return await operation();
@@ -27,20 +27,20 @@ export const useFirebaseAuth = () => {
       password: string;
       username: string;
     },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.signUp(
         data.email,
         data.password,
-        data.username
+        data.username,
       );
     }, onError);
   };
 
   const logIn = async (
     data: { email: string; password: string },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.logIn(data.email, data.password);
@@ -55,7 +55,7 @@ export const useFirebaseAuth = () => {
 
   const resetPassword = async (
     data: { email: string },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.resetPassword(data.email);
@@ -64,7 +64,7 @@ export const useFirebaseAuth = () => {
 
   const updateEmail = async (
     data: { email: string },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.updateEmail(data.email);
@@ -73,7 +73,7 @@ export const useFirebaseAuth = () => {
 
   const updatePassword = async (
     data: { password: string },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.updatePassword(data.password);
@@ -82,7 +82,7 @@ export const useFirebaseAuth = () => {
 
   const updateName = async (
     data: { name: string },
-    onError?: (error: FirebaseError) => void
+    onError?: (error: FirebaseError) => void,
   ) => {
     return await executeFirebaseAuthOperation(async () => {
       return await firebaseAuthContext!.updateName(data.name);
@@ -91,6 +91,7 @@ export const useFirebaseAuth = () => {
 
   return {
     currentUser: firebaseAuthContext.currentUser,
+    isInitialized: firebaseAuthContext.isInitialized,
     signUp,
     logIn,
     logout,
