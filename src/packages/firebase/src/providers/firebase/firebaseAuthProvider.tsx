@@ -24,8 +24,11 @@ export const FirebaseAuthProvider = ({
 }: FirebaseAuthProviderInputProps) => {
   const app = React.useRef<FirebaseApp | null>(null);
   const auth = React.useRef<Auth | null>(null);
-  const currentUserRef = React.useRef<User | null>(null);
-  const [_, setCurrentUserState] = React.useState<User | null>(null);
+  const [isInitialized, setIsInitialized] = React.useState(false);
+  const currentUserRef = React.useRef<User | null | undefined>(undefined);
+  const [currentUser, setCurrentUserState] = React.useState<
+    User | null | undefined
+  >(undefined);
 
   const setCurrentUser = (user: User | null) => {
     currentUserRef.current = user;
@@ -36,7 +39,7 @@ export const FirebaseAuthProvider = ({
     const userCredential = await createUserWithEmailAndPassword(
       auth.current!,
       email,
-      password
+      password,
     );
 
     await updateProfile(userCredential.user, {
@@ -89,7 +92,7 @@ export const FirebaseAuthProvider = ({
   React.useEffect(() => {
     if (!FirebaseAppHelper.isAppInitialized()) {
       throw new Error(
-        "Firebase app is not initialized. Please call FirebaseAppHelper.initializeApp() with your Firebase configuration."
+        "Firebase app is not initialized. Please call FirebaseAppHelper.initializeApp() with your Firebase configuration.",
       );
     }
 
@@ -102,7 +105,9 @@ export const FirebaseAuthProvider = ({
     }
 
     const unsubscribe = auth.current.onAuthStateChanged((user: User | null) => {
+      console.log("FirebaseAuthProvider > AuthStateChanged > ", { user });
       setCurrentUser(user);
+      setIsInitialized(true);
     });
 
     return unsubscribe;
@@ -111,7 +116,8 @@ export const FirebaseAuthProvider = ({
   return (
     <FirebaseAuthProviderContext.Provider
       value={{
-        currentUser: currentUserRef.current,
+        currentUser: currentUser,
+        isInitialized: isInitialized,
         signUp,
         logIn,
         logout,
