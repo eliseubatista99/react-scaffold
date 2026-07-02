@@ -1,18 +1,26 @@
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 export class FirebaseStorageHelper {
-  static uploadImage = async (file: File, path = "images"): Promise<string> => {
+  static uploadImage = async (
+    file: File,
+    path = "images",
+    fileName?: string,
+  ): Promise<string> => {
     if (!file.type.startsWith("image/")) {
       throw new Error("File must be an image");
     }
 
-    return await this.uploadFile(file, path);
+    return await this.uploadFile(file, path, fileName);
   };
 
-  static uploadFile = async (file: File, path = "files"): Promise<string> => {
+  static uploadFile = async (
+    file: File,
+    path = "files",
+    fileName?: string,
+  ): Promise<string> => {
     const storage = getStorage();
 
-    const safeName = file.name
+    const safeName = (fileName ?? file.name)
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, "-");
