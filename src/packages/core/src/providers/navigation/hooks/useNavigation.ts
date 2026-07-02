@@ -66,11 +66,16 @@ export const useNavigation = () => {
     [navigate],
   );
 
+  const clearHistory = React.useCallback(() => {
+    navigationContext.replaceHistory([]);
+  }, [navigate]);
+
   return {
     currentPath: location.pathname,
     history: navigationContext.history,
     searchParams: navigationParams,
     goBack,
     goTo,
+    clearHistory,
   };
 };
