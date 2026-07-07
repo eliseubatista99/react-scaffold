@@ -193,7 +193,9 @@ export const useFormHelper = ({
       result.map(async (res) => await validateField(res, "submit")),
     );
 
-    return result;
+    const fieldsWithErrors = result.find((i) => i.error !== undefined);
+
+    return { fields: result, hasErrors: fieldsWithErrors !== undefined };
   }, []);
 
   const handleSubmitForm = React.useCallback(
@@ -214,7 +216,7 @@ export const useFormHelper = ({
 
         isSubmittingRef.current = false;
 
-        onSubmit?.(result);
+        onSubmit?.(result.fields, result.hasErrors);
       } catch (e) {
         isSubmittingRef.current = false;
         console.error("Form > OnSubmit > Error submitting: ", e);
@@ -233,7 +235,7 @@ export const useFormHelper = ({
 
         console.log("result", { changedElement });
 
-        onChange?.(result);
+        onChange?.(result, result.error !== undefined);
       } catch (e) {
         console.error("Form > onChange > Error changing: ", e);
       }
@@ -245,7 +247,7 @@ export const useFormHelper = ({
     try {
       const result = await validateAllFields();
 
-      onMount?.(result);
+      onMount?.(result.fields, result.hasErrors);
     } catch (e) {
       console.error("Form > onChange > Error changing: ", e);
     }

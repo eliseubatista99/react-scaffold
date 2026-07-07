@@ -12,10 +12,10 @@ export interface FormProps {
   children?: React.ReactNode;
   configurations?: FormFieldConfiguration[];
   submitButton: FormSubmitButton;
-  onMount?: (data: FormFieldOutputData[]) => Promise<void>;
+  onMount?: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
   onPreSubmit?: () => void;
-  onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
-  onChange?: (data: FormFieldOutputData) => Promise<void>;
+  onSubmit: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
+  onChange?: (data: FormFieldOutputData, hasErrors?: boolean) => Promise<void>;
   styles?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }
