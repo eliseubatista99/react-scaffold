@@ -5,6 +5,7 @@ import { FormProps } from "./form";
 export const useFormHelper = ({
   onPreSubmit,
   onSubmit,
+  onChange,
   configurations,
 }: FormProps) => {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -13,7 +14,7 @@ export const useFormHelper = ({
   const getFieldsData = (event: React.FormEvent<HTMLFormElement>) => {
     const inputs = Array.from(event.currentTarget.elements).filter(
       (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
-        !!el.getAttribute("name")
+        !!el.getAttribute("name"),
     );
 
     const result: FormFieldOutputData[] = [];
@@ -31,11 +32,11 @@ export const useFormHelper = ({
   };
 
   const validateField = async (
-    data: FormFieldOutputData
+    data: FormFieldOutputData,
   ): Promise<FormFieldOutputData> => {
     try {
       const configuration = (configurations || []).find(
-        (c) => c.name === data.name
+        (c) => c.name === data.name,
       );
 
       if (!configuration) {
@@ -134,7 +135,7 @@ export const useFormHelper = ({
         let result = getFieldsData(event);
 
         result = await Promise.all(
-          result.map(async (res) => await validateField(res))
+          result.map(async (res) => await validateField(res)),
         );
 
         isSubmittingRef.current = false;
@@ -145,7 +146,20 @@ export const useFormHelper = ({
         console.error("Form > OnSubmit > Error submitting: ", e);
       }
     },
-    [onSubmit, onPreSubmit]
+    [onSubmit, onPreSubmit],
+  );
+
+  const handleOnChange = React.useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      try {
+        let result = getFieldsData(event);
+
+        onChange?.(result);
+      } catch (e) {
+        console.error("Form > onChange > Error changing: ", e);
+      }
+    },
+    [onSubmit, onPreSubmit],
   );
 
   const submitForm = (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -159,5 +173,6 @@ export const useFormHelper = ({
     ref: formRef,
     submitForm,
     handleFormSubmission: handleSubmitForm,
+    handleFormChange: handleOnChange,
   };
 };

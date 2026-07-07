@@ -14,6 +14,7 @@ export interface FormProps {
   submitButton: FormSubmitButton;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
+  onChange?: (data: FormFieldOutputData[]) => Promise<void>;
   styles?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }
@@ -37,12 +38,14 @@ const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
 
 export const Form = (props: FormProps) => {
   const { children, styles, childrenStyles, submitButton } = props;
-  const { ref, handleFormSubmission, submitForm } = useFormHelper(props);
+  const { ref, handleFormSubmission, submitForm, handleFormChange } =
+    useFormHelper(props);
 
   return (
     <form
       ref={ref}
       onSubmit={handleFormSubmission}
+      onChange={handleFormChange}
       style={{
         width: "100%",
         display: "flex",
