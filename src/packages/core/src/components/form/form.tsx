@@ -15,7 +15,11 @@ export interface FormProps {
   onMount?: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
-  onChange?: (data: FormFieldOutputData, hasErrors?: boolean) => Promise<void>;
+  onChange?: (
+    changedField: FormFieldOutputData,
+    data: FormFieldOutputData[],
+    hasErrors?: boolean,
+  ) => Promise<void>;
   styles?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }

@@ -3,6 +3,8 @@ import { useDidMount } from "../../hooks";
 import { FormFieldOutputData } from "../../types";
 import { FormProps } from "./form";
 
+type FormMoment = "change" | "submit" | "mount";
+
 export const useFormHelper = ({
   onPreSubmit,
   onSubmit,
@@ -44,7 +46,7 @@ export const useFormHelper = ({
   };
 
   const shouldValidateConfigurationOnMoment = (
-    moment: "change" | "submit" | "mount",
+    moment: FormMoment,
     configurationShouldValidateOnChange: boolean | null | undefined,
     configurationShouldValidateOnMount: boolean | null | undefined,
   ) => {
@@ -57,7 +59,7 @@ export const useFormHelper = ({
 
   const validateField = async (
     data: FormFieldOutputData,
-    moment: "change" | "submit",
+    moment: FormMoment,
   ): Promise<FormFieldOutputData> => {
     try {
       const configuration = (configurations || []).find(
@@ -187,10 +189,10 @@ export const useFormHelper = ({
     return data;
   };
 
-  const validateAllFields = useCallback(async () => {
+  const validateAllFields = useCallback(async (moment: FormMoment) => {
     let result = getFieldsData();
     result = await Promise.all(
-      result.map(async (res) => await validateField(res, "submit")),
+      result.map(async (res) => await validateField(res, moment)),
     );
 
     const fieldsWithErrors = result.find((i) => i.error !== undefined);
@@ -212,7 +214,7 @@ export const useFormHelper = ({
         // Preventing the page from reloading
         event.preventDefault();
         event.stopPropagation();
-        const result = await validateAllFields();
+        const result = await validateAllFields("submit");
 
         isSubmittingRef.current = false;
 
@@ -229,13 +231,19 @@ export const useFormHelper = ({
     async (event: React.FormEvent<HTMLFormElement>) => {
       try {
         const changedElement = event.target as HTMLInputElement;
+
+        var allFieldsValidation = await validateAllFields("change");
         let result = getInputData(changedElement);
 
         result = await validateField(result, "change");
 
-        console.log("result", { changedElement });
+        console.log("Form > On Change > ", { result, allFieldsValidation });
 
-        onChange?.(result, result.error !== undefined);
+        onChange?.(
+          result,
+          allFieldsValidation.fields,
+          allFieldsValidation.hasErrors,
+        );
       } catch (e) {
         console.error("Form > onChange > Error changing: ", e);
       }
@@ -245,7 +253,7 @@ export const useFormHelper = ({
 
   const handleOnMount = React.useCallback(async () => {
     try {
-      const result = await validateAllFields();
+      const result = await validateAllFields("mount");
 
       onMount?.(result.fields, result.hasErrors);
     } catch (e) {
