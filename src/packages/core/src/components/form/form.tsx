@@ -14,7 +14,7 @@ export interface FormProps {
   submitButton: FormSubmitButton;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
-  onChange?: (data: FormFieldOutputData[]) => Promise<void>;
+  onChange?: (data: FormFieldOutputData) => Promise<void>;
   styles?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }

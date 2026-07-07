@@ -11,6 +11,17 @@ export const useFormHelper = ({
   const formRef = React.useRef<HTMLFormElement>(null);
   const isSubmittingRef = React.useRef<boolean>(false);
 
+  const getInputData = (
+    input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  ): FormFieldOutputData => {
+    const name = input.name;
+
+    return {
+      name,
+      value: input.value,
+    };
+  };
+
   const getFieldsData = (event: React.FormEvent<HTMLFormElement>) => {
     const inputs = Array.from(event.currentTarget.elements).filter(
       (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
@@ -20,12 +31,7 @@ export const useFormHelper = ({
     const result: FormFieldOutputData[] = [];
 
     for (const input of inputs) {
-      const name = input.name;
-
-      result.push({
-        name,
-        value: input.value,
-      });
+      result.push(getInputData(input));
     }
 
     return result;
@@ -200,11 +206,12 @@ export const useFormHelper = ({
   const handleOnChange = React.useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       try {
-        let result = getFieldsData(event);
+        const changedElement = event.target as HTMLInputElement;
+        let result = getInputData(changedElement);
 
-        result = await Promise.all(
-          result.map(async (res) => await validateField(res, "change")),
-        );
+        result = await validateField(result, "change");
+
+        console.log("result", { changedElement });
 
         onChange?.(result);
       } catch (e) {

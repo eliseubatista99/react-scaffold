@@ -11,7 +11,7 @@ export const FormStoriesSetup = (props: FormProps) => {
     setShowLoader(false);
   };
 
-  const onChange = async (data: FormFieldOutputData[]) => {
+  const onChange = async (data: FormFieldOutputData) => {
     console.log("Form > OnChange > ", { data });
   };
 
