@@ -115,6 +115,7 @@ const meta = {
         emptyValidation: {
           allow: false,
           errorMessage: "Cannot be empty",
+          validateOnChange: true,
         },
       },
     ],

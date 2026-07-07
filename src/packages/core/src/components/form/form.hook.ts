@@ -31,8 +31,19 @@ export const useFormHelper = ({
     return result;
   };
 
+  const shouldValidateConfigurationOnMoment = (
+    moment: "change" | "submit",
+    configurationShouldValidateOnChange: boolean | null | undefined,
+  ) => {
+    return (
+      (moment === "change" && configurationShouldValidateOnChange) ||
+      moment === "submit"
+    );
+  };
+
   const validateField = async (
     data: FormFieldOutputData,
+    moment: "change" | "submit",
   ): Promise<FormFieldOutputData> => {
     try {
       const configuration = (configurations || []).find(
@@ -50,7 +61,11 @@ export const useFormHelper = ({
       if (
         configuration.emptyValidation &&
         configuration.emptyValidation.allow === false &&
-        !stringValue
+        !stringValue &&
+        shouldValidateConfigurationOnMoment(
+          moment,
+          configuration.emptyValidation.validateOnChange,
+        )
       ) {
         data.error = configuration.emptyValidation.errorMessage;
         return data;
@@ -59,7 +74,11 @@ export const useFormHelper = ({
       //Min length validation
       if (
         configuration.minLengthValidation &&
-        stringValue.length < configuration.minLengthValidation.value
+        stringValue.length < configuration.minLengthValidation.value &&
+        shouldValidateConfigurationOnMoment(
+          moment,
+          configuration.minLengthValidation.validateOnChange,
+        )
       ) {
         data.error = configuration.minLengthValidation.errorMessage;
         return data;
@@ -68,7 +87,11 @@ export const useFormHelper = ({
       //Max length validation
       if (
         configuration.maxLengthValidation &&
-        stringValue.length > configuration.maxLengthValidation.value
+        stringValue.length > configuration.maxLengthValidation.value &&
+        shouldValidateConfigurationOnMoment(
+          moment,
+          configuration.maxLengthValidation.validateOnChange,
+        )
       ) {
         data.error = configuration.maxLengthValidation.errorMessage;
         return data;
@@ -78,7 +101,11 @@ export const useFormHelper = ({
         //Min value validation
         if (
           configuration.minValueValidation &&
-          numericValue < configuration.minValueValidation.value
+          numericValue < configuration.minValueValidation.value &&
+          shouldValidateConfigurationOnMoment(
+            moment,
+            configuration.minValueValidation.validateOnChange,
+          )
         ) {
           data.error = configuration.minValueValidation.errorMessage;
           return data;
@@ -87,7 +114,11 @@ export const useFormHelper = ({
         //Max value validation
         if (
           configuration.maxValueValidation &&
-          numericValue > configuration.maxValueValidation.value
+          numericValue > configuration.maxValueValidation.value &&
+          shouldValidateConfigurationOnMoment(
+            moment,
+            configuration.maxValueValidation.validateOnChange,
+          )
         ) {
           data.error = configuration.maxValueValidation.errorMessage;
           return data;
@@ -97,14 +128,31 @@ export const useFormHelper = ({
       //Exact value validation
       if (
         configuration.exactValueValidation &&
-        configuration.exactValueValidation.value !== data.value
+        configuration.exactValueValidation.value !== data.value &&
+        shouldValidateConfigurationOnMoment(
+          moment,
+          configuration.exactValueValidation.validateOnChange,
+        )
       ) {
         data.error = configuration.exactValueValidation.errorMessage;
         return data;
       }
 
       for (let i = 0; i < (configuration.validations || []).length; i++) {
-        const error = await configuration.validations?.[i](data.value);
+        const validationItem = configuration.validations?.[i];
+
+        if (
+          !shouldValidateConfigurationOnMoment(
+            moment,
+            validationItem?.validateOnChange,
+          )
+        ) {
+          continue;
+        }
+
+        const error = await configuration.validations?.[i].validate?.(
+          data.value,
+        );
 
         if (error) {
           data.error = error;
@@ -135,7 +183,7 @@ export const useFormHelper = ({
         let result = getFieldsData(event);
 
         result = await Promise.all(
-          result.map(async (res) => await validateField(res)),
+          result.map(async (res) => await validateField(res, "submit")),
         );
 
         isSubmittingRef.current = false;
@@ -153,6 +201,10 @@ export const useFormHelper = ({
     async (event: React.FormEvent<HTMLFormElement>) => {
       try {
         let result = getFieldsData(event);
+
+        result = await Promise.all(
+          result.map(async (res) => await validateField(res, "change")),
+        );
 
         onChange?.(result);
       } catch (e) {
