@@ -1,5 +1,6 @@
 type FormFieldBaseValidation = {
   validateOnChange?: boolean;
+  validateOnMount?: boolean;
 };
 
 type FormFieldUnknownValueValidation = FormFieldBaseValidation & {
@@ -12,6 +13,11 @@ type FormFieldNumericValidation = FormFieldBaseValidation & {
   errorMessage: string;
 };
 
+type FormFieldEmptyValidation = FormFieldBaseValidation & {
+  allow: boolean;
+  errorMessage: string;
+};
+
 type FormFieldCustomValidation = FormFieldBaseValidation & {
   validate: (
     value: unknown,
@@ -20,11 +26,7 @@ type FormFieldCustomValidation = FormFieldBaseValidation & {
 
 export interface FormFieldConfiguration {
   name: string;
-  emptyValidation?: {
-    allow: boolean;
-    errorMessage: string;
-    validateOnChange?: boolean;
-  };
+  emptyValidation?: FormFieldEmptyValidation;
   minLengthValidation?: FormFieldNumericValidation;
   maxLengthValidation?: FormFieldNumericValidation;
   minValueValidation?: FormFieldNumericValidation;

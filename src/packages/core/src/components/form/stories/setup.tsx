@@ -15,6 +15,10 @@ export const FormStoriesSetup = (props: FormProps) => {
     console.log("Form > OnChange > ", { data });
   };
 
+  const onMount = async (data: FormFieldOutputData[]) => {
+    console.log("Form > OnMount > ", { data });
+  };
+
   return (
     <div style={{ width: "100%" }}>
       {showLoader && (
@@ -53,6 +57,7 @@ export const FormStoriesSetup = (props: FormProps) => {
         {...props}
         onSubmit={onSubmit}
         onChange={onChange}
+        onMount={onMount}
         onPreSubmit={() => {
           setShowLoader(true);
         }}

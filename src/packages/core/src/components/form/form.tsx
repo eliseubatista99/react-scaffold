@@ -12,6 +12,7 @@ export interface FormProps {
   children?: React.ReactNode;
   configurations?: FormFieldConfiguration[];
   submitButton: FormSubmitButton;
+  onMount?: (data: FormFieldOutputData[]) => Promise<void>;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[]) => Promise<void>;
   onChange?: (data: FormFieldOutputData) => Promise<void>;

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useDidMount } from "../../hooks";
 import { FormFieldOutputData } from "../../types";
 import { FormProps } from "./form";
 
@@ -6,6 +7,7 @@ export const useFormHelper = ({
   onPreSubmit,
   onSubmit,
   onChange,
+  onMount,
   configurations,
 }: FormProps) => {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -22,8 +24,12 @@ export const useFormHelper = ({
     };
   };
 
-  const getFieldsData = (event: React.FormEvent<HTMLFormElement>) => {
-    const inputs = Array.from(event.currentTarget.elements).filter(
+  const getFieldsData = () => {
+    if (!formRef.current?.elements) {
+      return [];
+    }
+
+    const inputs = Array.from(formRef.current?.elements).filter(
       (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
         !!el.getAttribute("name"),
     );
@@ -38,11 +44,13 @@ export const useFormHelper = ({
   };
 
   const shouldValidateConfigurationOnMoment = (
-    moment: "change" | "submit",
+    moment: "change" | "submit" | "mount",
     configurationShouldValidateOnChange: boolean | null | undefined,
+    configurationShouldValidateOnMount: boolean | null | undefined,
   ) => {
     return (
       (moment === "change" && configurationShouldValidateOnChange) ||
+      (moment === "mount" && configurationShouldValidateOnMount) ||
       moment === "submit"
     );
   };
@@ -71,6 +79,7 @@ export const useFormHelper = ({
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.emptyValidation.validateOnChange,
+          configuration.emptyValidation.validateOnMount,
         )
       ) {
         data.error = configuration.emptyValidation.errorMessage;
@@ -84,6 +93,7 @@ export const useFormHelper = ({
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.minLengthValidation.validateOnChange,
+          configuration.minLengthValidation.validateOnMount,
         )
       ) {
         data.error = configuration.minLengthValidation.errorMessage;
@@ -97,6 +107,7 @@ export const useFormHelper = ({
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.maxLengthValidation.validateOnChange,
+          configuration.maxLengthValidation.validateOnMount,
         )
       ) {
         data.error = configuration.maxLengthValidation.errorMessage;
@@ -111,6 +122,7 @@ export const useFormHelper = ({
           shouldValidateConfigurationOnMoment(
             moment,
             configuration.minValueValidation.validateOnChange,
+            configuration.minValueValidation.validateOnMount,
           )
         ) {
           data.error = configuration.minValueValidation.errorMessage;
@@ -124,6 +136,7 @@ export const useFormHelper = ({
           shouldValidateConfigurationOnMoment(
             moment,
             configuration.maxValueValidation.validateOnChange,
+            configuration.maxValueValidation.validateOnMount,
           )
         ) {
           data.error = configuration.maxValueValidation.errorMessage;
@@ -138,6 +151,7 @@ export const useFormHelper = ({
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.exactValueValidation.validateOnChange,
+          configuration.exactValueValidation.validateOnMount,
         )
       ) {
         data.error = configuration.exactValueValidation.errorMessage;
@@ -151,6 +165,7 @@ export const useFormHelper = ({
           !shouldValidateConfigurationOnMoment(
             moment,
             validationItem?.validateOnChange,
+            validationItem?.validateOnMount,
           )
         ) {
           continue;
@@ -172,6 +187,15 @@ export const useFormHelper = ({
     return data;
   };
 
+  const validateAllFields = useCallback(async () => {
+    let result = getFieldsData();
+    result = await Promise.all(
+      result.map(async (res) => await validateField(res, "submit")),
+    );
+
+    return result;
+  }, []);
+
   const handleSubmitForm = React.useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       try {
@@ -186,11 +210,7 @@ export const useFormHelper = ({
         // Preventing the page from reloading
         event.preventDefault();
         event.stopPropagation();
-        let result = getFieldsData(event);
-
-        result = await Promise.all(
-          result.map(async (res) => await validateField(res, "submit")),
-        );
+        const result = await validateAllFields();
 
         isSubmittingRef.current = false;
 
@@ -221,11 +241,25 @@ export const useFormHelper = ({
     [onSubmit, onPreSubmit],
   );
 
+  const handleOnMount = React.useCallback(async () => {
+    try {
+      const result = await validateAllFields();
+
+      onMount?.(result);
+    } catch (e) {
+      console.error("Form > onChange > Error changing: ", e);
+    }
+  }, [onSubmit, onPreSubmit]);
+
   const submitForm = (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (formRef.current) {
       formRef.current.requestSubmit();
     }
   };
+
+  useDidMount(() => {
+    handleOnMount();
+  });
 
   //   <form onSubmit={handleSubmitForm}></form>;
   return {
