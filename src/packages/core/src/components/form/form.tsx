@@ -33,7 +33,7 @@ export interface FormProps {
 
 const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
   display: flex;
-  flex: 1,
+  flex: 1;
   align-items: center;
   justify-content: center;
   background: none;
@@ -80,6 +80,7 @@ export const Form = (props: FormProps) => {
         {children}
       </div>
       <div
+        data-testid="submit-section"
         style={{
           width: "100%",
           flexDirection: "row",
