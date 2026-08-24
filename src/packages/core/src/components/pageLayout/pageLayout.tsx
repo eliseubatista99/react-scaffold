@@ -10,6 +10,7 @@ export interface PageLayoutHeaderAndFooterProps {
 export interface PageLayoutProps {
   header?: PageLayoutHeaderAndFooterProps;
   footer?: PageLayoutHeaderAndFooterProps;
+  sidebar?: Omit<PageLayoutHeaderAndFooterProps, "visibility">;
   floatingContent?: React.ReactNode;
   allowScroll?: boolean;
   reserveSpaceForScrollbar?: boolean;
@@ -50,7 +51,7 @@ export const PageLayout = (props: PageLayoutProps) => {
     reserveSpaceForScrollbar,
   } = props;
 
-  const { footer, header, page } = usePageLayoutHelper(props);
+  const { footer, header, sidebar } = usePageLayoutHelper(props);
   return (
     <PageContainer
       id="page-container"
@@ -80,35 +81,58 @@ export const PageLayout = (props: PageLayoutProps) => {
         </div>
       )}
       <div
-        id="page-body"
         style={{
           width: "100%",
-          overflow: "hidden",
-          display: "flex",
+          flexDirection: "row",
           flex: 1,
+          display: "flex",
+          overflow: "hidden",
           marginTop: `-${header.height}px`,
           marginBottom: `-${footer.height}px`,
         }}
       >
+        {sidebar.visible && (
+          <div
+            ref={sidebar.ref}
+            id="page-sidebar"
+            style={{
+              width: "30%",
+              display: "flex",
+              ...sidebar.styles,
+            }}
+          >
+            {sidebar.content}
+          </div>
+        )}
+
         <div
-          id="page-content"
+          id="page-body"
           style={{
             width: "100%",
-            overflowX: "hidden",
-            overflowY: allowScroll ? "auto" : "hidden",
             display: "flex",
-            flexDirection: "column",
             flex: 1,
-            minHeight: "100%",
-            scrollbarGutter: reserveSpaceForScrollbar ? "stable" : undefined,
-            paddingLeft: "0px",
-            paddingRight: "0px",
-            paddingTop: `${header.height}px`,
-            paddingBottom: `${footer.height}px`,
-            ...pageStyles,
           }}
         >
-          {children}
+          <div
+            id="page-content"
+            style={{
+              width: "100%",
+              overflowX: "hidden",
+              overflowY: allowScroll ? "auto" : "hidden",
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              minHeight: "100%",
+              scrollbarGutter: reserveSpaceForScrollbar ? "stable" : undefined,
+              paddingLeft: "0px",
+              paddingRight: "0px",
+              paddingTop: `${header.height}px`,
+              paddingBottom: `${footer.height}px`,
+              ...pageStyles,
+            }}
+          >
+            {children}
+          </div>
         </div>
       </div>
 
