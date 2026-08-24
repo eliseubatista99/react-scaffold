@@ -85,6 +85,7 @@ export const InputField = (props: InputFieldProps) => {
     >
       {label}
       <div
+        onClick={() => handleOnClick()}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -119,7 +120,6 @@ export const InputField = (props: InputFieldProps) => {
           onChange={onValueChanged}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
-          onClick={handleOnClick}
           onInput={onInput}
           pattern={pattern}
           style={{

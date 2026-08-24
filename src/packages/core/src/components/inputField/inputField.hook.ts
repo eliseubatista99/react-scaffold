@@ -16,7 +16,7 @@ export const useInputFieldHelper = (props: InputFieldProps) => {
     props.onBlur?.();
   };
 
-  const handleOnClick = (event: React.MouseEvent<HTMLInputElement>) => {
+  const handleOnClick = () => {
     props.onClick?.();
   };
 
