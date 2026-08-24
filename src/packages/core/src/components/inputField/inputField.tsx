@@ -7,6 +7,7 @@ import {
 import { useInputFieldHelper } from "./inputField.hook";
 
 export interface InputFieldProps {
+  ref?: React.Ref<HTMLInputElement>;
   name: string;
   label?: React.ReactNode;
   leftIcon?: React.ReactNode;
@@ -55,6 +56,7 @@ export const InputField = (props: InputFieldProps) => {
     useInputFieldHelper(props);
 
   const {
+    ref,
     name,
     label,
     leftIcon,
@@ -109,6 +111,7 @@ export const InputField = (props: InputFieldProps) => {
       >
         {leftIcon}
         <input
+          ref={ref}
           name={name}
           type={type}
           autoComplete={autoComplete}
