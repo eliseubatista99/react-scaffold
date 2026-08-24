@@ -24,6 +24,7 @@ export interface InputFieldProps {
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onClick?: () => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
   styles?: CSSProperties;
@@ -50,7 +51,7 @@ const ContainerDiv = styled.div`
 `;
 
 export const InputField = (props: InputFieldProps) => {
-  const { onValueChanged, handleOnBlur, handleOnFocus } =
+  const { onValueChanged, handleOnBlur, handleOnFocus, handleOnClick } =
     useInputFieldHelper(props);
 
   const {
@@ -118,6 +119,7 @@ export const InputField = (props: InputFieldProps) => {
           onChange={onValueChanged}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
+          onClick={handleOnClick}
           onInput={onInput}
           pattern={pattern}
           style={{
