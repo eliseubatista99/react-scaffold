@@ -8,10 +8,17 @@ export interface FormSubmitButton {
   content: React.ReactNode;
 }
 
+export interface FormSubmitSection {
+  renderBeforeSubmitButton?: React.ReactNode;
+  submitButton: FormSubmitButton;
+  renderAfterSubmitButton?: React.ReactNode;
+  styles?: React.CSSProperties;
+}
+
 export interface FormProps {
   children?: React.ReactNode;
   configurations?: FormFieldConfiguration[];
-  submitButton: FormSubmitButton;
+  submitSection: FormSubmitSection;
   onMount?: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
@@ -26,7 +33,7 @@ export interface FormProps {
 
 const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
   display: flex;
-  width: 100%;
+  flex: 1;
   align-items: center;
   justify-content: center;
   background: none;
@@ -42,7 +49,7 @@ const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
 `;
 
 export const Form = (props: FormProps) => {
-  const { children, styles, childrenStyles, submitButton } = props;
+  const { children, styles, childrenStyles, submitSection } = props;
   const { ref, handleFormSubmission, submitForm, handleFormChange } =
     useFormHelper(props);
 
@@ -72,14 +79,30 @@ export const Form = (props: FormProps) => {
       >
         {children}
       </div>
-      <SubmitButton
-        onClick={submitForm}
-        styles={{
-          ...submitButton.styles,
+      <div
+        data-testid="submit-section"
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          gap: "10px",
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "center",
+          ...submitSection.styles,
         }}
       >
-        {submitButton.content}
-      </SubmitButton>
+        {submitSection.renderBeforeSubmitButton}
+        <SubmitButton
+          onClick={submitForm}
+          styles={{
+            ...submitSection.submitButton.styles,
+          }}
+        >
+          {submitSection.submitButton.content}
+        </SubmitButton>
+        {submitSection.renderAfterSubmitButton}
+      </div>
     </form>
   );
 };

@@ -35,6 +35,44 @@ export const Default: Story = {
   args: {},
 };
 
+export const WithSidebar: Story = {
+  args: {
+    ...baseArgs,
+    sidebar: {
+      content: (
+        <div
+          style={{
+            width: "100%",
+            flex: 1,
+            background: "#ffffff",
+            padding: "30px 15px",
+            borderRight: "1px solid #E2E8F0",
+            gap: "10px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {Array.from({ length: 30 }, (_, i) => i + 1).map((i) => (
+            <div
+              style={{
+                background: `rgba(120, 2000, 60, ${100 / i})`,
+                width: "300px",
+                height: "100px",
+                maxWidth: "100%",
+              }}
+            />
+          ))}
+        </div>
+      ),
+    },
+    pageStyles: {
+      padding: "24px",
+    },
+    header: undefined,
+    footer: undefined,
+  },
+};
+
 export const WithHeaderAlwaysVisible: Story = {
   args: {
     ...baseArgs,
