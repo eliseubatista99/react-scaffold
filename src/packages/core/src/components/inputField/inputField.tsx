@@ -21,6 +21,7 @@ export interface InputFieldProps {
   initialValue?: string;
   pattern?: string;
   maxLength?: number;
+  disabled?: boolean;
   type?: HTMLInputTypeAttribute;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (value: string) => void;
@@ -74,6 +75,7 @@ export const InputField = (props: InputFieldProps) => {
     styles,
     step,
     pattern,
+    disabled,
     onInput,
   } = props;
 
@@ -126,6 +128,7 @@ export const InputField = (props: InputFieldProps) => {
           onBlur={handleOnBlur}
           onInput={onInput}
           pattern={pattern}
+          disabled={disabled}
           style={{
             flex: 1,
             border: "none",
