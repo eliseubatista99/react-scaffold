@@ -70,3 +70,12 @@ export const Numeric: Story = {
     maxLength: 4,
   },
 };
+
+export const WithDelay: Story = {
+  args: {
+    onChangeDelayInMilliseconds: 2000,
+    onChange: () => {
+      console.debug("InputField > OnChange");
+    },
+  },
+};

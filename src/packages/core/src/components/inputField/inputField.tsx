@@ -9,6 +9,7 @@ import { useInputFieldHelper } from "./inputField.hook";
 export interface InputFieldProps {
   ref?: React.Ref<HTMLInputElement>;
   name: string;
+  onChangeDelayInMilliseconds?: number;
   label?: React.ReactNode;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
