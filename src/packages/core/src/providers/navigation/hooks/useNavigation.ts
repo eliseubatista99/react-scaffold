@@ -9,6 +9,11 @@ export type GoToParams = {
   params?: Record<string, unknown>;
 };
 
+export type GoBackParams = {
+  steps?: number;
+  params?: Record<string, unknown>;
+};
+
 export const useNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,13 +57,16 @@ export const useNavigation = () => {
   );
 
   const goBack = React.useCallback(
-    (steps?: number) => {
-      let finalSteps = steps || 1;
+    (data: GoBackParams) => {
+      let finalSteps = data.steps || 1;
 
       if (navigationContext.history.length < finalSteps) {
         finalSteps = navigationContext.history.length;
       }
 
+      if (data.params) {
+        navigationParams.setMany(data.params);
+      }
       navigate(-finalSteps);
 
       navigationContext.popFromHistory(finalSteps);
