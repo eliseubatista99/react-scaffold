@@ -22,7 +22,7 @@ export const useFormHelper = ({
 
     return {
       name,
-      value: input.value,
+      value: input.value?.trim(),
     };
   };
 

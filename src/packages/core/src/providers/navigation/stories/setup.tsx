@@ -59,7 +59,7 @@ const NavigationExampleInnerContent = () => {
       return <></>;
     }
 
-    return <button onClick={() => goBack()}>Back</button>;
+    return <button onClick={() => goBack({})}>Back</button>;
   }, [goBack, history]);
 
   const goToButton = React.useCallback(
