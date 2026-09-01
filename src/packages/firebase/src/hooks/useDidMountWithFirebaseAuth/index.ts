@@ -1,2 +1,1 @@
 export * from "./useDidMountWithFirebaseAuth";
-export * from "./useFirestore";

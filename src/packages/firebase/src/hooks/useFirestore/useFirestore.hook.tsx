@@ -5,7 +5,9 @@ import {
   getDocs,
   getFirestore,
   setDoc,
+  UpdateData,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { FirebaseAppHelper } from "../../helpers";
 
@@ -24,7 +26,7 @@ export const useFirestore = () => {
   const addItem = async <TOutput extends object>(
     collectionName: string,
     path: string,
-    item: TOutput
+    item: TOutput,
   ) => {
     const collectionRef = collection(firestore(), collectionName);
     const data = doc(collectionRef, path);
@@ -34,7 +36,7 @@ export const useFirestore = () => {
 
   const getItem = async <TOutput extends object>(
     collectionName: string,
-    path: string
+    path: string,
   ): Promise<FirestoreItem<TOutput> | null> => {
     const collectionRef = collection(firestore(), collectionName);
     const data = doc(collectionRef, path);
@@ -48,7 +50,7 @@ export const useFirestore = () => {
 
   const getItems = async <TOutput extends object>(
     collectionName: string,
-    predicate?: (data: TOutput) => boolean
+    predicate?: (data: TOutput) => boolean,
   ): Promise<FirestoreItem<TOutput>[]> => {
     const collectionRef = collection(firestore(), collectionName);
 
@@ -71,12 +73,12 @@ export const useFirestore = () => {
   const updateItem = async <TOutput extends object>(
     collectionName: string,
     path: string,
-    newValues: TOutput
+    newValues: Partial<TOutput>,
   ) => {
     const collectionRef = collection(firestore(), collectionName);
 
     const docRef = doc(collectionRef, path);
-    await updateDoc(docRef, { ...newValues });
+    await updateDoc(docRef, newValues as UpdateData<TOutput>);
   };
 
   const deleteItem = async (collectionName: string, path: string) => {
@@ -86,21 +88,32 @@ export const useFirestore = () => {
     await deleteDoc(docRef);
   };
 
-  //   const deleteItemFromCollection = async <TOutput extends object>(
-  //     collectionName: string,
-  //     path: string,
-  //     predicate: (data: TOutput) => boolean
-  //   ) => {
-  //     const collectionRef = collection(firestore(), collectionName);
-  //     const docRef = doc(collectionRef, path);
+  const updateManyItems = async <TOutput extends object>(
+    collectionName: string,
+    predicate: (data: TOutput) => boolean,
+    newValues: Partial<TOutput>,
+  ) => {
+    const db = firestore();
+    const collectionRef = collection(db, collectionName);
 
-  //     const items = await getItems<TOutput>(collectionName);
+    const snapshot = await getDocs(collectionRef);
 
-  //     const result = items.filter((doc) => predicate(doc));
+    const docsToUpdate = snapshot.docs.filter((doc) => {
+      if (!doc.exists()) return false;
+      const data = doc.data() as TOutput;
+      return predicate(data);
+    });
 
-  //     updateDoc(collectionRef, { favorites });
-  //     return result as TOutput[];
-  //   };
+    const batch = writeBatch(db);
+
+    docsToUpdate.forEach((doc) => {
+      batch.update(doc.ref, newValues as UpdateData<TOutput>);
+    });
+
+    await batch.commit();
+
+    return docsToUpdate.length;
+  };
 
   return {
     addItem,
@@ -108,5 +121,6 @@ export const useFirestore = () => {
     getItems,
     updateItem,
     deleteItem,
+    updateManyItems,
   };
 };

@@ -4,9 +4,11 @@ import { PageLayoutProps } from "./pageLayout";
 export const usePageLayoutHelper = (props: PageLayoutProps) => {
   const headerRef = React.useRef<HTMLDivElement>(null);
   const footerRef = React.useRef<HTMLDivElement>(null);
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   const [headerHeight, setHeaderHeight] = React.useState<number>(24);
   const [footerHeight, setFooterHeight] = React.useState<number>(24);
+  const [sidebarWidth, setSidebarWidth] = React.useState<number>(300);
 
   const executeHeaderCalculations = React.useCallback(() => {
     if (!headerRef.current) {
@@ -23,6 +25,14 @@ export const usePageLayoutHelper = (props: PageLayoutProps) => {
 
     setFooterHeight(footerRef.current.clientHeight);
   }, [footerRef, footerRef.current]);
+
+  const executeSidebarCalculations = React.useCallback(() => {
+    if (!sidebarRef.current) {
+      return;
+    }
+
+    setSidebarWidth(sidebarRef.current.clientWidth);
+  }, [sidebarRef, sidebarRef.current]);
 
   const calculateExtraHeight = React.useCallback(() => {
     let extra = 0;
@@ -46,18 +56,34 @@ export const usePageLayoutHelper = (props: PageLayoutProps) => {
     executeFooterCalculations();
   }, [executeFooterCalculations, footerRef, footerRef.current]);
 
+  React.useEffect(() => {
+    executeSidebarCalculations();
+  }, [executeSidebarCalculations, sidebarRef, sidebarRef.current]);
+
   return {
     header: {
       ...props.header,
       visible: props.header !== undefined,
-      height: props.header?.visibility === "fixed" ? 0 : headerHeight,
+      height:
+        !props.header || props.header?.visibility === "fixed"
+          ? 0
+          : headerHeight,
       ref: headerRef,
     },
     footer: {
       ...props.footer,
       visible: props.footer !== undefined,
-      height: props.footer?.visibility === "fixed" ? 0 : footerHeight,
+      height:
+        !props.footer || props.footer?.visibility === "fixed"
+          ? 0
+          : footerHeight,
       ref: footerRef,
+    },
+    sidebar: {
+      ...props.sidebar,
+      width: sidebarWidth,
+      visible: props.sidebar !== undefined,
+      ref: sidebarRef,
     },
     page: {
       extraHeight: calculateExtraHeight(),

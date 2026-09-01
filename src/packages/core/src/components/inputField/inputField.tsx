@@ -7,7 +7,9 @@ import {
 import { useInputFieldHelper } from "./inputField.hook";
 
 export interface InputFieldProps {
+  ref?: React.Ref<HTMLInputElement>;
   name: string;
+  onChangeDelayInMilliseconds?: number;
   label?: React.ReactNode;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -19,11 +21,13 @@ export interface InputFieldProps {
   initialValue?: string;
   pattern?: string;
   maxLength?: number;
+  disabled?: boolean;
   type?: HTMLInputTypeAttribute;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onClick?: () => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
   styles?: CSSProperties;
@@ -50,10 +54,11 @@ const ContainerDiv = styled.div`
 `;
 
 export const InputField = (props: InputFieldProps) => {
-  const { onValueChanged, handleOnBlur, handleOnFocus } =
+  const { onValueChanged, handleOnBlur, handleOnFocus, handleOnClick } =
     useInputFieldHelper(props);
 
   const {
+    ref,
     name,
     label,
     leftIcon,
@@ -70,6 +75,7 @@ export const InputField = (props: InputFieldProps) => {
     styles,
     step,
     pattern,
+    disabled,
     onInput,
   } = props;
 
@@ -84,6 +90,7 @@ export const InputField = (props: InputFieldProps) => {
     >
       {label}
       <div
+        onClick={() => handleOnClick()}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -107,6 +114,7 @@ export const InputField = (props: InputFieldProps) => {
       >
         {leftIcon}
         <input
+          ref={ref}
           name={name}
           type={type}
           autoComplete={autoComplete}
@@ -120,6 +128,7 @@ export const InputField = (props: InputFieldProps) => {
           onBlur={handleOnBlur}
           onInput={onInput}
           pattern={pattern}
+          disabled={disabled}
           style={{
             flex: 1,
             border: "none",

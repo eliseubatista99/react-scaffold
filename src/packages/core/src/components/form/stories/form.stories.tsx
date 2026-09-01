@@ -115,24 +115,27 @@ const meta = {
         emptyValidation: {
           allow: false,
           errorMessage: "Cannot be empty",
+          validateOnChange: true,
         },
       },
     ],
     childrenStyles: {
       gap: "20px",
     },
-    submitButton: {
-      content: (
-        <Button
-          onClick={() => {
-            //click
-          }}
-        >
-          Submit
-        </Button>
-      ),
-      styles: {
-        marginTop: "auto",
+    submitSection: {
+      submitButton: {
+        content: (
+          <Button
+            onClick={() => {
+              //click
+            }}
+          >
+            Submit
+          </Button>
+        ),
+        styles: {
+          marginTop: "auto",
+        },
       },
     },
     onSubmit: async (_) => {
@@ -147,4 +150,34 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {},
+};
+
+export const WithAnotherButton: Story = {
+  args: {
+    submitSection: {
+      renderBeforeSubmitButton: (
+        <Button
+          onClick={() => {
+            //click
+          }}
+        >
+          Cancel
+        </Button>
+      ),
+      submitButton: {
+        content: (
+          <Button
+            onClick={() => {
+              //click
+            }}
+          >
+            Submit
+          </Button>
+        ),
+        styles: {
+          marginTop: "auto",
+        },
+      },
+    },
+  },
 };

@@ -1,6 +1,6 @@
 export class TextHelper {
   static getPascalCase = (text: string) => {
-    return text.replace(/\w+/g, function (w) {
+    return text.replace(/\p{L}+/gu, function (w) {
       return w[0].toUpperCase() + w.slice(1).toLowerCase();
     });
   };
