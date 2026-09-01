@@ -26,7 +26,7 @@ export const Typography = ({
         textOverflow: overflowEllipsis ? "ellipsis" : undefined,
         fontSize: "16px",
         fontStyle: "normal",
-        lineHeight: "normal",
+        lineHeight: "inherit",
         color: "inherit",
         pointerEvents: "none",
         ...styles,
