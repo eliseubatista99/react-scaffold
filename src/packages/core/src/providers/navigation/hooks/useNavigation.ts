@@ -67,9 +67,6 @@ export const useNavigation = () => {
           finalSteps = navigationContext.history.length;
         }
 
-        if (data.params) {
-          navigationParams.setMany(data.params);
-        }
         navigate(-finalSteps);
 
         navigationContext.popFromHistory(finalSteps);
