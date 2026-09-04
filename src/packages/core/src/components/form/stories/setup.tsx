@@ -6,7 +6,7 @@ export const FormStoriesSetup = (props: FormProps) => {
   const [showLoader, setShowLoader] = useState(false);
 
   const onSubmit = async (data: FormFieldOutputData[]) => {
-    console.log("Form > OnSubmit > ", { data });
+    console.debug("Form > OnSubmit > ", { data });
 
     setShowLoader(false);
   };
@@ -15,11 +15,11 @@ export const FormStoriesSetup = (props: FormProps) => {
     changedField: FormFieldOutputData,
     data: FormFieldOutputData[],
   ) => {
-    console.log("Form > OnChange > ", { changedField, data });
+    console.debug("Form > OnChange > ", { changedField, data });
   };
 
   const onMount = async (data: FormFieldOutputData[]) => {
-    console.log("Form > OnMount > ", { data });
+    console.debug("Form > OnMount > ", { data });
   };
 
   return (
