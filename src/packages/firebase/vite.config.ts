@@ -16,7 +16,20 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom"], // evita que estas libs sejam incluídas no bundle
+      external: [
+        "react",
+        "react-dom",
+        "firebase/app",
+        "firebase/firestore",
+        "firebase/auth",
+        "firebase/storage",
+        "firebase/functions",
+        "firebase/compat/app",
+        "firebase/compat/firestore",
+        "firebase/compat/auth",
+        "firebase/compat/storage",
+        "firebase/compat/functions",
+      ], // evita que estas libs sejam incluídas no bundle
       output: {
         globals: {
           react: "React",
@@ -25,5 +38,21 @@ export default defineConfig({
       },
     },
     outDir: "dist",
+  },
+  optimizeDeps: {
+    include: [
+      "firebase/app",
+      "firebase/firestore",
+      "firebase/auth",
+      "firebase/storage",
+      "firebase/functions",
+    ],
+    exclude: [
+      "firebase/compat/app",
+      "firebase/compat/firestore",
+      "firebase/compat/auth",
+      "firebase/compat/storage",
+      "firebase/compat/functions",
+    ],
   },
 });
