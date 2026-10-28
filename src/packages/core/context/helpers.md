@@ -27,6 +27,7 @@ File: `helpers/numberHelper/numberHelper.ts`
 ```ts
 NumberHelper.clamp(num: number, min: number, max: number): number
 ```
+- All arguments must be finite numbers, and `min` must be less than or equal to `max`; invalid arguments throw `RangeError`.
 
 ## ObjectsHelper
 File: `helpers/objectsHelper/objectsHelper.ts`
