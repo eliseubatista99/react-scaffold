@@ -40,8 +40,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
-- `NavigationProvider` renders `<Route>` elements without `key` (React warning).
-- `useNavigation.goBack` / `clearHistory` `useCallback` deps omit the context, so they may use a stale `history`.
 - Initial page is never pushed to the internal history stack.
 
 ## Outdated documentation

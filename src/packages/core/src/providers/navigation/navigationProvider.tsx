@@ -26,50 +26,66 @@ export const NavigationProvider = ({
     setHistory(value);
   }, []);
 
-  const addToHistory = (entry: string, replace = false) => {
-    let newHistory = [...historyRef.current];
+  const addToHistory = React.useCallback(
+    (entry: string, replace = false) => {
+      let newHistory = [...historyRef.current];
 
-    if (replace) {
-      newHistory = newHistory.slice(0, newHistory.length - 1);
-    }
+      if (replace) {
+        newHistory = newHistory.slice(0, newHistory.length - 1);
+      }
 
-    newHistory = [...newHistory, entry];
+      newHistory = [...newHistory, entry];
 
-    updateHistory(newHistory);
-  };
+      updateHistory(newHistory);
+    },
+    [updateHistory],
+  );
 
-  const popFromHistory = (count: number) => {
-    let newLocation = "";
-    let newHistory: string[] = [];
+  const popFromHistory = React.useCallback(
+    (count: number) => {
+      if (historyRef.current.length === 0 || historyRef.current.length < count) {
+        return "/";
+      }
 
-    if (historyRef.current.length === 0 || historyRef.current.length < count) {
-      return "/";
-    }
+      const newHistory = historyRef.current.slice(
+        0,
+        historyRef.current.length - count,
+      );
+      const newLocation = newHistory[newHistory.length - 1];
 
-    newHistory = historyRef.current.slice(0, historyRef.current.length - count);
+      updateHistory(newHistory);
+      return newLocation;
+    },
+    [updateHistory],
+  );
 
-    newLocation = newHistory[newHistory.length - 1];
+  const replaceHistory = React.useCallback(
+    (entries: string[]) => {
+      updateHistory(entries);
+    },
+    [updateHistory],
+  );
 
-    updateHistory(newHistory);
-    return newLocation;
-  };
-
-  const replaceHistory = (entries: string[]) => {
-    updateHistory(entries);
-  };
-
-  const routesList = routes.map((route) => (
-    <Route path={route.path} element={route.render} />
+  const routesList = routes.map((route, index) => (
+    <Route
+      key={`${route.path}-${index}`}
+      path={route.path}
+      element={route.render}
+    />
   ));
+  const contextValue = React.useMemo(
+    () => ({
+      history,
+      addToHistory,
+      popFromHistory,
+      replaceHistory,
+    }),
+    [history, addToHistory, popFromHistory, replaceHistory],
+  );
 
   return (
     <NavigationProviderContext.Provider
-      value={{
-        history,
-        addToHistory,
-        popFromHistory,
-        replaceHistory,
-      }}
+      value={contextValue}
     >
       <BrowserRouter>
         <>

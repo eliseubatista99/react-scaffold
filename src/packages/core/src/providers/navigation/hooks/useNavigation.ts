@@ -15,61 +15,65 @@ export type GoBackParams = {
   params?: Record<string, unknown>;
 };
 
+const buildUrlWithParams = (data: GoToParams) => {
+  const url = new URL(data.path, "http://dummy-base");
+
+  if (data.params) {
+    Object.entries(data.params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
+  }
+
+  return url.pathname + url.search;
+};
+
 export const useNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const navigationParams = useNavigationParams();
 
-  const navigationContext = useContext(NavigationProviderContext);
-
-  const buildUrlWithParams = (data: GoToParams) => {
-    const url = new URL(data.path, "http://dummy-base"); // dummy url
-
-    if (data.params) {
-      Object.entries(data.params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.set(key, String(value));
-        }
-      });
-    }
-
-    return url.pathname + url.search;
-  };
+  const {
+    history,
+    addToHistory,
+    popFromHistory,
+    replaceHistory,
+  } = useContext(NavigationProviderContext);
 
   const goTo = React.useCallback(
     (data: GoToParams) => {
       const url = buildUrlWithParams(data);
-      const addToHistory = data.addToHistory !== false;
+      const shouldAddToHistory = data.addToHistory !== false;
 
-      if (addToHistory) {
+      if (shouldAddToHistory) {
         navigate(url);
-        navigationContext.addToHistory(url);
+        addToHistory(url);
       } else {
         navigate(url, { replace: true });
 
-        if (navigationContext.history.length > 0) {
-          navigationContext.popFromHistory(1);
+        if (history.length > 0) {
+          popFromHistory(1);
 
-          navigationContext.addToHistory(url);
+          addToHistory(url);
         }
       }
     },
-    [navigate, navigationContext.history],
+    [navigate, history, addToHistory, popFromHistory],
   );
 
   const goBack = React.useCallback(
-    (data: GoBackParams) => {
-      //If we can go back
-      if (navigationContext.history.length > 0) {
+    (data: GoBackParams = {}) => {
+      if (history.length > 0) {
         let finalSteps = data.steps || 1;
 
-        if (navigationContext.history.length < finalSteps) {
-          finalSteps = navigationContext.history.length;
+        if (history.length < finalSteps) {
+          finalSteps = history.length;
         }
 
         navigate(-finalSteps);
 
-        navigationContext.popFromHistory(finalSteps);
+        popFromHistory(finalSteps);
       } else if (data.defaultBackPath) {
         goTo({
           path: data.defaultBackPath,
@@ -78,16 +82,16 @@ export const useNavigation = () => {
         });
       }
     },
-    [navigate],
+    [navigate, history, popFromHistory, goTo],
   );
 
   const clearHistory = React.useCallback(() => {
-    navigationContext.replaceHistory([]);
-  }, [navigate]);
+    replaceHistory([]);
+  }, [replaceHistory]);
 
   return {
     currentPath: location.pathname,
-    history: navigationContext.history,
+    history,
     searchParams: navigationParams,
     goBack,
     goTo,

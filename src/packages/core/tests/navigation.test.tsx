@@ -5,13 +5,22 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Link } from "react-router-dom";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import { Link, MemoryRouter } from "react-router-dom";
 import {
   NavigationProvider,
   useNavigation,
   type NavigationProviderRoute,
 } from "../src/providers/navigation";
+import { NavigationProviderContext } from "../src/providers/navigation/navigationContext";
+import type { NavigationContextData } from "../src/providers/navigation/navigationContext";
 
 const NavigationControls = () => {
   const { currentPath, history, goBack, goTo, searchParams } = useNavigation();
@@ -65,6 +74,28 @@ const routes: NavigationProviderRoute[] = [
   { path: "*", render: <div>Navigation test route</div> },
 ];
 
+const NavigationCallbackControls = () => {
+  const { currentPath, clearHistory, goBack, goTo } = useNavigation();
+
+  return (
+    <div>
+      <output data-testid="callback-path">{currentPath}</output>
+      <button onClick={() => goTo({ path: "/next" })}>Callback go to</button>
+      <button onClick={() => goBack()}>Callback go back</button>
+      <button onClick={clearHistory}>Callback clear history</button>
+    </div>
+  );
+};
+
+const renderNavigationCallbacks = (contextValue: NavigationContextData) =>
+  render(
+    <MemoryRouter initialEntries={["/previous", "/current"]} initialIndex={1}>
+      <NavigationProviderContext.Provider value={contextValue}>
+        <NavigationCallbackControls />
+      </NavigationProviderContext.Provider>
+    </MemoryRouter>,
+  );
+
 const renderNavigation = () =>
   render(
     <NavigationProvider routes={routes}>
@@ -81,6 +112,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 describe("NavigationProvider", () => {
@@ -201,5 +233,80 @@ describe("NavigationProvider", () => {
       expect(currentPath()).toBe("/external");
       expect(history()).toBe("[]");
     });
+  });
+
+  it("uses the current navigation context in callbacks after the context changes", async () => {
+    const initialContext: NavigationContextData = {
+      history: [],
+      addToHistory: vi.fn(),
+      popFromHistory: vi.fn(),
+      replaceHistory: vi.fn(),
+    };
+    const updatedContext: NavigationContextData = {
+      history: ["/previous"],
+      addToHistory: vi.fn(),
+      popFromHistory: vi.fn(),
+      replaceHistory: vi.fn(),
+    };
+    const view = renderNavigationCallbacks(initialContext);
+
+    view.rerender(
+      <MemoryRouter
+        initialEntries={["/previous", "/current"]}
+        initialIndex={1}
+      >
+        <NavigationProviderContext.Provider value={updatedContext}>
+          <NavigationCallbackControls />
+        </NavigationProviderContext.Provider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Callback go back" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("callback-path").textContent).toBe("/previous");
+    });
+    expect(updatedContext.popFromHistory).toHaveBeenCalledWith(1);
+    expect(initialContext.popFromHistory).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Callback go to" }));
+    await waitFor(() => {
+      expect(screen.getByTestId("callback-path").textContent).toBe("/next");
+    });
+    expect(updatedContext.addToHistory).toHaveBeenCalledWith("/next");
+    expect(initialContext.addToHistory).not.toHaveBeenCalled();
+
+    view.rerender(
+      <MemoryRouter
+        initialEntries={["/previous", "/current"]}
+        initialIndex={1}
+      >
+        <NavigationProviderContext.Provider value={updatedContext}>
+          <NavigationCallbackControls />
+        </NavigationProviderContext.Provider>
+      </MemoryRouter>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Callback clear history" }),
+    );
+    expect(updatedContext.replaceHistory).toHaveBeenCalledWith([]);
+    expect(initialContext.replaceHistory).not.toHaveBeenCalled();
+  });
+
+  it("renders route lists without React missing-key warnings", () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(
+      <NavigationProvider
+        routes={[
+          { path: "/first", render: <div>First</div> },
+          { path: "/second", render: <div>Second</div> },
+        ]}
+      />,
+    );
+
+    expect(consoleError).not.toHaveBeenCalledWith(
+      expect.stringContaining("unique"),
+    );
   });
 });
