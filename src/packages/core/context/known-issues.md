@@ -30,7 +30,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `usePointer` causes a re-render on every global pointer move for every consumer.
 - `useOnScreen` does not re-observe when the ref element changes.
 - `useResponsive` reads `window` during render (not SSR-safe); `BreakpointConfiguration` requires all keys even though values are merged with defaults; resize handler is captured once (config changes after mount ignored).
-- `useFetch` does not catch network errors; always calls `.json()`.
 - `useTranslations` has no fallback language.
 
 ## Helpers

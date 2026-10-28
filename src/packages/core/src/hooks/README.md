@@ -1,19 +1,42 @@
 <h1 align="center">Core | Hooks</h1>
 
-Providers are simple functions that handle simple logic that can cause the DOM to be re-rendered.
+Hooks provide reusable behavior for React components.
 
 ## useFetch
 
-The fetch hook makes fetching an endpoint an easy task.
+`useFetch` returns `get`, `post`, `put`, `patch` and `delete` methods. Each method resolves to a `FetchOutput<T>` with the parsed JSON `result`, HTTP `statusCode`, and an optional parsing `error`.
 
-Let's say we want to call the "https://exampleendpoint.com" endpoint, and convert its response to an SomeType type. All we have to do is use the fetch hook, pass the endpoint as a paremeter and the desired type, and the hook will handle the everything
+```tsx
+import { useFetch } from "@eliseubatista99/react-scaffold-core";
 
-```js
-import { useFetch } from "@react-scaffold-eliseubatista99/core/hooks";
+type User = {
+  id: number;
+  name: string;
+};
 
-const fetch = useFetch();
+function UserExample() {
+  const { get, post } = useFetch();
 
-const fetchSomethingFromApi = () => {
-  const result = await fetch<SomeType>("https://exampleendpoint.com");
+  const loadUser = async () => {
+    const response = await get<User>("https://example.com/users/1");
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      console.log(response.result?.name);
+    }
+  };
+
+  const createUser = async () => {
+    await post<User>("https://example.com/users", { name: "Ada" });
+  };
+
+  return (
+    <>
+      <button onClick={loadUser}>Load user</button>
+      <button onClick={createUser}>Create user</button>
+    </>
+  );
 }
 ```
+
+`get` and `delete` serialize options as query parameters; array values become repeated parameters. `post`, `put` and `patch` serialize options as a JSON body and default to `Content-Type: application/json`, which can be overridden with the `headers` argument. Existing query strings and URL fragments are preserved.
+
+Responses are parsed as JSON. Empty responses (including `204 No Content`) return `result: undefined` without a parsing error. Non-empty invalid JSON is reported through `error`; network failures reject the promise. HTTP error statuses do not reject automatically—check `statusCode`.

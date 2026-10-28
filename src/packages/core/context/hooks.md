@@ -40,15 +40,17 @@ useDrag(input: UseDragInput): void
 File: `hooks/useFetch/useFetch.ts`
 ```ts
 type FetchOutput<TOut> = { result: TOut | undefined; statusCode: number; error?: unknown };
+type FetchOptions = object;
 
 const { get, post, put, patch, delete: del } = useFetch();
-get<T>(url: string, options?: Record<string, any>, headers?: HeadersInit): Promise<FetchOutput<T>>
+get<T>(url: string, options?: FetchOptions, headers?: HeadersInit): Promise<FetchOutput<T>>
 // post / put / patch / delete have the same signature
 ```
 - `get` and `delete`: `options` become query string (`URLSearchParams`; arrays → repeated keys; `null`/`undefined` skipped). No body.
 - `post`, `put`, `patch`: `options` are sent as `JSON.stringify(options)` body with `Content-Type: application/json` (overridable via `headers`).
-- Response is always parsed with `response.json()`; parse failures (e.g. 204/empty or non-JSON) return `{ result: undefined, statusCode, error }`.
-- Network errors from `fetch` itself are **not** caught (the promise rejects).
+- Existing query strings and URL fragments are preserved when adding query parameters. `HeadersInit` inputs are normalized with `Headers`.
+- Non-empty responses are parsed as JSON; empty responses (including 204) return `{ result: undefined, statusCode }`. Invalid JSON returns `{ result: undefined, statusCode, error }`.
+- Network errors from `fetch` itself are **not** caught (the promise rejects). HTTP error statuses do not reject; callers should inspect `statusCode`.
 - HTTP error statuses are not thrown; check `statusCode`.
 
 ## useOnScreen
