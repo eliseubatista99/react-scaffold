@@ -90,4 +90,4 @@ function FeedbackControls() {
 }
 ```
 
-`showItem(id)` adds an ID only if it is not already visible; `hideItem(id)` removes it. `isItemVisible(id)` checks whether the ID is visible. Built-in components such as `Modal`, `Drawer`, `Toast`, and `Loader` use this provider state; render them with the same ID used by `showItem` and `hideItem`.
+`showItem(id)` adds an ID only if it is not already visible; `hideItem(id)` removes it. `isItemVisible(id)` reads the current visibility synchronously, including changes made immediately before the call. `visibleItems` is the React state snapshot used for rendering and updates on the next render. Built-in components such as `Modal`, `Drawer`, `Toast`, and `Loader` use this provider state; render them with the same ID used by `showItem` and `hideItem`.

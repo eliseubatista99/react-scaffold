@@ -92,13 +92,14 @@ interface FeedbackContextData {          // not exported from the package
 }
 ```
 - Keeps a list of visible item ids (ref for synchronous reads + state for re-renders). `showItem` adds the id if absent; `hideItem` removes it.
+- `isItemVisible(id)` reads the provider's synchronous ref, so it reflects `showItem`/`hideItem` immediately, even before React re-renders. `visibleItems` updates with React state and is intended for rendering.
 - Generic: any UI can use ids. Built-in consumers: `Modal`, `Drawer`, `Toast`, `Loader`.
 
 ### useFeedback
 ```ts
 useFeedback(): {
   visibleItems: string[];
-  isItemVisible: (id: string) => boolean;   // computed from state (render-safe)
+  isItemVisible: (id: string) => boolean;   // synchronous read of current visibility
   showItem: (id: string) => void;
   hideItem: (id: string) => void;
 }

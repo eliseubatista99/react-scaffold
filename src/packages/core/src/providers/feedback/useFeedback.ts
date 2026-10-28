@@ -9,7 +9,7 @@ export const useFeedback = () => {
   }
 
   const isItemVisible = (id: string) => {
-    return feedbackContext.visibleItems.some((item) => item === id);
+    return feedbackContext.isItemVisible(id);
   };
 
   const showItem = (id: string) => {
