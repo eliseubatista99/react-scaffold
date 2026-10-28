@@ -26,7 +26,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `NumericInputField` overwrites any consumer `onInput` prop.
 
 ## Helpers
-- `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).
 
 ## Providers
 - `NavigationRoutes` only knows entries created after it mounted; navigation history from before it mounted or from a separate router is not tracked.

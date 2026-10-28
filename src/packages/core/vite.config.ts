@@ -16,7 +16,7 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom", "react-router-dom"],
+      external: ["react", "react-dom", "react-router-dom", "lodash/isEqual"],
       output: {
         globals: {
           react: "React",

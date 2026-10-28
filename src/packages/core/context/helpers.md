@@ -31,10 +31,10 @@ NumberHelper.clamp(num: number, min: number, max: number): number
 ## ObjectsHelper
 File: `helpers/objectsHelper/objectsHelper.ts`
 ```ts
-ObjectsHelper.isSameObject(o1: any, o2: any): boolean
+ObjectsHelper.isSameObject(o1: unknown, o2: unknown): boolean
 ```
-- `null`/`undefined` are considered equal to each other.
-- **Shallow** comparison: same number of own keys and `===` on each value (nested objects/arrays are compared by reference).
+- Deep comparison using lodash `isEqual`, including nested values and supported built-in types such as `Date`, `Map`, and `Set`.
+- `null` and `undefined` are considered equal to each other for backward compatibility.
 
 ## ScrollHelper
 File: `helpers/scrollHelper/scrollHelper.ts`

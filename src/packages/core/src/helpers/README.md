@@ -21,3 +21,16 @@ The TextHelper has the following methods:
       i am text => I Am Text
 
 - **isEqual**: Checks if to strings are the same, can be case sensitive or not.
+
+## Objects Helper
+
+`ObjectsHelper.isSameObject` compares values deeply, including nested objects and arrays. It uses lodash `isEqual`; `null` and `undefined` are treated as equivalent for backward compatibility.
+
+```ts
+import { ObjectsHelper } from "@eliseubatista99/react-scaffold-core";
+
+ObjectsHelper.isSameObject(
+  { user: { name: "Ada" } },
+  { user: { name: "Ada" } },
+);
+```
