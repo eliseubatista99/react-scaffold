@@ -10,27 +10,53 @@ export const usePointer = () => {
     {}
   );
   const [isPointerDown, setIsPointerDown] = React.useState(false);
+  const activePointerId = React.useRef<number | null>(null);
 
   React.useEffect(() => {
-    const updateMousePosition = (ev: MouseEvent) => {
-      setMousePosition({ x: ev.clientX, y: ev.clientY });
+    const updatePointerPosition = (event: PointerEvent) => {
+      if (!event.isPrimary) return;
+      if (
+        activePointerId.current !== null &&
+        event.pointerId !== activePointerId.current
+      ) {
+        return;
+      }
+
+      setMousePosition((currentPosition) => {
+        if (
+          currentPosition.x === event.clientX &&
+          currentPosition.y === event.clientY
+        ) {
+          return currentPosition;
+        }
+
+        return { x: event.clientX, y: event.clientY };
+      });
     };
 
-    const onPointerDown = (_: MouseEvent) => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || activePointerId.current !== null) return;
+
+      activePointerId.current = event.pointerId;
       setIsPointerDown(true);
     };
 
-    const onPointerUp = (_: MouseEvent) => {
+    const onPointerEnd = (event: PointerEvent) => {
+      if (event.pointerId !== activePointerId.current) return;
+
+      activePointerId.current = null;
       setIsPointerDown(false);
     };
 
-    window.addEventListener("pointermove", updateMousePosition);
+    window.addEventListener("pointermove", updatePointerPosition);
     window.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointerup", onPointerEnd);
+    window.addEventListener("pointercancel", onPointerEnd);
     return () => {
-      window.removeEventListener("pointermove", updateMousePosition);
+      window.removeEventListener("pointermove", updatePointerPosition);
       window.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointerup", onPointerEnd);
+      window.removeEventListener("pointercancel", onPointerEnd);
     };
   }, []);
 

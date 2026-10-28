@@ -27,7 +27,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Hooks
 - `useDrag`: un-cancellable `while` polling loop if the ref never resolves; overwrites `onpointerdown`; distances lag one update; coordinate `0` treated as missing; noisy `console.debug` on every move.
-- `usePointer` causes a re-render on every global pointer move for every consumer.
 
 ## Helpers
 - `TimeHelper.isDateOneAfterDateTwo` is incorrect: uses `getDay()` (weekday) instead of `getDate()`, and returns `false` for a later year with an earlier month.

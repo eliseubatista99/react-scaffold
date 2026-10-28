@@ -64,3 +64,7 @@ The hook starts with a `0 × 0` snapshot that is consistent between server rende
 ## useDidMount
 
 `useDidMount(callback)` runs an effect after the component mounts and accepts an optional cleanup function. It follows React's `useEffect` lifecycle: in development, `StrictMode` performs an extra setup/cleanup cycle, so the callback is not guaranteed to run exactly once. Make the effect safe to repeat and its cleanup safe to call.
+
+## usePointer
+
+`usePointer()` returns `pointerPosition` (`x` and `y`) and `isPointerDown`. It tracks only primary pointer events. Pressed state is tied to the pointer ID that started it and resets on `pointerup` or `pointercancel`; listeners are removed on unmount.

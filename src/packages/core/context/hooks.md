@@ -67,7 +67,9 @@ File: `hooks/usePointer/usePointer.ts`
 type MousePositionData = { x?: number; y?: number };
 usePointer(): { pointerPosition: MousePositionData; isPointerDown: boolean }
 ```
-- Global `window` listeners for `pointermove` (updates position with `clientX/clientY`), `pointerdown`, `pointerup`. Re-renders on every pointer move.
+- Tracks primary pointer events only. `pointerPosition` updates from primary `pointermove` coordinates; repeated identical coordinates do not create new state.
+- `isPointerDown` tracks the first active primary pointer ID and resets on its `pointerup` or `pointercancel`; events from other pointer IDs are ignored until it ends.
+- Registers global `window` listeners in an effect and removes them on unmount.
 
 ## useResponsive
 File: `hooks/useResponsive/useResponsive.ts`
