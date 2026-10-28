@@ -11,8 +11,8 @@ FormsHelper.getField(data: FormFieldOutputData[], name: string): FormFieldOutput
 FormsHelper.getFieldValue<T>(field?: FormFieldOutputData): T | undefined
 FormsHelper.getFieldValueOrDefault<T>(field: FormFieldOutputData | undefined, defaultValue: T): T
 ```
-- `getFieldValue` returns `undefined` for any falsy value (`""`, `0`, `false`); `getFieldValueOrDefault` then returns `defaultValue`.
-- No type conversion: form values are strings, so `getFieldValue<number>` still returns a string at runtime.
+- Both methods preserve falsy values such as `0`, `false`, and `""`. `getFieldValue` returns `undefined` for nullish values; `getFieldValueOrDefault` returns its default in that case.
+- The generic type is a compile-time assertion only; values are not converted. Form inputs are strings, so convert them explicitly before requesting a different type.
 
 Example:
 ```ts

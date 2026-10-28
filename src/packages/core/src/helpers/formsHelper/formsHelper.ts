@@ -14,7 +14,7 @@ export class FormsHelper {
   static getFieldValue = <T>(
     field: FormFieldOutputData | undefined
   ): T | undefined => {
-    if (!field || !field.value) {
+    if (!field || field.value === undefined || field.value === null) {
       return undefined;
     }
 
@@ -27,10 +27,6 @@ export class FormsHelper {
   ): T => {
     const value = FormsHelper.getFieldValue<T>(field);
 
-    if (!value) {
-      return defaultValue;
-    }
-
-    return value;
+    return value === undefined ? defaultValue : value;
   };
 }

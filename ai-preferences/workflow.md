@@ -6,6 +6,8 @@
 4. Add or update tests for the changed behavior and run the applicable validation commands.
 5. Summarize the changes and verification results, including any known limitations.
 
+When a requirement or expected behavior is unclear and would affect the solution, ask for clarification instead of making an assumption.
+
 Version control actions are governed by [version-control.md](./version-control.md).
 
 ## Agent Collaboration

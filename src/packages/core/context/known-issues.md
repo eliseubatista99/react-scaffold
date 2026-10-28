@@ -27,7 +27,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Helpers
 - `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).
-- `FormsHelper.getFieldValue` treats `0`/`""`/`false` as missing.
 - `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
