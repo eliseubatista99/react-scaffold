@@ -1,0 +1,50 @@
+# Core — Known Issues, Quirks and Outdated Docs
+
+Use this list before changing behaviour: some quirks may be relied upon by consumers.
+
+## Exports / packaging
+- `EmailHelper` is implemented but not exported from `helpers/index.ts`.
+- `useNavigationParams`, `NavigationProviderContext` and `FeedbackProviderContext` are not exported (barrels only re-export the provider and main hook).
+- `@emotion/styled` is only a devDependency and is not in `rollupOptions.external`, so it (and its emotion runtime) is bundled into `dist`. `@emotion/react` is not declared anywhere in the package.
+- `react-router-dom`, `react-slick`, `slick-carousel`, `dayjs` are peer deps but are **not** externalized in `vite.config.ts` (only `react`/`react-dom` are), so they may be bundled, duplicating router context with the consumer's copy.
+- `Carousel` imports slick CSS files as side effects; importing the package requires `slick-carousel` CSS to resolve.
+- Library `name` in Vite config is the placeholder `MyComponentLibrary`.
+
+## Components
+- `PageLayout.floatingContent` is declared and destructured but never rendered.
+- `PageLayout` header/footer `visibility: "fixed"` actually means `position: relative` (in flow), while the default is `sticky` — naming is counter-intuitive. `page.extraHeight` is computed but unused; `calculateExtraHeight` has stale `useCallback` deps.
+- `Form`:
+  - `exactValueValidation.value` is typed `number` (type named `FormFieldUnknownValueValidation`) but compared with `!==` against the string field value, so it always fails for numbers.
+  - Numeric validations cast the string value with `as number`; comparisons rely on JS coercion.
+  - `minLengthValidation`/`maxLengthValidation` call `.length` on the value — works only because values are strings.
+  - Submission is not blocked when `hasErrors` is true.
+  - `handleOnChange` has wrong `useCallback` deps (`[onSubmit, onPreSubmit]`), so a changing `onChange` prop can be stale.
+  - Uses `var` in `validateField`.
+  - `RadioButton` has no hidden input, so it is not collected by `Form` (unlike `Checkbox`).
+- `Toast` timeout is not cleared on unmount; effect deps omit `id`/`durationInSeconds`.
+- `Drawer` does not hide itself on swipe; consumer must call `hideItem` inside `onCloseDrawer`.
+- `NumericInputField` overwrites any consumer `onInput` prop.
+
+## Hooks
+- `useDrag`: un-cancellable `while` polling loop if the ref never resolves; overwrites `onpointerdown`; distances lag one update; coordinate `0` treated as missing; noisy `console.debug` on every move.
+- `usePointer` causes a re-render on every global pointer move for every consumer.
+- `useOnScreen` does not re-observe when the ref element changes.
+- `useResponsive` reads `window` during render (not SSR-safe); `BreakpointConfiguration` requires all keys even though values are merged with defaults; resize handler is captured once (config changes after mount ignored).
+- `useFetch` does not catch network errors; always calls `.json()`.
+- `useTranslations` has no fallback language.
+
+## Helpers
+- `TimeHelper.isDateOneAfterDateTwo` is incorrect: uses `getDay()` (weekday) instead of `getDate()`, and returns `false` for a later year with an earlier month.
+- `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).
+- `FormsHelper.getFieldValue` treats `0`/`""`/`false` as missing.
+- `TimeHelper.waitForCondition*` have no timeout.
+
+## Providers
+- `NavigationProvider` renders `<Route>` elements without `key` (React warning).
+- `useNavigation.goBack` / `clearHistory` `useCallback` deps omit the context, so they may use a stale `history`.
+- Initial page is never pushed to the internal history stack.
+
+## Outdated documentation
+- `src/providers/README.md` mentions `replaceHistory` on `useNavigation`, feedback items with `type`/`content`, and `getVisibleItemsOfType` — none of these exist in the current API.
+- `src/hooks/README.md` shows `await fetch<SomeType>(url)` instead of `useFetch().get<SomeType>(url)`.
+- `src/components/README.md` and `src/helpers/README.md` cover only `Drawer` and `TextHelper`.

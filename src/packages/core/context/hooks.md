@@ -1,0 +1,107 @@
+# Core — Hooks
+
+All hooks live in `src/hooks/<useName>/` and are exported from the package root.
+
+---
+
+## useDidMount
+File: `hooks/useDidMount/useDidMount.ts`
+```ts
+export const useDidMount = (arg: () => void) => useEffect(arg, []);
+```
+- Runs the callback once after mount. The callback may return a cleanup function. Under React `StrictMode` (dev) it runs twice.
+
+## useDrag
+File: `hooks/useDrag/useDrag.tsx` — depends on `usePointer`.
+```ts
+interface DragData {
+  startPosX?: number; startPosY?: number;
+  posX?: number; posY?: number;
+  distanceX?: number;   // startPosX - posX  (positive when dragging LEFT)
+  distanceY?: number;   // posY - startPosY  (positive when dragging DOWN)
+  isDragging: boolean;
+}
+interface UseDragInput {
+  ref?: React.RefObject<HTMLDivElement | null>;
+  onDragStart?: (data: DragData) => void;
+  onDrag?: (data: DragData) => void;
+  onDragEnd?: (data: DragData) => void;
+}
+useDrag(input: UseDragInput): void
+```
+- `pointerdown` on `ref.current` starts the drag (prevents default, stops propagation, stores start position, calls `onDragStart`).
+- Global pointer moves (tracked by `usePointer`) call `onDrag` while dragging; pointer up calls `onDragEnd` and clears the start position.
+- Attaches lazily once `ref.current` exists (polls every 300 ms with an un-cancellable `while` loop) by **assigning** `ref.current.onpointerdown` (overwrites any existing handler) and sets `ref.current.style.touchAction = "none"`.
+- Distances are computed from the previous stored position (one update behind) and the `if (start && pos)` checks treat coordinate `0` as missing.
+- Emits `console.debug` logs on every pointer move.
+- Used by `Drawer`.
+
+## useFetch
+File: `hooks/useFetch/useFetch.ts`
+```ts
+type FetchOutput<TOut> = { result: TOut | undefined; statusCode: number; error?: unknown };
+
+const { get, post, put, patch, delete: del } = useFetch();
+get<T>(url: string, options?: Record<string, any>, headers?: HeadersInit): Promise<FetchOutput<T>>
+// post / put / patch / delete have the same signature
+```
+- `get` and `delete`: `options` become query string (`URLSearchParams`; arrays → repeated keys; `null`/`undefined` skipped). No body.
+- `post`, `put`, `patch`: `options` are sent as `JSON.stringify(options)` body with `Content-Type: application/json` (overridable via `headers`).
+- Response is always parsed with `response.json()`; parse failures (e.g. 204/empty or non-JSON) return `{ result: undefined, statusCode, error }`.
+- Network errors from `fetch` itself are **not** caught (the promise rejects).
+- HTTP error statuses are not thrown; check `statusCode`.
+
+## useOnScreen
+File: `hooks/useOnScreen/useOnScreen.tsx`
+```ts
+useOnScreen(ref: RefObject<HTMLElement | null>): boolean
+```
+- Memoised `IntersectionObserver` (default options) observing `ref.current` on mount; returns `isIntersecting`. Disconnects on unmount. Does not re-observe if the ref element changes later.
+
+## usePointer
+File: `hooks/usePointer/usePointer.ts`
+```ts
+type MousePositionData = { x?: number; y?: number };
+usePointer(): { pointerPosition: MousePositionData; isPointerDown: boolean }
+```
+- Global `window` listeners for `pointermove` (updates position with `clientX/clientY`), `pointerdown`, `pointerup`. Re-renders on every pointer move.
+
+## useResponsive
+File: `hooks/useResponsive/useResponsive.ts`
+```ts
+type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
+type Size = "mobile" | "tablet" | "desktop";
+type BreakpointConfiguration = Record<Breakpoint, number>;
+const defaultBreakpoints = { xs: 0, sm: 420, md: 768, lg: 991, xl: 1200, xxl: 1440 };
+
+interface UseResponsiveInput { breakpointConfiguration?: BreakpointConfiguration; }
+interface UseResponsiveOutput {
+  currentWidth: number; currentHeight: number;
+  currentBreakpoint: Breakpoint; currentSize: Size;
+}
+useResponsive(input?: UseResponsiveInput): UseResponsiveOutput
+```
+- Config is merged over `defaultBreakpoints` (the type requires all keys; use a spread/cast to override partially).
+- Breakpoint: `< sm → xs`, `< md → sm`, `< lg → md`, `< xl → lg`, `< xxl → xl`, else `xxl`.
+- Size: `<= sm → mobile`, `<= md → tablet`, else `desktop`.
+- Uses `window.innerWidth/innerHeight` on `resize` (no debounce). Reads `window` during initial render (not SSR-safe).
+
+## useTranslations
+File: `hooks/useTranslations/useTranslations.tsx`
+```ts
+type Language = string;
+type Translation = Record<Language, string>;          // e.g. { en: "Hello", pt: "Olá" }
+type TranslationValues = Record<string, unknown>;
+type TranslationList = { [key: string]: Translation };
+
+interface UseTranslationsInput { language: Language; translations: TranslationList; }
+interface UseTranslationsOutput {
+  t: (key: string, values?: TranslationValues) => string;
+  getTranslation: (translation?: Translation, values?: TranslationValues) => string | undefined;
+}
+useTranslations(input: UseTranslationsInput): UseTranslationsOutput
+```
+- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with `values[key]` (`replaceAll`). Returns `undefined` if the translation or the language entry is missing/empty.
+- `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; **falls back to the key itself** when the key or language is missing.
+- No fallback language; no pluralisation; no React context (language and dictionary are passed per call site).
+- These types are re-used by the `cv` package (`Translation`, `TranslationList`, `Language`).
