@@ -63,7 +63,7 @@ import { BrowserRouter } from "react-router-dom";
 ```
 
 - `Modal`, `Drawer`, `Toast`, `Loader` **require** a `FeedbackProvider` ancestor.
-- `NavigationProvider` remains available as a backwards-compatible wrapper that creates a `BrowserRouter`.
+- `NavigationProvider` remains available as a backwards-compatible wrapper that creates a `BrowserRouter`. `NavigationRoutes` tracks in-app entries observed after mounting to support `goBack` fallback behavior.
 - For application-owned routers, render `NavigationRoutes` inside `BrowserRouter`, `MemoryRouter`, or another compatible router. `useNavigation` and `useNavigationParams` must be called inside a router.
 - `useFeedback` can be called in any descendant of `FeedbackProvider`.
 

@@ -18,7 +18,7 @@ type NavigationRoutesProps = NavigationProviderInputProps;
 ```
 - `NavigationRoutes` renders the configured routes and children inside an existing React Router. It supports `BrowserRouter`, `MemoryRouter`, and other compatible routers.
 - `NavigationProvider` is the backwards-compatible convenience wrapper that creates a `BrowserRouter` around `NavigationRoutes`. Its existing props and behavior remain unchanged in this release. Prefer `NavigationRoutes` when the application owns router setup; remove the compatibility wrapper only in a future major release.
-- Each configured route is rendered as a keyed `<Route>`. Navigation history is owned by React Router and the browser; this package does not maintain a second stack.
+- Each configured route is rendered as a keyed `<Route>`. React Router and the browser own navigation; `NavigationRoutes` keeps a lightweight list of route-entry keys observed after it mounts so `goBack` can decide when to use `defaultBackPath`. It does not expose or mirror the browser's full history stack.
 
 Composable setup:
 ```tsx
@@ -51,8 +51,8 @@ useNavigation(): {
 }
 ```
 - `goTo`: delegates path resolution to React Router. Paths starting with `/` resolve from the router root; paths without a leading slash resolve relative to the current route. Query-only and hash-only destinations follow React Router navigation semantics. When `params` are provided, the path's relative or absolute pathname and hash are preserved while query values are merged. Values in `params` are serialized with JavaScript `String` and encoded by `URLSearchParams`: strings are unchanged before URL encoding, numbers use their JavaScript string representation, and booleans become `"true"` or `"false"`. Scalar `null`/`undefined` values are skipped, leaving any same-named query values already in `path` unchanged. Scalar values replace any existing query values for that key. Array values replace that key and append one query entry per non-null item, preserving array order; an empty array removes the existing key. By default navigation pushes a browser history entry; `addToHistory: false` replaces the current entry.
-- `goBack`: navigates back by `steps` known in-app history entries (default `1`). `steps` must be a positive safe integer; invalid values throw a `RangeError`. If fewer tracked in-app entries are available than requested, `defaultBackPath` is navigated to with `replace`. The tracker observes entries while `NavigationRoutes` is mounted; entries created before it mounted or by a different router are not known. Without a `defaultBackPath`, the hook preserves the native React Router back behavior.
-- Migration: `useNavigation().history`, `clearHistory`, and the conditional `defaultBackPath` fallback have been removed. The React Router public API does not expose the information or operation needed to implement them reliably.
+- `goBack`: `steps` defaults to `1` and must be a positive safe integer; invalid values throw a `RangeError`. When enough in-app entries observed by `NavigationRoutes` are available, it navigates back by the requested number of entries. Otherwise, when `defaultBackPath` is provided, it navigates there with `replace`; without a fallback it preserves the native React Router back behavior. The tracker only knows entries observed while `NavigationRoutes` is mounted, not earlier entries or entries created by a different router.
+- Migration: `useNavigation().history` and `clearHistory` have been removed. React Router's public API does not expose the information or operation needed to provide those APIs reliably.
 - `useNavigation` works inside any compatible React Router; it does not require the legacy `NavigationProvider` when the app already provides a router.
 
 ### useNavigationParams (internal, available via `useNavigation().searchParams`)
