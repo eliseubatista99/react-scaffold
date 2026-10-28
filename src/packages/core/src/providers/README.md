@@ -41,7 +41,9 @@ const { currentPath, goBack, goTo } = useNavigation();
 <button onClick={() => goBack()}> Back </button>;
 ```
 
-`goTo({ path, addToHistory: false })` replaces the current browser history entry. `goBack({ steps })` navigates backward by the requested number of entries (one by default). Browser history cannot be inspected or cleared through the public React Router API, so going back may leave the application if there is no suitable in-app entry.
+`goTo({ path, addToHistory: false })` replaces the current browser history entry. Query values accept strings, numbers, booleans, and arrays of those values; values use JavaScript `String` serialization and `URLSearchParams` URL encoding. Arrays become repeated query keys, and scalar nullish values are skipped. Existing query strings and hashes in `path` are preserved. An empty array removes existing values for that key. `goBack({ steps })` navigates backward by a positive safe integer number of entries (one by default); invalid values throw a `RangeError`. Browser history cannot be inspected or cleared through the public React Router API, so going back may leave the application if there is no suitable in-app entry.
+
+Use `searchParams.get(key)` for the first string value and `searchParams.getAllValues(key)` for all values associated with a repeated query key. `searchParams.getAll()` returns a flat object where duplicate keys resolve to their last value. Query values are not automatically parsed; convert them explicitly when needed.
 
 ## Feedback Provider
 

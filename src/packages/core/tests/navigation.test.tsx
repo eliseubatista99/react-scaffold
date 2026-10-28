@@ -2,6 +2,7 @@ import {
   cleanup,
   fireEvent,
   render,
+  renderHook,
   screen,
   waitFor,
 } from "@testing-library/react";
@@ -30,7 +31,9 @@ const NavigationControls = () => {
       <output data-testid="query-params">
         {JSON.stringify({
           all: searchParams.getAll(),
-          query: searchParams.get<string>("q"),
+          tags: searchParams.getAllValues("tag"),
+          query: searchParams.get("q"),
+          firstTag: searchParams.getMany(["tag"]).tag,
         })}
       </output>
       <button onClick={() => goTo({ path: "/first" })}>Go first</button>
@@ -45,15 +48,30 @@ const NavigationControls = () => {
       <button
         onClick={() =>
           goTo({
-            path: "/search?existing=1",
-            params: { q: "hello world", page: 2, omitted: null },
+            path: "/search?existing=1&omitted=keep&empty=old&tag=old&tag=older#results",
+            params: {
+              q: "hello world",
+              page: 2,
+              enabled: true,
+              tag: ["react", "router"],
+              omitted: null,
+              empty: [],
+            },
           })
         }
       >
         Go to search
       </button>
-      <button onClick={() => searchParams.set("filter", "active")}>
-        Set query
+      <button
+        onClick={() =>
+          searchParams.setMany({
+            filter: "active",
+            tag: ["one", "two"],
+            page: 0,
+          })
+        }
+      >
+        Set query params
       </button>
       <button onClick={() => searchParams.remove("filter")}>
         Remove query
@@ -142,6 +160,18 @@ describe("NavigationProvider", () => {
     });
   });
 
+  it("rejects invalid goBack step counts", () => {
+    const { result } = renderHook(() => useNavigation(), {
+      wrapper: ({ children }) => (
+        <NavigationProvider routes={routes}>{children}</NavigationProvider>
+      ),
+    });
+
+    expect(() => result.current.goBack({ steps: 0 })).toThrow(RangeError);
+    expect(() => result.current.goBack({ steps: -1 })).toThrow(RangeError);
+    expect(() => result.current.goBack({ steps: 1.5 })).toThrow(RangeError);
+  });
+
   it("builds query strings and supports reading, setting, and removing query params", async () => {
     renderNavigation();
 
@@ -151,17 +181,40 @@ describe("NavigationProvider", () => {
       expect(currentPath()).toBe("/search");
       expect(screen.getByTestId("query-params").textContent).toBe(
         JSON.stringify({
-          all: { existing: "1", q: "hello world", page: "2" },
+          all: {
+            existing: "1",
+            omitted: "keep",
+            q: "hello world",
+            page: "2",
+            enabled: "true",
+            tag: "router",
+          },
+          tags: ["react", "router"],
           query: "hello world",
+          firstTag: "react",
         }),
       );
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Set query" }));
+    expect(window.location.hash).toBe("#results");
 
+    fireEvent.click(screen.getByRole("button", { name: "Set query params" }));
     await waitFor(() => {
-      expect(screen.getByTestId("query-params").textContent).toContain(
-        '"filter":"active"',
+      expect(screen.getByTestId("query-params").textContent).toBe(
+        JSON.stringify({
+          all: {
+            existing: "1",
+            omitted: "keep",
+            q: "hello world",
+            page: "0",
+            enabled: "true",
+            filter: "active",
+            tag: "two",
+          },
+          tags: ["one", "two"],
+          query: "hello world",
+          firstTag: "one",
+        }),
       );
     });
 

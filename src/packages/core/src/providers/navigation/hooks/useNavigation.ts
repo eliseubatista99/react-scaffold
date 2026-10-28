@@ -1,11 +1,12 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNavigationParams } from "./useNavigationParams";
+import type { NavigationParamInput } from "./useNavigationParams";
 
 export type GoToParams = {
   path: string;
   addToHistory?: boolean;
-  params?: Record<string, unknown>;
+  params?: Record<string, NavigationParamInput>;
 };
 
 export type GoBackParams = {
@@ -18,12 +19,21 @@ const buildUrlWithParams = (data: GoToParams) => {
   if (data.params) {
     Object.entries(data.params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        url.searchParams.set(key, String(value));
+        if (Array.isArray(value)) {
+          url.searchParams.delete(key);
+          value.forEach((item) => {
+            if (item !== undefined && item !== null) {
+              url.searchParams.append(key, String(item));
+            }
+          });
+        } else {
+          url.searchParams.set(key, String(value));
+        }
       }
     });
   }
 
-  return url.pathname + url.search;
+  return url.pathname + url.search + url.hash;
 };
 
 export const useNavigation = () => {
@@ -41,7 +51,13 @@ export const useNavigation = () => {
 
   const goBack = React.useCallback(
     (data: GoBackParams = {}) => {
-      navigate(-(data.steps ?? 1));
+      const steps = data.steps ?? 1;
+
+      if (!Number.isSafeInteger(steps) || steps < 1) {
+        throw new RangeError("goBack steps must be a positive safe integer.");
+      }
+
+      navigate(-steps);
     },
     [navigate],
   );

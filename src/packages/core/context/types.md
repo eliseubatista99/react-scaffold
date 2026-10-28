@@ -47,6 +47,6 @@ Only `FormFieldConfiguration`, `FormFieldInputData` and `FormFieldOutputData` ar
 |---|---|
 | `ButtonProps`, `CarouselProps`, `CarouselSlideProps`, `CheckboxProps`, `DrawerProps`, `DrawerHandleProps`, `FormProps`, `FormSubmitSection`, `FormSubmitButton`, `ImageProps`, `InputFieldProps`, `LoaderProps`, `ModalProps`, `NumericInputFieldProps`, `PageLayoutProps`, `PageLayoutHeaderAndFooterProps`, `ProgressBarProps`, `RadioButtonProps`, `SvgImageProps`, `TextAreaFieldProps`, `ToastProps`, `TypographyProps` | components (see [components.md](components.md)) |
 | `DragData`, `UseDragInput`, `MousePositionData`, `FetchOutput`, `Breakpoint`, `Size`, `BreakpointConfiguration`, `UseResponsiveInput`, `UseResponsiveOutput`, `Language`, `Translation`, `TranslationValues`, `TranslationList`, `UseTranslationsInput`, `UseTranslationsOutput` | hooks (see [hooks.md](hooks.md)) |
-| `NavigationProviderRoute`, `NavigationProviderInputProps`, `NavigationRoutesProps`, `GoToParams`, `GoBackParams`, `FeedbackProviderInputProps` | providers (see [providers.md](providers.md)) |
+| `NavigationProviderRoute`, `NavigationProviderInputProps`, `NavigationRoutesProps`, `NavigationParamValue`, `NavigationParamInput`, `NavigationParams`, `GoToParams`, `GoBackParams`, `FeedbackProviderInputProps` | providers (see [providers.md](providers.md)) |
 
 Constant: `defaultBreakpoints` (from `useResponsive`).
