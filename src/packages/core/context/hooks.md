@@ -100,7 +100,7 @@ useResponsive(input?: UseResponsiveInput): UseResponsiveOutput
 ```
 - Config is merged over `defaultBreakpoints`; overrides may specify only the breakpoints being changed.
 - Breakpoint: `< sm → xs`, `< md → sm`, `< lg → md`, `< xl → lg`, `< xxl → xl`, else `xxl`.
-- Size: `<= sm → mobile`, `<= md → tablet`, else `desktop`.
+- Size uses the same range boundaries as breakpoint classification: `< sm → mobile`, `sm–<lg → tablet`, `>= lg → desktop`.
 - Starts with a `0 × 0` snapshot so server rendering and the initial hydration render match; reads the actual viewport and listens for resize in an effect.
 - Recalculates when the breakpoint configuration changes. Resize updates are immediate (no debounce).
 

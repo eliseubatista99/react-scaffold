@@ -96,9 +96,9 @@ const getCurrentSize = (
   currentWidth: number,
   breakpoints: BreakpointConfiguration
 ): Size => {
-  if (currentWidth <= breakpoints.sm) {
+  if (currentWidth < breakpoints.sm) {
     return "mobile";
-  } else if (currentWidth <= breakpoints.md) {
+  } else if (currentWidth < breakpoints.lg) {
     return "tablet";
   } else {
     return "desktop";

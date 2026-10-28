@@ -90,4 +90,36 @@ describe("useResponsive", () => {
       currentSize: "desktop",
     });
   });
+
+  it.each([
+    { width: 419, breakpoint: "xs", size: "mobile" },
+    { width: 420, breakpoint: "sm", size: "tablet" },
+    { width: 767, breakpoint: "sm", size: "tablet" },
+    { width: 768, breakpoint: "md", size: "tablet" },
+    { width: 990, breakpoint: "md", size: "tablet" },
+    { width: 991, breakpoint: "lg", size: "desktop" },
+  ] as const)(
+    "aligns size and breakpoint at width $width",
+    ({ width, breakpoint, size }) => {
+      setViewport(width, 600);
+
+      const { result } = renderHook(() => useResponsive());
+
+      expect(result.current.currentBreakpoint).toBe(breakpoint);
+      expect(result.current.currentSize).toBe(size);
+    },
+  );
+
+  it("uses configured sm and lg thresholds for the size", () => {
+    setViewport(500, 600);
+
+    const { result } = renderHook(() =>
+      useResponsive({
+        breakpointConfiguration: { sm: 450, lg: 550 },
+      }),
+    );
+
+    expect(result.current.currentBreakpoint).toBe("sm");
+    expect(result.current.currentSize).toBe("tablet");
+  });
 });

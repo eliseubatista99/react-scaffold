@@ -51,7 +51,7 @@ const viewport = useResponsive({
 });
 ```
 
-The hook starts with a `0 × 0` snapshot that is consistent between server rendering and the initial hydration render, then reads the actual viewport in an effect. It updates on resize and when breakpoint overrides change.
+The hook starts with a `0 × 0` snapshot that is consistent between server rendering and the initial hydration render, then reads the actual viewport in an effect. It updates on resize and when breakpoint overrides change. `currentSize` uses the same boundaries as breakpoints: widths below `sm` are mobile, `sm` through below `lg` are tablet, and `lg` or above are desktop.
 
 ## useOnScreen
 
