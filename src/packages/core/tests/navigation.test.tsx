@@ -198,6 +198,7 @@ const FallbackNavigationControls = () => {
       >
         Back two with fallback
       </button>
+      <button onClick={() => goBack({ steps: 2 })}>Back two</button>
     </div>
   );
 };
@@ -388,6 +389,32 @@ describe("NavigationProvider", () => {
         }),
       ),
     );
+  });
+
+  it("limits back navigation to the observed in-app history", async () => {
+    renderFallbackNavigation("/initial");
+    fireEvent.click(screen.getByRole("button", { name: "Go to one" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back two" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/initial",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("does not leave the app when no observed back entry exists", async () => {
+    window.history.replaceState({}, "", "/outside");
+    window.history.pushState({}, "", "/initial");
+    renderNavigation();
+
+    fireEvent.click(screen.getByRole("button", { name: "Go back" }));
+
+    await waitFor(() => expect(currentPath()).toBe("/initial"));
   });
 
   it("replaces the current entry when navigating to defaultBackPath", async () => {

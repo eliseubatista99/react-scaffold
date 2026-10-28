@@ -68,9 +68,20 @@ export const useNavigation = () => {
         throw new RangeError("goBack steps must be a positive safe integer.");
       }
 
-      if (historyTracker && historyTracker.index < steps) {
-        if (data.defaultBackPath !== undefined) {
-          navigate(data.defaultBackPath, { replace: true });
+      if (historyTracker) {
+        const availableSteps = historyTracker.index;
+
+        if (availableSteps < steps) {
+          if (data.defaultBackPath !== undefined) {
+            navigate(data.defaultBackPath, { replace: true });
+            return;
+          }
+
+          if (availableSteps === 0) {
+            return;
+          }
+
+          navigate(-availableSteps);
           return;
         }
       }
