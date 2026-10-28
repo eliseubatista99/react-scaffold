@@ -50,10 +50,10 @@ ScrollHelper.enableScroll(): void        // restores the inline overflow saved b
 ## TextHelper
 File: `helpers/text/textHelper.ts`
 ```ts
-TextHelper.getPascalCase(text: string): string             // each Unicode word: First upper, rest lower (keeps spaces)
+TextHelper.getPascalCase(text: string): string             // capitalizes Unicode words, preserves separators
 TextHelper.isEqual(a: string, b: string, caseSensitive = true): boolean
-TextHelper.isEmail(value: string): boolean                 // /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-TextHelper.isPhoneNumber(value: string): boolean           // /^\+?\d{9,15}$/ (no spaces)
+TextHelper.isEmail(value: string): boolean                 // basic syntax check, not full RFC/mailbox validation
+TextHelper.isPhoneNumber(value: string): boolean           // optional +, then 9–15 digits, no spaces
 TextHelper.isValidName(value: string): boolean             // Latin letters incl. accents; single ' - or space separators
 ```
 

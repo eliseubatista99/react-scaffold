@@ -21,6 +21,9 @@ The TextHelper has the following methods:
       i am text => I Am Text
 
 - **isEqual**: Checks if to strings are the same, can be case sensitive or not.
+- **isEmail**: Performs a basic syntax check; it does not validate every RFC rule or whether a mailbox exists.
+- **isPhoneNumber**: Accepts an optional leading `+` followed by 9–15 digits, without spaces or punctuation.
+- **isValidName**: Accepts Latin letters (including accents), separated by a single space, hyphen, or straight apostrophe.
 
 ## Objects Helper
 
