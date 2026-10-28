@@ -52,3 +52,7 @@ const viewport = useResponsive({
 ```
 
 The hook starts with a `0 × 0` snapshot that is consistent between server rendering and the initial hydration render, then reads the actual viewport in an effect. It updates on resize and when breakpoint overrides change.
+
+## useOnScreen
+
+`useOnScreen(ref)` returns whether the referenced element intersects the viewport, using the browser's default `IntersectionObserver` options. It is safe to render on the server and returns `false` if `IntersectionObserver` is unavailable. When `ref.current` changes on a subsequent render, the hook disconnects the old observer and observes the new element.

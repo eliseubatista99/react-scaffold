@@ -58,7 +58,7 @@ File: `hooks/useOnScreen/useOnScreen.tsx`
 ```ts
 useOnScreen(ref: RefObject<HTMLElement | null>): boolean
 ```
-- Memoised `IntersectionObserver` (default options) observing `ref.current` on mount; returns `isIntersecting`. Disconnects on unmount. Does not re-observe if the ref element changes later.
+- Returns `false` during server rendering and while `IntersectionObserver` is unavailable. Observes the current `ref.current` with default options, re-observes when the referenced element changes, and disconnects the observer on cleanup.
 
 ## usePointer
 File: `hooks/usePointer/usePointer.ts`
