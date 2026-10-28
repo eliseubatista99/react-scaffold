@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
-  "version": "1.0.13",
+  "version": "1.0.16",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
@@ -50,7 +50,7 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
-    "firebase": "^11.10.0",
+    "firebase": "^12.19.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   }

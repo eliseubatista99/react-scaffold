@@ -20,7 +20,7 @@ export const useDidMountWithFirebaseAuth = (action: () => void) => {
     }
 
     const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
-      console.log("useDidMountWithFirebaseAuth > AuthStateChanged > ", {
+      console.debug("useDidMountWithFirebaseAuth > AuthStateChanged > ", {
         user,
       });
 

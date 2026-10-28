@@ -105,7 +105,7 @@ export const FirebaseAuthProvider = ({
     }
 
     const unsubscribe = auth.current.onAuthStateChanged((user: User | null) => {
-      console.log("FirebaseAuthProvider > AuthStateChanged > ", { user });
+      console.debug("FirebaseAuthProvider > AuthStateChanged > ", { user });
       setCurrentUser(user);
       setIsInitialized(true);
     });

@@ -237,7 +237,7 @@ export const useFormHelper = ({
 
         result = await validateField(result, "change");
 
-        console.log("Form > On Change > ", { result, allFieldsValidation });
+        console.debug("Form > On Change > ", { result, allFieldsValidation });
 
         onChange?.(
           result,
