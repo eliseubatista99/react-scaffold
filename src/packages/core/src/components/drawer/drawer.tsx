@@ -23,7 +23,7 @@ export const Drawer = (props: DrawerProps) => {
     drawerParentRef,
     drawerRef,
     handleRef,
-    drawerBottomDistance,
+    dragStyle,
   } = useDrawerHelper(props);
 
   return (
@@ -63,8 +63,9 @@ export const Drawer = (props: DrawerProps) => {
               padding: "24px",
               zIndex: 1001,
               position: "absolute",
-              bottom: `${drawerBottomDistance}px`,
+              bottom: 0,
               ...contentStyles,
+              ...dragStyle,
             }}
             onClick={(e) => {
               e.stopPropagation();

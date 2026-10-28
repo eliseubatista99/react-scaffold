@@ -68,3 +68,26 @@ The hook starts with a `0 × 0` snapshot that is consistent between server rende
 ## usePointer
 
 `usePointer()` returns `pointerPosition` (`x` and `y`) and `isPointerDown`. It tracks only primary pointer events. Pressed state is tied to the pointer ID that started it and resets on `pointerup` or `pointercancel`; listeners are removed on unmount.
+
+## useDrag
+
+`useDrag` returns refs for the movable element, its bounds container and an optional separate drag handle, along with the current position, drag state and style:
+
+```tsx
+const { ref, containerRef, handleRef, position, isDragging, style } = useDrag({
+  axis: "both",
+  onDrag: ({ position }) => console.log(position),
+});
+
+return (
+  <div ref={containerRef}>
+    <article ref={ref} style={style}>
+      <button ref={handleRef}>Drag</button>
+      Position: {position ? `${position.x}, ${position.y}` : "not dragged"}
+      {isDragging ? " (dragging)" : ""}
+    </article>
+  </div>
+);
+```
+
+Position is measured from the container's top-left once the element ref is attached. By default, the element stays inside its container (the element's parent if `containerRef` is not attached). Set `axis` to `"x"` or `"y"` to restrict movement; `bounds: false` allows it to move outside the container. Position is retained after release unless `resetOnDragEnd: true` is set. Apply the returned `style` to the movable element because the hook controls its CSS transform. The `handleRef` is optional; if omitted, the movable element itself starts the drag. Pointer cancellation and window blur end an active drag.

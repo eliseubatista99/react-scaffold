@@ -25,9 +25,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `Drawer` does not hide itself on swipe; consumer must call `hideItem` inside `onCloseDrawer`.
 - `NumericInputField` overwrites any consumer `onInput` prop.
 
-## Hooks
-- `useDrag`: un-cancellable `while` polling loop if the ref never resolves; overwrites `onpointerdown`; distances lag one update; coordinate `0` treated as missing; noisy `console.debug` on every move.
-
 ## Helpers
 - `TimeHelper.isDateOneAfterDateTwo` is incorrect: uses `getDay()` (weekday) instead of `getDate()`, and returns `false` for a later year with an earlier month.
 - `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).

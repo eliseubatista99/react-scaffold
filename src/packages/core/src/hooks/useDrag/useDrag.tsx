@@ -1,156 +1,290 @@
 import React from "react";
-import { MousePositionData, usePointer } from "../usePointer";
+
+export interface DragPosition {
+  x: number;
+  y: number;
+}
 
 export interface DragData {
-  startPosX?: number;
-  startPosY?: number;
-  posX?: number;
-  posY?: number;
-  distanceX?: number;
-  distanceY?: number;
+  position: DragPosition;
+  delta: DragPosition;
   isDragging: boolean;
 }
 
+export type DragAxis = "both" | "x" | "y";
+
 export interface UseDragInput {
-  ref?: React.RefObject<HTMLDivElement | null>;
+  axis?: DragAxis;
+  bounds?: boolean;
+  resetOnDragEnd?: boolean;
   onDragStart?: (data: DragData) => void;
   onDrag?: (data: DragData) => void;
   onDragEnd?: (data: DragData) => void;
 }
 
+export interface UseDragOutput {
+  ref: React.RefCallback<HTMLElement>;
+  containerRef: React.RefCallback<HTMLElement>;
+  handleRef: React.RefCallback<HTMLElement>;
+  position: DragPosition | null;
+  isDragging: boolean;
+  style: React.CSSProperties;
+}
+
+interface ActiveDrag {
+  pointerId: number;
+  startPointer: DragPosition;
+  startPosition: DragPosition;
+  startTranslation: DragPosition;
+  position: DragPosition;
+  delta: DragPosition;
+}
+
+const zeroPosition: DragPosition = { x: 0, y: 0 };
+
 export const useDrag = ({
-  ref,
-  onDrag,
+  axis = "both",
+  bounds = true,
+  resetOnDragEnd = false,
   onDragStart,
+  onDrag,
   onDragEnd,
-}: UseDragInput) => {
-  const isInitialized = React.useRef<boolean>(false);
-  const isPointerDownCache = React.useRef<boolean>(false);
-  const { pointerPosition, isPointerDown } = usePointer();
+}: UseDragInput = {}): UseDragOutput => {
+  const [element, setElement] = React.useState<HTMLElement | null>(null);
+  const [container, setContainer] = React.useState<HTMLElement | null>(null);
+  const [handle, setHandle] = React.useState<HTMLElement | null>(null);
+  const [position, setPosition] = React.useState<DragPosition | null>(null);
+  const [translation, setTranslation] =
+    React.useState<DragPosition>(zeroPosition);
+  const [isDragging, setIsDragging] = React.useState(false);
 
-  const dragDataRef = React.useRef<DragData>({
-    isDragging: false,
-  });
+  const activeDragRef = React.useRef<ActiveDrag | null>(null);
+  const translationRef = React.useRef(zeroPosition);
+  const configurationRef = React.useRef({ axis, bounds, resetOnDragEnd });
+  const callbacksRef = React.useRef({ onDragStart, onDrag, onDragEnd });
 
-  const calculateDragData = React.useCallback(
-    (pointerPos: MousePositionData) => {
-      if (!ref || !ref.current || !dragDataRef.current) {
-        return undefined;
-      }
+  configurationRef.current = { axis, bounds, resetOnDragEnd };
+  callbacksRef.current = { onDragStart, onDrag, onDragEnd };
 
-      const result: DragData = { ...dragDataRef.current };
+  const ref = React.useCallback<React.RefCallback<HTMLElement>>((node) => {
+    setElement(node);
+  }, []);
 
-      //Y position of the pointer
-      result.posY = pointerPos.y;
-      result.posX = pointerPos.x;
-
-      if (dragDataRef.current.startPosX && dragDataRef.current.posX) {
-        result.distanceX =
-          dragDataRef.current.startPosX - dragDataRef.current.posX;
-      }
-
-      if (dragDataRef.current.startPosY && dragDataRef.current.posY) {
-        result.distanceY = -(
-          dragDataRef.current.startPosY - dragDataRef.current.posY
-        );
-      }
-
-      return result;
+  const containerRef = React.useCallback<React.RefCallback<HTMLElement>>(
+    (node) => {
+      setContainer(node);
     },
-    []
+    [],
   );
 
-  const handleOnClick = React.useCallback(
-    (e: PointerEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      dragDataRef.current.isDragging = true;
-      dragDataRef.current.startPosY = e.clientY;
-      dragDataRef.current.startPosX = e.clientX;
-
-      const dragDataResult = calculateDragData({ x: e.clientX, y: e.clientY });
-
-      if (dragDataResult) {
-        dragDataRef.current = dragDataResult;
-
-        onDragStart?.(dragDataResult);
-      }
+  const handleRef = React.useCallback<React.RefCallback<HTMLElement>>(
+    (node) => {
+      setHandle(node);
     },
-    [calculateDragData]
+    [],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleOnPointerUp = React.useCallback(
-    (_?: PointerEvent) => {
-      dragDataRef.current.isDragging = false;
-
-      const dragDataResult = calculateDragData(pointerPosition);
-
-      if (dragDataResult) {
-        onDragEnd?.(dragDataResult);
-
-        dragDataResult.startPosX = undefined;
-        dragDataResult.startPosY = undefined;
-
-        dragDataRef.current = dragDataResult;
+  const limitPosition = React.useCallback(
+    (
+      nextPosition: DragPosition,
+      target: HTMLElement,
+      boundsElement: HTMLElement | null,
+    ): DragPosition => {
+      if (!configurationRef.current.bounds || !boundsElement) {
+        return nextPosition;
       }
+
+      const targetRect = target.getBoundingClientRect();
+      const containerRect = boundsElement.getBoundingClientRect();
+      const maxX = Math.max(0, containerRect.width - targetRect.width);
+      const maxY = Math.max(0, containerRect.height - targetRect.height);
+
+      return {
+        x: Math.min(Math.max(nextPosition.x, 0), maxX),
+        y: Math.min(Math.max(nextPosition.y, 0), maxY),
+      };
     },
-    [calculateDragData, pointerPosition]
+    [],
   );
 
-  const handleOnPointerMove = React.useCallback(
-    (_?: PointerEvent) => {
-      console.debug(
-        "useDrag > onPointerMove > Is Dragging >",
-        dragDataRef.current.isDragging
-      );
+  React.useEffect(() => {
+    if (!element) return;
 
-      if (!dragDataRef.current.isDragging) {
+    const boundsElement = container ?? element.parentElement;
+    const elementRect = element.getBoundingClientRect();
+    const containerRect = boundsElement?.getBoundingClientRect();
+
+    setPosition({
+      x: containerRect
+        ? elementRect.left - containerRect.left
+        : elementRect.left,
+      y: containerRect
+        ? elementRect.top - containerRect.top
+        : elementRect.top,
+    });
+  }, [container, element]);
+
+  React.useEffect(() => {
+    if (!element) return;
+
+    const dragHandle = handle ?? element;
+    const previousTouchAction = dragHandle.style.touchAction;
+
+    const startDrag = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0 || activeDragRef.current) {
         return;
       }
 
-      const dragDataResult = calculateDragData(pointerPosition);
+      const boundsElement = container ?? element.parentElement;
+      const elementRect = element.getBoundingClientRect();
+      const containerRect = boundsElement?.getBoundingClientRect();
+      const currentPosition = {
+        x: containerRect
+          ? elementRect.left - containerRect.left
+          : elementRect.left,
+        y: containerRect
+          ? elementRect.top - containerRect.top
+          : elementRect.top,
+      };
+      const boundedPosition = limitPosition(
+        currentPosition,
+        element,
+        boundsElement,
+      );
+      const startTranslation = translationRef.current;
+      const boundedTranslation = {
+        x: startTranslation.x + boundedPosition.x - currentPosition.x,
+        y: startTranslation.y + boundedPosition.y - currentPosition.y,
+      };
+      const drag: ActiveDrag = {
+        pointerId: event.pointerId,
+        startPointer: { x: event.clientX, y: event.clientY },
+        startPosition: boundedPosition,
+        startTranslation: boundedTranslation,
+        position: boundedPosition,
+        delta: zeroPosition,
+      };
 
-      console.debug("useDrag > onPointerMove > Drag Result >", dragDataResult);
+      event.preventDefault();
+      activeDragRef.current = drag;
+      translationRef.current = boundedTranslation;
+      setPosition(boundedPosition);
+      setTranslation(boundedTranslation);
+      setIsDragging(true);
+      callbacksRef.current.onDragStart?.({
+        position: boundedPosition,
+        delta: zeroPosition,
+        isDragging: true,
+      });
+    };
 
-      if (dragDataResult) {
-        onDrag?.(dragDataResult);
+    dragHandle.style.touchAction = "none";
+    dragHandle.addEventListener("pointerdown", startDrag);
 
-        dragDataRef.current = dragDataResult;
+    return () => {
+      dragHandle.removeEventListener("pointerdown", startDrag);
+      dragHandle.style.touchAction = previousTouchAction;
+      activeDragRef.current = null;
+      setIsDragging(false);
+    };
+  }, [container, element, handle, limitPosition]);
+
+  React.useEffect(() => {
+    const moveDrag = (event: PointerEvent) => {
+      const activeDrag = activeDragRef.current;
+      const target = element;
+      if (!activeDrag || !target || event.pointerId !== activeDrag.pointerId) {
+        return;
       }
+
+      const boundsElement = container ?? target.parentElement;
+      const { axis: activeAxis } = configurationRef.current;
+      const pointerDelta = {
+        x:
+          activeAxis === "y"
+            ? 0
+            : event.clientX - activeDrag.startPointer.x,
+        y:
+          activeAxis === "x"
+            ? 0
+            : event.clientY - activeDrag.startPointer.y,
+      };
+      const nextPosition = limitPosition(
+        {
+          x: activeDrag.startPosition.x + pointerDelta.x,
+          y: activeDrag.startPosition.y + pointerDelta.y,
+        },
+        target,
+        boundsElement,
+      );
+      const delta = {
+        x: nextPosition.x - activeDrag.startPosition.x,
+        y: nextPosition.y - activeDrag.startPosition.y,
+      };
+      const nextTranslation = {
+        x: activeDrag.startTranslation.x + delta.x,
+        y: activeDrag.startTranslation.y + delta.y,
+      };
+
+      activeDrag.position = nextPosition;
+      activeDrag.delta = delta;
+      translationRef.current = nextTranslation;
+      setPosition(nextPosition);
+      setTranslation(nextTranslation);
+      callbacksRef.current.onDrag?.({
+        position: nextPosition,
+        delta,
+        isDragging: true,
+      });
+    };
+
+    const endDrag = (event?: PointerEvent) => {
+      const activeDrag = activeDragRef.current;
+      if (
+        !activeDrag ||
+        (event && event.pointerId !== activeDrag.pointerId)
+      ) {
+        return;
+      }
+
+      activeDragRef.current = null;
+      if (configurationRef.current.resetOnDragEnd) {
+        translationRef.current = activeDrag.startTranslation;
+        setTranslation(activeDrag.startTranslation);
+        setPosition(activeDrag.startPosition);
+      }
+      setIsDragging(false);
+      callbacksRef.current.onDragEnd?.({
+        position: activeDrag.position,
+        delta: activeDrag.delta,
+        isDragging: false,
+      });
+    };
+
+    const cancelDrag = () => endDrag();
+
+    window.addEventListener("pointermove", moveDrag);
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+    window.addEventListener("blur", cancelDrag);
+
+    return () => {
+      window.removeEventListener("pointermove", moveDrag);
+      window.removeEventListener("pointerup", endDrag);
+      window.removeEventListener("pointercancel", endDrag);
+      window.removeEventListener("blur", cancelDrag);
+    };
+  }, [container, element, limitPosition]);
+
+  return {
+    ref,
+    containerRef,
+    handleRef,
+    position,
+    isDragging,
+    style: {
+      transform: `translate3d(${translation.x}px, ${translation.y}px, 0)`,
+      cursor: isDragging ? "grabbing" : "grab",
     },
-    [calculateDragData, pointerPosition]
-  );
-
-  const initializeDrag = React.useCallback(async () => {
-    if (isInitialized.current) {
-      return;
-    }
-
-    while (!ref?.current) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-
-    isInitialized.current = true;
-    ref.current.onpointerdown = handleOnClick;
-    ref.current.style.touchAction = "none";
-  }, [ref?.current, handleOnClick]);
-
-  React.useEffect(() => {
-    initializeDrag();
-  }, [initializeDrag]);
-
-  React.useEffect(() => {
-    handleOnPointerMove();
-  }, [pointerPosition]);
-
-  React.useEffect(() => {
-    if (isPointerDown !== isPointerDownCache.current) {
-      isPointerDownCache.current = isPointerDown;
-
-      if (!isPointerDown) {
-        handleOnPointerUp();
-      }
-    }
-  }, [isPointerDown, isPointerDownCache.current]);
+  };
 };

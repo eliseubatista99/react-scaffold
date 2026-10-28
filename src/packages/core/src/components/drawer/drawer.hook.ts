@@ -1,63 +1,63 @@
 import React from "react";
-import { DragData, useDrag } from "../../hooks";
+import { useDrag } from "../../hooks";
 import { useFeedback } from "../../providers";
 import type { DrawerProps } from "./drawer";
+
+interface UseDrawerHelperOutput {
+  isVisible: boolean;
+  drawerParentRef: React.RefCallback<HTMLElement>;
+  drawerRef: React.RefCallback<HTMLElement>;
+  handleRef: React.RefCallback<HTMLElement>;
+  dragStyle: React.CSSProperties;
+}
 
 export const useDrawerHelper = ({
   id,
   onCloseDrawer,
   drawerCloseOffset = 15,
-}: DrawerProps) => {
+}: DrawerProps): UseDrawerHelperOutput => {
   const { isItemVisible } = useFeedback();
 
-  const [dragData, setDragData] = React.useState<DragData>({
-    isDragging: false,
-  });
+  const closeTriggered = React.useRef(false);
+  const {
+    ref: dragRef,
+    containerRef: drawerParentRef,
+    handleRef,
+    style: dragStyle,
+  } = useDrag({
+    axis: "y",
+    bounds: false,
+    resetOnDragEnd: true,
+    onDragStart: () => {
+      closeTriggered.current = false;
+    },
+    onDrag: ({ delta }) => {
+      const drawerHeight =
+        drawerRef.current?.getBoundingClientRect().height ?? 0;
 
-  const drawerParentRef = React.useRef<HTMLDivElement>(null);
-  const drawerRef = React.useRef<HTMLDivElement>(null);
-  const handleRef = React.useRef<HTMLDivElement>(null);
-  const [drawerBottomDistance, setDrawerBottomDistance] =
-    React.useState<number>(0);
-
-  const handleOnClick = (data: DragData) => {
-    setDragData(data);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleOnPointerUp = (data: DragData) => {
-    setDragData(data);
-    setDrawerBottomDistance(0);
-  };
-
-  const handleOnPointerMove = (data: DragData) => {
-    setDragData(data);
-
-    const drawerHeight = drawerRef.current?.clientHeight || 0;
-
-    if (data.distanceY) {
-      //Set the drawer bottom distance. In case the pointer moved up, cap it to zero
-      setDrawerBottomDistance(data.distanceY < 0 ? 0 : -data.distanceY);
-
-      if (data.distanceY >= drawerHeight - drawerCloseOffset) {
+      if (
+        !closeTriggered.current &&
+        delta.y >= drawerHeight - drawerCloseOffset
+      ) {
+        closeTriggered.current = true;
         onCloseDrawer?.();
-        handleOnPointerUp(data);
       }
-    }
-  };
-
-  useDrag({
-    ref: handleRef,
-    onDrag: handleOnPointerMove,
-    onDragEnd: handleOnPointerUp,
-    onDragStart: handleOnClick,
+    },
   });
+  const drawerRef = React.useRef<HTMLElement>(null);
+  const assignDrawerRef = React.useCallback(
+    (element: HTMLElement | null) => {
+      drawerRef.current = element;
+      dragRef(element);
+    },
+    [dragRef],
+  );
 
   return {
     isVisible: isItemVisible(id),
     drawerParentRef,
-    drawerRef,
-    drawerBottomDistance,
+    drawerRef: assignDrawerRef,
     handleRef,
+    dragStyle,
   };
 };

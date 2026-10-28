@@ -23,19 +23,30 @@ interface DragData {
   isDragging: boolean;
 }
 interface UseDragInput {
-  ref?: React.RefObject<HTMLDivElement | null>;
+  axis?: "both" | "x" | "y";
+  bounds?: boolean; // defaults to true; false allows movement outside the container
+  resetOnDragEnd?: boolean;
   onDragStart?: (data: DragData) => void;
   onDrag?: (data: DragData) => void;
   onDragEnd?: (data: DragData) => void;
 }
-useDrag(input: UseDragInput): void
+interface UseDragOutput {
+  ref: React.RefCallback<HTMLElement>;
+  containerRef: React.RefCallback<HTMLElement>;
+  handleRef: React.RefCallback<HTMLElement>;
+  position: { x: number; y: number } | null;
+  isDragging: boolean;
+  style: React.CSSProperties;
+}
+useDrag(input?: UseDragInput): UseDragOutput
 ```
-- `pointerdown` on `ref.current` starts the drag (prevents default, stops propagation, stores start position, calls `onDragStart`).
-- Global pointer moves (tracked by `usePointer`) call `onDrag` while dragging; pointer up calls `onDragEnd` and clears the start position.
-- Attaches lazily once `ref.current` exists (polls every 300 ms with an un-cancellable `while` loop) by **assigning** `ref.current.onpointerdown` (overwrites any existing handler) and sets `ref.current.style.touchAction = "none"`.
-- Distances are computed from the previous stored position (one update behind) and the `if (start && pos)` checks treat coordinate `0` as missing.
-- Emits `console.debug` logs on every pointer move.
-- Used by `Drawer`.
+- Attach `ref` to the movable element and `containerRef` to its bounds container (or omit the container ref to use the element's parent). `handleRef` optionally attaches dragging to a separate handle; otherwise the element itself is the handle.
+- Apply the returned `style` to the movable element. The hook uses a CSS transform and owns that transform while active.
+- The default bounds keep the element inside the container. `bounds: false` permits overflow; `axis: "x"` or `"y"` restricts movement to one axis.
+- Position is retained after release by default; `resetOnDragEnd: true` returns the element to its position at the start of the drag.
+- Position is measured from the container's top-left and is `null` until the element ref is attached. Callback data includes the current `position`, movement `delta`, and drag state.
+- Primary pointer events start dragging; `pointerup`, `pointercancel`, or window blur ends it. The hook restores the handle's previous `touch-action` style on cleanup.
+- Used by `Drawer`, which opts into vertical unbounded movement for its swipe-to-close gesture.
 
 ## useFetch
 File: `hooks/useFetch/useFetch.ts`
