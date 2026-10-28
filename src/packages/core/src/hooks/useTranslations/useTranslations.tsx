@@ -47,9 +47,7 @@ export const useTranslations = (
       Object.keys(values).forEach((key) => {
         const value = values[key];
 
-        if (value !== null && value !== undefined) {
-          res = res.replaceAll(`{{${key}}}`, String(value));
-        }
+        res = res.replaceAll(`{{${key}}}`, String(value));
       });
     }
 

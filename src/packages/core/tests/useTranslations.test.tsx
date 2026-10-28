@@ -63,7 +63,7 @@ describe("useTranslations", () => {
     ).toBe("Name: Ada, count: 3, active: false");
   });
 
-  it("leaves placeholders unchanged for null and undefined values", () => {
+  it("converts null and undefined values to their string representations", () => {
     const { result } = renderHook(() =>
       useTranslations({
         language: "en",
@@ -80,6 +80,28 @@ describe("useTranslations", () => {
         nullValue: null,
         undefinedValue: undefined,
       }),
-    ).toBe("Null: {{nullValue}}, missing: {{undefinedValue}}");
+    ).toBe("Null: null, missing: undefined");
+  });
+
+  it("converts unsupported runtime values to their natural string representations", () => {
+    const { result } = renderHook(() =>
+      useTranslations({
+        language: "en",
+        translations: {
+          values: {
+            en: "Object: {{objectValue}}, array: {{arrayValue}}",
+          },
+        },
+      }),
+    );
+
+    const values = {
+      objectValue: { label: "object" },
+      arrayValue: ["array"],
+    } as unknown as Record<string, string>;
+
+    expect(result.current.t("values", values)).toBe(
+      "Object: [object Object], array: array",
+    );
   });
 });

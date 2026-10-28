@@ -120,7 +120,7 @@ interface UseTranslationsOutput {
 }
 useTranslations(input: UseTranslationsInput): UseTranslationsOutput
 ```
-- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` for string, number, and boolean values. Null and undefined leave their placeholders unchanged. Returns `undefined` if the translation or the language entry is missing/empty.
+- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with the value's string representation. Null, undefined, arrays, and objects therefore appear as `null`, `undefined`, or their normal JavaScript string conversion. Returns `undefined` if the translation or the language entry is missing/empty.
 - `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; returns the key itself when the key or requested language is missing/empty.
 - No fallback language or pluralisation; no React context (language and dictionary are passed per call site).
 - These types are re-used by the `cv` package (`Translation`, `TranslationList`, `Language`).

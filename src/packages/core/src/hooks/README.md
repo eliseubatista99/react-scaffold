@@ -59,7 +59,7 @@ The hook starts with a `0 × 0` snapshot that is consistent between server rende
 
 ## useTranslations
 
-`useTranslations({ language, translations })` returns `t` and `getTranslation`. Interpolation accepts strings, numbers, and booleans. Null and undefined values are treated as missing and leave the matching placeholder unchanged; objects are not accepted by the TypeScript API. If the requested language entry is missing, `getTranslation` returns `undefined`, while `t` returns the translation key. Missing keys passed to `t` also return the key; no alternate language is used as a fallback.
+`useTranslations({ language, translations })` returns `t` and `getTranslation`. Its TypeScript API accepts strings, numbers, and booleans, but runtime values are converted using JavaScript's normal string conversion: `null` becomes `"null"`, `undefined` becomes `"undefined"`, and an object becomes `"[object Object]"`. If the requested language entry is missing, `getTranslation` returns `undefined`, while `t` returns the translation key. Missing keys passed to `t` also return the key; no alternate language is used as a fallback.
 
 ## useDidMount
 
