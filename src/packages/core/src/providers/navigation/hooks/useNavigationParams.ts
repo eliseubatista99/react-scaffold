@@ -56,6 +56,8 @@ export const useNavigationParams = (): NavigationParams => {
     [searchParams],
   );
 
+  const getAll = useCallback(() => allParams, [allParams]);
+
   const getMany = useCallback(
     (keys: readonly string[]) =>
       Object.fromEntries(keys.map((key) => [key, searchParams.get(key)])),
@@ -141,7 +143,7 @@ export const useNavigationParams = (): NavigationParams => {
   );
 
   return {
-    getAll: () => allParams,
+    getAll,
     getAllValues,
     get,
     getMany,

@@ -726,4 +726,30 @@ describe("Navigation query params", () => {
       "safe",
     );
   });
+
+  it("keeps getAll stable between renders and updates it when query params change", async () => {
+    const { result, rerender } = renderHook(() => useNavigation(), {
+      wrapper: ({ children }) => (
+        <MemoryRouter initialEntries={["/?initial=value"]}>
+          {children}
+        </MemoryRouter>
+      ),
+    });
+    const getAll = result.current.searchParams.getAll;
+
+    rerender();
+
+    expect(result.current.searchParams.getAll).toBe(getAll);
+    expect(result.current.searchParams.getAll()).toEqual({ initial: "value" });
+
+    result.current.searchParams.set("updated", "yes");
+
+    await waitFor(() => {
+      expect(result.current.searchParams.getAll).not.toBe(getAll);
+      expect(result.current.searchParams.getAll()).toEqual({
+        initial: "value",
+        updated: "yes",
+      });
+    });
+  });
 });

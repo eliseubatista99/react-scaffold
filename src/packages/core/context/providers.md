@@ -71,7 +71,7 @@ Wraps `useSearchParams()`:
 }
 ```
 - `get` and `getMany` return the first value for a query key as a string; they do not parse or coerce it. Missing keys return `null`.
-- `getAllValues(key)` returns every value for that key in URL order. `getAll()` returns a backwards-compatible flat object containing only the last value for each key; use `getAllValues` when duplicate keys matter.
+- `getAllValues(key)` returns every value for that key in URL order. `getAll()` returns a backwards-compatible flat object containing only the last value for each key; use `getAllValues` when duplicate keys matter. The `getAll` function reference stays stable until the query params change.
 - `set` and `setMany` accept strings, numbers, booleans, `null`/`undefined`, or readonly arrays of those values. Scalars replace all values for the key; arrays replace the key with repeated entries, skipping nullish array items. `null`/`undefined` scalar values remove the key. Updates made sequentially in the same event are composed in call order; `setMany` and `removeMany` remain available for explicit batch operations.
 - The `get<T>` generic was removed because it previously only cast a string without converting it. Convert explicitly at the call site when a number, boolean, or other type is needed.
 
