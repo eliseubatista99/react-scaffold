@@ -74,19 +74,21 @@ File: `hooks/useResponsive/useResponsive.ts`
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 type Size = "mobile" | "tablet" | "desktop";
 type BreakpointConfiguration = Record<Breakpoint, number>;
+type BreakpointConfigurationOverrides = Partial<BreakpointConfiguration>;
 const defaultBreakpoints = { xs: 0, sm: 420, md: 768, lg: 991, xl: 1200, xxl: 1440 };
 
-interface UseResponsiveInput { breakpointConfiguration?: BreakpointConfiguration; }
+interface UseResponsiveInput { breakpointConfiguration?: BreakpointConfigurationOverrides; }
 interface UseResponsiveOutput {
   currentWidth: number; currentHeight: number;
   currentBreakpoint: Breakpoint; currentSize: Size;
 }
 useResponsive(input?: UseResponsiveInput): UseResponsiveOutput
 ```
-- Config is merged over `defaultBreakpoints` (the type requires all keys; use a spread/cast to override partially).
+- Config is merged over `defaultBreakpoints`; overrides may specify only the breakpoints being changed.
 - Breakpoint: `< sm → xs`, `< md → sm`, `< lg → md`, `< xl → lg`, `< xxl → xl`, else `xxl`.
 - Size: `<= sm → mobile`, `<= md → tablet`, else `desktop`.
-- Uses `window.innerWidth/innerHeight` on `resize` (no debounce). Reads `window` during initial render (not SSR-safe).
+- Starts with a `0 × 0` snapshot so server rendering and the initial hydration render match; reads the actual viewport and listens for resize in an effect.
+- Recalculates when the breakpoint configuration changes. Resize updates are immediate (no debounce).
 
 ## useTranslations
 File: `hooks/useTranslations/useTranslations.tsx`

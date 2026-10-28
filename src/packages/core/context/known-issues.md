@@ -29,7 +29,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `useDrag`: un-cancellable `while` polling loop if the ref never resolves; overwrites `onpointerdown`; distances lag one update; coordinate `0` treated as missing; noisy `console.debug` on every move.
 - `usePointer` causes a re-render on every global pointer move for every consumer.
 - `useOnScreen` does not re-observe when the ref element changes.
-- `useResponsive` reads `window` during render (not SSR-safe); `BreakpointConfiguration` requires all keys even though values are merged with defaults; resize handler is captured once (config changes after mount ignored).
 - `useTranslations` has no fallback language.
 
 ## Helpers
