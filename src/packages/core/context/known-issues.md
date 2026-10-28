@@ -4,7 +4,7 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Exports / packaging
 - `EmailHelper` is implemented but not exported from `helpers/index.ts`.
-- `useNavigationParams`, `NavigationProviderContext` and `FeedbackProviderContext` are not exported (barrels only re-export the provider and main hook).
+- `useNavigationParams` and `FeedbackProviderContext` are not exported (barrels only re-export the provider and main hook).
 - `@emotion/styled` is only a devDependency and is not in `rollupOptions.external`, so it (and its emotion runtime) is bundled into `dist`. `@emotion/react` is not declared anywhere in the package.
 - `react-router-dom`, `react-slick`, `slick-carousel`, `dayjs` are peer deps but are **not** externalized in `vite.config.ts` (only `react`/`react-dom` are), so they may be bundled, duplicating router context with the consumer's copy.
 - `Carousel` imports slick CSS files as side effects; importing the package requires `slick-carousel` CSS to resolve.
@@ -40,9 +40,9 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
-- Initial page is never pushed to the internal history stack.
+- `useNavigation.goBack` delegates to browser history and can navigate outside the application when there is no suitable in-app history entry. React Router does not expose a reliable public API to inspect or clear the history stack.
 
 ## Outdated documentation
-- `src/providers/README.md` mentions `replaceHistory` on `useNavigation`, feedback items with `type`/`content`, and `getVisibleItemsOfType` — none of these exist in the current API.
+- `src/providers/README.md` contains outdated navigation examples and feedback items with `type`/`content` and `getVisibleItemsOfType` — those feedback APIs do not exist.
 - `src/hooks/README.md` shows `await fetch<SomeType>(url)` instead of `useFetch().get<SomeType>(url)`.
 - `src/components/README.md` and `src/helpers/README.md` cover only `Drawer` and `TextHelper`.

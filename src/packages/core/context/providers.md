@@ -1,11 +1,11 @@
 # Core — Providers
 
-Providers live in `src/providers/<name>/`. Each one has a context file (`<name>Context.ts`, with no-op defaults), a provider component and a consumer hook.
+Providers live in `src/providers/<name>/`. Providers that need shared state use a context and a consumer hook.
 
 ---
 
 ## NavigationProvider
-Files: `providers/navigation/navigationProvider.tsx`, `navigationContext.ts`, `hooks/useNavigation.ts`, `hooks/useNavigationParams.ts`. External: `react-router-dom` v7 (`BrowserRouter`, `Routes`, `Route`, `useNavigate`, `useLocation`, `useSearchParams`).
+Files: `providers/navigation/navigationProvider.tsx`, `hooks/useNavigation.ts`, `hooks/useNavigationParams.ts`. External: `react-router-dom` v7 (`BrowserRouter`, `Routes`, `Route`, `useNavigate`, `useLocation`, `useSearchParams`).
 
 ```ts
 interface NavigationProviderRoute { path: string; render: React.ReactNode; }
@@ -15,35 +15,25 @@ interface NavigationProviderInputProps {
   children?: React.ReactNode;           // rendered inside the router, after <Routes> (e.g. global overlays)
 }
 
-interface NavigationContextData {       // not exported from the package
-  history: string[];
-  addToHistory: (entry: string) => void;
-  popFromHistory: (count: number) => string;
-  replaceHistory: (entries: string[]) => void;
-}
 ```
-- Renders `Context.Provider > BrowserRouter > (isReady && <Routes>{routes}</Routes>) + children`. Each route → `<Route path element />` (no `key`).
-- Maintains its **own in-app history stack** (`string[]`, ref + state) alongside the browser history. It starts empty, so the initial page is not in the stack.
-- `popFromHistory(count)`: returns `"/"` if the stack is shorter than `count`; otherwise removes `count` entries and returns the new last entry.
+- Renders `BrowserRouter > (isReady && <Routes>{routes}</Routes>) + children`. Each configured route is rendered as a keyed `<Route>`.
+- Uses the React Router/browser history directly; the provider does not maintain a second navigation stack.
 
 ### useNavigation
 ```ts
 type GoToParams = { path: string; addToHistory?: boolean; params?: Record<string, unknown> };
-type GoBackParams = { steps?: number; defaultBackPath?: string; params?: Record<string, unknown> };
+type GoBackParams = { steps?: number };
 
 useNavigation(): {
   currentPath: string;                       // location.pathname
-  history: string[];
   searchParams: ReturnType<typeof useNavigationParams>;
   goTo: (data: GoToParams) => void;
-  goBack: (data: GoBackParams) => void;
-  clearHistory: () => void;
+  goBack: (data?: GoBackParams) => void;
 }
 ```
-- `goTo`: builds `path?query` from `params` (skips `null`/`undefined`, values stringified). `addToHistory !== false` → `navigate(url)` + push to stack. `addToHistory: false` → `navigate(url, { replace: true })` and replaces the last stack entry (only if the stack is not empty).
-- `goBack`: if the stack has entries → `navigate(-min(steps ?? 1, stack.length))` and pops. If empty and `defaultBackPath` is given → `goTo({ path: defaultBackPath, addToHistory: false, params })`. Otherwise does nothing.
-- `goBack({})` requires an object argument (no default).
-- `clearHistory`: `replaceHistory([])`.
+- `goTo`: builds `path?query` from `params` (skips `null`/`undefined`, values stringified). By default it pushes a browser history entry; `addToHistory: false` replaces the current entry.
+- `goBack`: navigates back by `steps` browser history entries (default `1`). It can navigate outside the app if there is no suitable in-app entry; the React Router public API does not expose a reliable way to inspect or clear the browser history stack.
+- Migration: `useNavigation().history`, `clearHistory`, and the conditional `defaultBackPath` fallback have been removed. The React Router public API does not expose the information or operation needed to implement them reliably.
 
 ### useNavigationParams (internal, available via `useNavigation().searchParams`)
 Wraps `useSearchParams()`:

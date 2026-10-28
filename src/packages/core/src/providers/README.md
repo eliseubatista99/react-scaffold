@@ -31,14 +31,14 @@ import { NavigationProvider } from "@react-scaffold-eliseubatista99/core/provide
 </NavigationProvider>;
 ```
 
-The provider comes with an hook to handle the necessary navigation actions, like going to a path, going back, getting the current path and even replacing the entire history with something else.
+The provider comes with a hook for navigation actions such as going to a path, going back, and reading the current path. Navigation history is managed by React Router and the browser.
 
 Let's say we want to go to the about screen when clicking a button, and going to the previous step when clicking another button:
 
 ```ts
 import { useNavigation } from "@react-scaffold-eliseubatista99/core/providers";
 
-const { currentPath, goBack, goTo, replaceHistory } = useNavigation();
+const { currentPath, goBack, goTo } = useNavigation();
 
 // Button to go to the about screen
 <button onClick={() => goTo("/about")}> About </button>;
@@ -46,6 +46,8 @@ const { currentPath, goBack, goTo, replaceHistory } = useNavigation();
 // Button to go to previous screen
 <button onClick={() => goBack()}> Back </button>;
 ```
+
+`goTo({ path, addToHistory: false })` replaces the current browser history entry. `goBack({ steps })` navigates backward by the requested number of entries (one by default). Browser history cannot be inspected or cleared through the public React Router API, so going back may leave the application if there is no suitable in-app entry.
 
 ## Feedback Provider
 

@@ -26,7 +26,7 @@ The base library of the scaffold: generic UI components, utility hooks, static h
 | Components | `Button`, `Carousel`, `Checkbox`, `Drawer`, `Form`, `Image`, `InputField`, `Loader`, `Modal`, `NumericInputField`, `PageLayout`, `ProgressBar`, `RadioButton`, `SvgImage`, `TextAreaField`, `Toast`, `Typography` (+ everything exported from each `<name>.tsx`, e.g. `*Props` types). The `use*Helper` logic hooks in `*.hook.ts` files are **internal** (not re-exported). | [context/components.md](context/components.md) |
 | Hooks | `useDidMount`, `useDrag`, `useFetch`, `useOnScreen`, `usePointer`, `useResponsive`, `useTranslations` (+ types such as `DragData`, `FetchOutput`, `Breakpoint`, `Size`, `Translation`, `TranslationList`, `Language`, `defaultBreakpoints`) | [context/hooks.md](context/hooks.md) |
 | Helpers | `FormsHelper`, `NumberHelper`, `ObjectsHelper`, `ScrollHelper`, `TextHelper`, `TimeHelper` (`EmailHelper` exists but is **not exported**) | [context/helpers.md](context/helpers.md) |
-| Providers | `NavigationProvider`, `NavigationProviderRoute`, `NavigationProviderInputProps`, `useNavigation`, `GoToParams`, `GoBackParams`, `FeedbackProvider`, `FeedbackProviderInputProps`, `useFeedback`. **Not exported:** `useNavigationParams` (reachable only through `useNavigation().searchParams`), `NavigationProviderContext`, `FeedbackProviderContext` | [context/providers.md](context/providers.md) |
+| Providers | `NavigationProvider`, `NavigationProviderRoute`, `NavigationProviderInputProps`, `useNavigation`, `GoToParams`, `GoBackParams`, `FeedbackProvider`, `FeedbackProviderInputProps`, `useFeedback`. **Not exported:** `useNavigationParams` (reachable only through `useNavigation().searchParams`), `FeedbackProviderContext` | [context/providers.md](context/providers.md) |
 | Types | `FormFieldConfiguration`, `FormFieldInputData`, `FormFieldOutputData` | [context/types.md](context/types.md) |
 
 ## Folder structure
@@ -37,7 +37,7 @@ src/
 ├── components/   17 components, one folder each (+ README.md)
 ├── helpers/      formsHelper, numberHelper, objectsHelper, scrollHelper, text, timeHelper, emailHelper (+ README.md)
 ├── hooks/        useDidMount, useDrag, useFetch, useOnScreen, usePointer, useResponsive, useTranslations (+ README.md)
-├── providers/    navigation/ (provider, context, hooks/), feedback/ (provider, context, useFeedback) (+ README.md)
+├── providers/    navigation/ (router provider, hooks/), feedback/ (provider, context, useFeedback) (+ README.md)
 └── types/        types.ts (form types)
 ```
 
