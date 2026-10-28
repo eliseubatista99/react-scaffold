@@ -16,11 +16,12 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom"], // evita que estas libs sejam incluídas no bundle
+      external: ["react", "react-dom", "react-router-dom"],
       output: {
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
+          "react-router-dom": "ReactRouterDOM",
         },
       },
     },

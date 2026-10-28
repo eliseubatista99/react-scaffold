@@ -33,7 +33,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite",
-    "test": "vitest run --environment jsdom"
+    "test": "vitest run --environment jsdom",
+    "test:package": "npm run build && node tests/package-router-smoke.cjs"
   },
   "devDependencies": {
     "@emotion/styled": "^11.14.1",

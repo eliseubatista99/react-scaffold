@@ -6,7 +6,7 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `EmailHelper` is implemented but not exported from `helpers/index.ts`.
 - `useNavigationParams` and `FeedbackProviderContext` are not exported (barrels only re-export the provider and main hook).
 - `@emotion/styled` is only a devDependency and is not in `rollupOptions.external`, so it (and its emotion runtime) is bundled into `dist`. `@emotion/react` is not declared anywhere in the package.
-- `react-router-dom`, `react-slick`, `slick-carousel`, `dayjs` are peer deps but are **not** externalized in `vite.config.ts` (only `react`/`react-dom` are), so they may be bundled, duplicating router context with the consumer's copy.
+- `react-slick`, `slick-carousel`, and `dayjs` are peer dependencies but are not externalized in `vite.config.ts`.
 - `Carousel` imports slick CSS files as side effects; importing the package requires `slick-carousel` CSS to resolve.
 - Library `name` in Vite config is the placeholder `MyComponentLibrary`.
 

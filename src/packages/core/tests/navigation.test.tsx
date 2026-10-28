@@ -95,6 +95,82 @@ const renderNavigation = () =>
   );
 const currentPath = () => screen.getByTestId("current-path").textContent;
 
+const QueryParamsControls = () => {
+  const { searchParams } = useNavigation();
+
+  return (
+    <div>
+      <output data-testid="query-state">
+        {JSON.stringify({
+          all: searchParams.getAll(),
+          repeated: searchParams.getAllValues("repeated"),
+          firstRepeated: searchParams.get("repeated"),
+          selected: searchParams.getMany(["repeated", "missing"]),
+        })}
+      </output>
+      <button onClick={() => searchParams.set("single", "value")}>
+        Set single param
+      </button>
+      <button
+        onClick={() =>
+          searchParams.set("repeated", [
+            "first",
+            null,
+            undefined,
+            "last",
+          ])
+        }
+      >
+        Set repeated params
+      </button>
+      <button onClick={() => searchParams.removeMany(["first", "second"])}>
+        Remove multiple params
+      </button>
+      <button
+        onClick={() => {
+          searchParams.remove("first");
+          searchParams.remove("second");
+        }}
+      >
+        Remove params in sequence
+      </button>
+      <button onClick={() => searchParams.removeAll()}>Remove all params</button>
+      <button
+        onClick={() => {
+          searchParams.set("first", "1");
+          searchParams.set("second", "2");
+        }}
+      >
+        Set params in sequence
+      </button>
+    </div>
+  );
+};
+
+const RelativeNavigationControls = () => {
+  const { currentPath, goTo } = useNavigation();
+
+  return (
+    <div>
+      <output data-testid="current-path">{currentPath}</output>
+      <button onClick={() => goTo({ path: "details" })}>Go to relative path</button>
+      <button onClick={() => goTo({ path: "?tab=overview" })}>
+        Go to query-only path
+      </button>
+      <button onClick={() => goTo({ path: "#section" })}>
+        Go to hash-only path
+      </button>
+    </div>
+  );
+};
+
+const renderQueryParams = (initialEntry = "/") =>
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <QueryParamsControls />
+    </MemoryRouter>,
+  );
+
 beforeEach(() => {
   window.history.replaceState({}, "", "/");
 });
@@ -288,5 +364,153 @@ describe("NavigationProvider", () => {
     });
 
     expect(screen.queryByTestId("configured-route")).toBeNull();
+  });
+
+  it("resolves relative, query-only, and hash-only paths from the URL root", async () => {
+    window.history.replaceState({}, "", "/parent/current?existing=value");
+
+    render(
+      <NavigationProvider routes={routes}>
+        <RelativeNavigationControls />
+      </NavigationProvider>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Go to relative path" }),
+    );
+    await waitFor(() => expect(currentPath()).toBe("/details"));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Go to query-only path" }),
+    );
+    await waitFor(() => expect(currentPath()).toBe("/"));
+    expect(window.location.search).toBe("?tab=overview");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Go to hash-only path" }),
+    );
+    await waitFor(() => expect(currentPath()).toBe("/"));
+    expect(window.location.hash).toBe("#section");
+  });
+
+  it("renders children but not configured routes when isReady is false", () => {
+    render(
+      <MemoryRouter initialEntries={["/not-ready"]}>
+        <NavigationRoutes
+          isReady={false}
+          routes={[
+            {
+              path: "/not-ready",
+              render: <div data-testid="not-ready-route">Route</div>,
+            },
+          ]}
+        >
+          <div data-testid="not-ready-child">Child</div>
+        </NavigationRoutes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByTestId("not-ready-route")).toBeNull();
+    expect(screen.getByTestId("not-ready-child")).toBeTruthy();
+  });
+});
+
+describe("Navigation query params", () => {
+  it("supports setting scalar and repeated values while skipping nullish array items", async () => {
+    renderQueryParams();
+
+    fireEvent.click(screen.getByRole("button", { name: "Set single param" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("query-state").textContent).toContain(
+        '"single":"value"',
+      ),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Set repeated params" }),
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId("query-state").textContent).toBe(
+        JSON.stringify({
+          all: { single: "value", repeated: "last" },
+          repeated: ["first", "last"],
+          firstRepeated: "first",
+          selected: { repeated: "first", missing: null },
+        }),
+      );
+    });
+  });
+
+  it("supports removing multiple and all query params", async () => {
+    renderQueryParams("/?keep=value&first=1&second=2");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Remove multiple params" }),
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("query-state").textContent).toBe(
+        JSON.stringify({
+          all: { keep: "value" },
+          repeated: [],
+          firstRepeated: null,
+          selected: { repeated: null, missing: null },
+        }),
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove all params" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("query-state").textContent).toBe(
+        JSON.stringify({
+          all: {},
+          repeated: [],
+          firstRepeated: null,
+          selected: { repeated: null, missing: null },
+        }),
+      ),
+    );
+  });
+
+  it("preserves sequential query updates made during the same event", async () => {
+    renderQueryParams();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Set params in sequence" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("query-state").textContent).toContain(
+        '"first":"1","second":"2"',
+      ),
+    );
+  });
+
+  it("preserves sequential query removals made during the same event", async () => {
+    renderQueryParams("/?first=1&second=2");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Remove params in sequence" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("query-state").textContent).toContain(
+        '"all":{}',
+      ),
+    );
+  });
+
+  it("returns __proto__ as an own query key from getMany", () => {
+    const { result } = renderHook(() => useNavigation(), {
+      wrapper: ({ children }) => (
+        <MemoryRouter initialEntries={["/?__proto__=safe"]}>
+          {children}
+        </MemoryRouter>
+      ),
+    });
+    const values = result.current.searchParams.getMany(["__proto__"]);
+
+    expect(Object.getOwnPropertyDescriptor(values, "__proto__")?.value).toBe(
+      "safe",
+    );
   });
 });

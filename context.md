@@ -125,7 +125,7 @@ src/packages/<name>/
 
 - Entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, files `dist/index.es.js` / `dist/index.cjs.js`.
 - `vite-plugin-dts({ insertTypesEntry: true })` generates `dist/index.d.ts`.
-- `rollupOptions.external: ["react", "react-dom"]` (firebase also externalizes all `firebase/*` modules).
+- `rollupOptions.external`: core externalizes `react`, `react-dom`, and `react-router-dom`; firebase also externalizes all `firebase/*` modules. Core keeps React Router external so its exported navigation APIs share the consuming application's router context.
 - `pdf` and `cv` additionally use `vite-plugin-static-copy` to copy `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` into `dist/`, and `assetsInclude: ["**/*.pdf"]`.
 - `package.json`: `main: dist/index.cjs.js`, `module: dist/index.es.js`, `types: dist/index.d.ts`, `files: ["dist/"]`, `publishConfig.access: public`, MIT license.
 
