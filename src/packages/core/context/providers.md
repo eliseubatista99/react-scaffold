@@ -103,7 +103,7 @@ useFeedback(): {
   hideItem: (id: string) => void;
 }
 ```
-- Outside a provider the context defaults are no-ops (nothing is ever visible), without throwing.
+- Must be called inside a `FeedbackProvider`; otherwise, it throws an error identifying the missing provider.
 
 ### Typical usage
 ```tsx

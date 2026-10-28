@@ -30,7 +30,7 @@ The navigation hook provides actions such as going to a path, going back, and re
 Let's say we want to go to the about screen when clicking a button, and going to the previous step when clicking another button:
 
 ```ts
-import { useNavigation } from "@react-scaffold-eliseubatista99/core/providers";
+import { useNavigation } from "@eliseubatista99/react-scaffold-core";
 
 const { currentPath, history, goBack, goTo } = useNavigation();
 
@@ -51,46 +51,43 @@ Sequential `searchParams` updates made during the same event are composed in cal
 
 ## Feedback Provider
 
-The feedback provider main purpose is to facilitate the management of dynamic feedback components that are meant to be hidden and shown, like modals, drawers, or toasts.
+`FeedbackProvider` tracks visible item IDs for feedback UI such as modals, drawers, toasts, and loaders. It accepts `children`; it does not take an `items` registry or render feedback content itself. The feedback components render their own content and use the shared IDs to determine visibility.
 
-To get started, in the file where you place your providers (ex: main.tsx) import and configure the feedback provider. The items parameter is a list of thos dynamic feedback components.
+Wrap the part of the application that needs feedback state:
 
-The id is used to identify the component, the type can be used to group that component in a category, and the content is what should be rendered when the component is visible.
+```tsx
+import { FeedbackProvider } from "@eliseubatista99/react-scaffold-core";
 
-```ts
-import { FeedbackProvider } from "@react-scaffold-eliseubatista99/core/providers";
-
-<FeedbackProvider
-  items={[
-    {
-      id: "example-modal",
-      type: "modal",
-      content: exampleModal,
-    },
-    {
-      id: "example-toast",
-      type: "toast",
-      content: exampleToast,
-    },
-  ]}
-></FeedbackProvider>;
+function App() {
+  return (
+    <FeedbackProvider>
+      <FeedbackControls />
+    </FeedbackProvider>
+  );
+}
 ```
 
-The provider comes with an hook to handle the necessary presentation actions. Considering the example above, let's say we want to show the example modal only if there are no other modals visible:
+Use `useFeedback` in a descendant to show or hide an item and check its visibility:
 
-```ts
-import { useFeedback } from "@react-scaffold-eliseubatista99/core/providers";
+`useFeedback` must be called inside a `FeedbackProvider`; it throws an error if no provider is present above the component.
 
-const { showItem, hideItem, isItemVisible, getVisibleItemsOfType } =
-  useFeedback();
+```tsx
+import { useFeedback } from "@eliseubatista99/react-scaffold-core";
 
-<>
-  //Check if there are any visible modals
-  {!getVisibleItemsOfType("drawer").length > 0 && (
-    // Show the component with the id "example-modal" on click
-    <button onClick={() => showItem("example-modal")}>Show Modal</button>
-  )}
-</>;
+function FeedbackControls() {
+  const { visibleItems, isItemVisible, showItem, hideItem } = useFeedback();
+  const itemId = "example-modal";
+
+  return (
+    <>
+      <button onClick={() => showItem(itemId)}>Show modal</button>
+      {isItemVisible(itemId) && (
+        <button onClick={() => hideItem(itemId)}>Hide modal</button>
+      )}
+      <p>Visible items: {visibleItems.join(", ")}</p>
+    </>
+  );
+}
 ```
 
-This example shows the use of getVisibleItemsOfType and showItem actions, but there are more useful actions on the hook (hideItem, isItemVisible);
+`showItem(id)` adds an ID only if it is not already visible; `hideItem(id)` removes it. `isItemVisible(id)` checks whether the ID is visible. Built-in components such as `Modal`, `Drawer`, `Toast`, and `Loader` use this provider state; render them with the same ID used by `showItem` and `hideItem`.

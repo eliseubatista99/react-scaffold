@@ -7,11 +7,5 @@ export interface FeedbackContextData {
   hideItem: (id: string) => void;
 }
 
-export const FeedbackProviderContext = React.createContext<FeedbackContextData>(
-  {
-    visibleItems: [],
-    isItemVisible: () => false,
-    showItem: () => {},
-    hideItem: () => {},
-  }
-);
+export const FeedbackProviderContext =
+  React.createContext<FeedbackContextData | undefined>(undefined);
