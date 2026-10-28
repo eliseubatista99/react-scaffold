@@ -7,9 +7,10 @@ All hooks live in `src/hooks/<useName>/` and are exported from the package root.
 ## useDidMount
 File: `hooks/useDidMount/useDidMount.ts`
 ```ts
-export const useDidMount = (arg: () => void) => useEffect(arg, []);
+export const useDidMount = (callback: EffectCallback): void => useEffect(callback, []);
 ```
-- Runs the callback once after mount. The callback may return a cleanup function. Under React `StrictMode` (dev) it runs twice.
+- Runs the callback after the component mounts and supports an optional cleanup function.
+- Like `useEffect`, development `StrictMode` performs an extra setup/cleanup cycle on initial mount. The callback is therefore not guaranteed to run exactly once; cleanup must safely undo the effect's setup.
 
 ## useDrag
 File: `hooks/useDrag/useDrag.tsx` — depends on `usePointer`.
@@ -106,6 +107,6 @@ interface UseTranslationsOutput {
 useTranslations(input: UseTranslationsInput): UseTranslationsOutput
 ```
 - `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with `values[key]` (`replaceAll`). Returns `undefined` if the translation or the language entry is missing/empty.
-- `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; **falls back to the key itself** when the key or language is missing.
-- No fallback language; no pluralisation; no React context (language and dictionary are passed per call site).
+- `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; returns the key itself when the key or requested language is missing/empty.
+- No fallback language or pluralisation; no React context (language and dictionary are passed per call site).
 - These types are re-used by the `cv` package (`Translation`, `TranslationList`, `Language`).

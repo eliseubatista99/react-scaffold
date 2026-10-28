@@ -56,3 +56,11 @@ The hook starts with a `0 × 0` snapshot that is consistent between server rende
 ## useOnScreen
 
 `useOnScreen(ref)` returns whether the referenced element intersects the viewport, using the browser's default `IntersectionObserver` options. It is safe to render on the server and returns `false` if `IntersectionObserver` is unavailable. When `ref.current` changes on a subsequent render, the hook disconnects the old observer and observes the new element.
+
+## useTranslations
+
+`useTranslations({ language, translations })` returns `t` and `getTranslation`. If the requested language entry is missing, `getTranslation` returns `undefined`, while `t` returns the translation key. Missing keys passed to `t` also return the key; no alternate language is used as a fallback.
+
+## useDidMount
+
+`useDidMount(callback)` runs an effect after the component mounts and accepts an optional cleanup function. It follows React's `useEffect` lifecycle: in development, `StrictMode` performs an extra setup/cleanup cycle, so the callback is not guaranteed to run exactly once. Make the effect safe to repeat and its cleanup safe to call.
