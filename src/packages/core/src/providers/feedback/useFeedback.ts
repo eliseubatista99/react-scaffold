@@ -8,22 +8,5 @@ export const useFeedback = () => {
     throw new Error("useFeedback must be used within a FeedbackProvider.");
   }
 
-  const isItemVisible = (id: string) => {
-    return feedbackContext.isItemVisible(id);
-  };
-
-  const showItem = (id: string) => {
-    feedbackContext.showItem(id);
-  };
-
-  const hideItem = (id: string) => {
-    feedbackContext.hideItem(id);
-  };
-
-  return {
-    visibleItems: feedbackContext.visibleItems,
-    isItemVisible,
-    showItem,
-    hideItem,
-  };
+  return feedbackContext;
 };

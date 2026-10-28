@@ -41,15 +41,18 @@ export const FeedbackProvider = ({ children }: FeedbackProviderInputProps) => {
     [isItemVisible, updateVisibleItems]
   );
 
+  const contextValue = React.useMemo(
+    () => ({
+      visibleItems,
+      isItemVisible,
+      showItem,
+      hideItem,
+    }),
+    [visibleItems, isItemVisible, showItem, hideItem]
+  );
+
   return (
-    <FeedbackProviderContext.Provider
-      value={{
-        visibleItems,
-        isItemVisible,
-        showItem,
-        hideItem,
-      }}
-    >
+    <FeedbackProviderContext.Provider value={contextValue}>
       {children}
     </FeedbackProviderContext.Provider>
   );

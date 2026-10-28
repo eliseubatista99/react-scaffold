@@ -1,5 +1,5 @@
-import { act, cleanup, renderHook } from "@testing-library/react";
-import type { PropsWithChildren } from "react";
+import { act, cleanup, render, renderHook } from "@testing-library/react";
+import { memo, type PropsWithChildren } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { FeedbackProvider, useFeedback } from "../src/providers/feedback";
 
@@ -99,5 +99,30 @@ describe("useFeedback", () => {
 
     expect(first.result.current.visibleItems).toEqual(["first-provider-item"]);
     expect(second.result.current.visibleItems).toEqual(["second-provider-item"]);
+  });
+
+  it("does not rerender memoized consumers when the provider value is unchanged", () => {
+    let renderCount = 0;
+    const MemoizedConsumer = memo(() => {
+      useFeedback();
+      renderCount += 1;
+      return null;
+    });
+
+    const { rerender } = render(
+      <FeedbackProvider>
+        <MemoizedConsumer />
+      </FeedbackProvider>,
+    );
+
+    expect(renderCount).toBe(1);
+
+    rerender(
+      <FeedbackProvider>
+        <MemoizedConsumer />
+      </FeedbackProvider>,
+    );
+
+    expect(renderCount).toBe(1);
   });
 });
