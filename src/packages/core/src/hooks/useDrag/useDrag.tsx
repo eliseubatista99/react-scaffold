@@ -42,6 +42,48 @@ interface ActiveDrag {
 
 const zeroPosition: DragPosition = { x: 0, y: 0 };
 
+const getPositionWithinContainer = (
+  element: HTMLElement,
+  container: HTMLElement,
+): DragPosition => {
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  return {
+    x:
+      elementRect.left -
+      containerRect.left -
+      container.clientLeft +
+      container.scrollLeft,
+    y:
+      elementRect.top -
+      containerRect.top -
+      container.clientTop +
+      container.scrollTop,
+  };
+};
+
+const limitPositionToContainer = (
+  position: DragPosition,
+  element: HTMLElement,
+  container: HTMLElement,
+): DragPosition => {
+  const maxX =
+    container.scrollLeft +
+    Math.max(0, container.clientWidth - element.getBoundingClientRect().width);
+  const maxY =
+    container.scrollTop +
+    Math.max(
+      0,
+      container.clientHeight - element.getBoundingClientRect().height,
+    );
+
+  return {
+    x: Math.min(Math.max(position.x, container.scrollLeft), maxX),
+    y: Math.min(Math.max(position.y, container.scrollTop), maxY),
+  };
+};
+
 export const useDrag = ({
   axis = "both",
   bounds = true,
@@ -94,15 +136,7 @@ export const useDrag = ({
         return nextPosition;
       }
 
-      const targetRect = target.getBoundingClientRect();
-      const containerRect = boundsElement.getBoundingClientRect();
-      const maxX = Math.max(0, containerRect.width - targetRect.width);
-      const maxY = Math.max(0, containerRect.height - targetRect.height);
-
-      return {
-        x: Math.min(Math.max(nextPosition.x, 0), maxX),
-        y: Math.min(Math.max(nextPosition.y, 0), maxY),
-      };
+      return limitPositionToContainer(nextPosition, target, boundsElement);
     },
     [],
   );
@@ -111,17 +145,14 @@ export const useDrag = ({
     if (!element) return;
 
     const boundsElement = container ?? element.parentElement;
-    const elementRect = element.getBoundingClientRect();
-    const containerRect = boundsElement?.getBoundingClientRect();
-
-    setPosition({
-      x: containerRect
-        ? elementRect.left - containerRect.left
-        : elementRect.left,
-      y: containerRect
-        ? elementRect.top - containerRect.top
-        : elementRect.top,
-    });
+    setPosition(
+      boundsElement
+        ? getPositionWithinContainer(element, boundsElement)
+        : {
+            x: element.getBoundingClientRect().left,
+            y: element.getBoundingClientRect().top,
+          },
+    );
   }, [container, element]);
 
   React.useEffect(() => {
@@ -136,16 +167,12 @@ export const useDrag = ({
       }
 
       const boundsElement = container ?? element.parentElement;
-      const elementRect = element.getBoundingClientRect();
-      const containerRect = boundsElement?.getBoundingClientRect();
-      const currentPosition = {
-        x: containerRect
-          ? elementRect.left - containerRect.left
-          : elementRect.left,
-        y: containerRect
-          ? elementRect.top - containerRect.top
-          : elementRect.top,
-      };
+      const currentPosition = boundsElement
+        ? getPositionWithinContainer(element, boundsElement)
+        : {
+            x: element.getBoundingClientRect().left,
+            y: element.getBoundingClientRect().top,
+          };
       const boundedPosition = limitPosition(
         currentPosition,
         element,

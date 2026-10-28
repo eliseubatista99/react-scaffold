@@ -42,7 +42,7 @@ useDrag(input?: UseDragInput): UseDragOutput
 ```
 - Attach `ref` to the movable element and `containerRef` to its bounds container (or omit the container ref to use the element's parent). `handleRef` optionally attaches dragging to a separate handle; otherwise the element itself is the handle.
 - Apply the returned `style` to the movable element. The hook uses a CSS transform and owns that transform while active.
-- The default bounds keep the element inside the container. `bounds: false` permits overflow; `axis: "x"` or `"y"` restricts movement to one axis.
+- The default bounds keep the element inside the container's visible inner area, excluding borders and accounting for its scroll offset. `bounds: false` permits overflow; `axis: "x"` or `"y"` restricts movement to one axis.
 - Position is retained after release by default; `resetOnDragEnd: true` returns the element to its position at the start of the drag.
 - Position is measured from the container's top-left and is `null` until the element ref is attached. Callback data includes the current `position`, movement `delta`, and drag state.
 - Primary pointer events start dragging; `pointerup`, `pointercancel`, or window blur ends it. The hook restores the handle's previous `touch-action` style on cleanup.

@@ -22,7 +22,21 @@ const rect = (left: number, top: number, width: number, height: number) =>
     toJSON: () => ({}),
   }) as DOMRect;
 
-const createDragFixture = (options: UseDragInput = {}) => {
+interface DragFixtureGeometry {
+  containerRect?: DOMRect;
+  targetRect?: DOMRect;
+  clientLeft?: number;
+  clientTop?: number;
+  clientWidth?: number;
+  clientHeight?: number;
+  scrollLeft?: number;
+  scrollTop?: number;
+}
+
+const createDragFixture = (
+  options: UseDragInput = {},
+  geometry: DragFixtureGeometry = {},
+) => {
   let drag: UseDragOutput;
 
   const TestComponent = () => {
@@ -31,8 +45,28 @@ const createDragFixture = (options: UseDragInput = {}) => {
       (node: HTMLElement | null) => {
         if (node) {
           vi.spyOn(node, "getBoundingClientRect").mockReturnValue(
-            rect(0, 0, 100, 100),
+            geometry.containerRect ?? rect(0, 0, 100, 100),
           );
+          Object.defineProperties(node, {
+            clientLeft: { configurable: true, value: geometry.clientLeft ?? 0 },
+            clientTop: { configurable: true, value: geometry.clientTop ?? 0 },
+            clientWidth: {
+              configurable: true,
+              value: geometry.clientWidth ?? 100,
+            },
+            clientHeight: {
+              configurable: true,
+              value: geometry.clientHeight ?? 100,
+            },
+            scrollLeft: {
+              configurable: true,
+              value: geometry.scrollLeft ?? 0,
+            },
+            scrollTop: {
+              configurable: true,
+              value: geometry.scrollTop ?? 0,
+            },
+          });
         }
         drag.containerRef(node);
       },
@@ -42,7 +76,7 @@ const createDragFixture = (options: UseDragInput = {}) => {
       (node: HTMLElement | null) => {
         if (node) {
           vi.spyOn(node, "getBoundingClientRect").mockReturnValue(
-            rect(20, 30, 40, 40),
+            geometry.targetRect ?? rect(20, 30, 40, 40),
           );
         }
         drag.ref(node);
@@ -117,6 +151,50 @@ describe("useDrag", () => {
     expect(getDrag().isDragging).toBe(false);
   });
 
+  it("calculates bounds from the container's inner area and current scroll offset", () => {
+    const { target, getDrag } = createDragFixture(
+      {},
+      {
+        containerRect: rect(100, 200, 200, 200),
+        targetRect: rect(150, 250, 40, 40),
+        clientLeft: 10,
+        clientTop: 8,
+        clientWidth: 180,
+        clientHeight: 170,
+        scrollLeft: 25,
+        scrollTop: 15,
+      },
+    );
+
+    expect(getDrag().position).toEqual({ x: 65, y: 57 });
+
+    dispatchPointerEvent(target, "pointerdown", {
+      clientX: 160,
+      clientY: 260,
+    });
+    dispatchPointerEvent(window, "pointermove", {
+      clientX: 500,
+      clientY: 600,
+    });
+
+    expect(getDrag().position).toEqual({ x: 165, y: 145 });
+
+    dispatchPointerEvent(window, "pointerup", {
+      clientX: 500,
+      clientY: 600,
+    });
+    dispatchPointerEvent(target, "pointerdown", {
+      clientX: 160,
+      clientY: 260,
+    });
+    dispatchPointerEvent(window, "pointermove", {
+      clientX: -1000,
+      clientY: -1000,
+    });
+
+    expect(getDrag().position).toEqual({ x: 25, y: 15 });
+  });
+
   it("can restrict movement to one axis and disable container bounds", () => {
     const { target, getDrag } = createDragFixture({
       axis: "y",
@@ -159,6 +237,10 @@ describe("useDrag", () => {
             vi.spyOn(node, "getBoundingClientRect").mockReturnValue(
               rect(0, 0, 100, 100),
             );
+            Object.defineProperties(node, {
+              clientWidth: { configurable: true, value: 100 },
+              clientHeight: { configurable: true, value: 100 },
+            });
           }
           drag.containerRef(node);
         },
