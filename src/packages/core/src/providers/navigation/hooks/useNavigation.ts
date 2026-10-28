@@ -86,6 +86,14 @@ export const useNavigation = () => {
         }
       }
 
+      if (!historyTracker) {
+        if (data.defaultBackPath !== undefined) {
+          navigate(data.defaultBackPath, { replace: true });
+        }
+
+        return;
+      }
+
       navigate(-steps);
     },
     [historyTracker, navigate],

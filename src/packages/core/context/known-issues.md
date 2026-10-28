@@ -32,7 +32,7 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
-- `useNavigation.goBack` can still navigate outside the application when no `defaultBackPath` is supplied or when history tracking is unavailable. `NavigationRoutes` only knows entries created after it mounted.
+- `NavigationRoutes` only knows entries created after it mounted; navigation history from before it mounted or from a separate router is not tracked.
 
 ## Outdated documentation
 - `src/providers/README.md` contains outdated navigation examples and feedback items with `type`/`content` and `getVisibleItemsOfType` — those feedback APIs do not exist.

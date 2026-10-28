@@ -203,6 +203,19 @@ const FallbackNavigationControls = () => {
   );
 };
 
+const UntrackedNavigationControls = () => {
+  const { goBack } = useNavigation();
+
+  return (
+    <div>
+      <button onClick={() => goBack()}>Back without tracking</button>
+      <button onClick={() => goBack({ defaultBackPath: "/fallback" })}>
+        Back with fallback without tracking
+      </button>
+    </div>
+  );
+};
+
 const LocationProbe = () => {
   const location = useLocation();
 
@@ -237,6 +250,17 @@ const renderFallbackNavigation = (initialEntry: string) =>
         <FallbackNavigationControls />
         <LocationProbe />
       </NavigationRoutes>
+    </MemoryRouter>,
+  );
+
+const renderUntrackedNavigation = () =>
+  render(
+    <MemoryRouter
+      initialEntries={["/outside", "/initial"]}
+      initialIndex={1}
+    >
+      <UntrackedNavigationControls />
+      <LocationProbe />
     </MemoryRouter>,
   );
 
@@ -415,6 +439,42 @@ describe("NavigationProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "Go back" }));
 
     await waitFor(() => expect(currentPath()).toBe("/initial"));
+  });
+
+  it("does not leave the app when navigation history is not tracked", () => {
+    renderUntrackedNavigation();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back without tracking" }),
+    );
+
+    expect(screen.getByTestId("router-location").textContent).toBe(
+      JSON.stringify({
+        pathname: "/initial",
+        search: "",
+        hash: "",
+      }),
+    );
+  });
+
+  it("uses defaultBackPath when navigation history is not tracked", async () => {
+    renderUntrackedNavigation();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Back with fallback without tracking",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/fallback",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
   });
 
   it("replaces the current entry when navigating to defaultBackPath", async () => {
