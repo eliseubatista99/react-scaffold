@@ -39,11 +39,12 @@ ObjectsHelper.isSameObject(o1: any, o2: any): boolean
 ## ScrollHelper
 File: `helpers/scrollHelper/scrollHelper.ts`
 ```ts
-ScrollHelper.isScrollEnabled(): boolean  // body.style.overflow is "unset" or "auto"
-ScrollHelper.disableScroll(): void       // body.style.overflow = "hidden"
-ScrollHelper.enableScroll(): void        // body.style.overflow = "unset"
+ScrollHelper.isScrollEnabled(): boolean  // checks computed body overflowY
+ScrollHelper.disableScroll(): void       // sets body overflow to hidden
+ScrollHelper.enableScroll(): void        // restores the inline overflow saved by disableScroll
 ```
-- `isScrollEnabled()` returns `false` when the inline style was never set (`""`).
+- The first `disableScroll()` saves the current inline overflow value and priority; repeated calls are idempotent. `enableScroll()` restores the saved value, or removes the inline property if none was set.
+- `isScrollEnabled()` treats computed `overflowY: hidden` or `clip` as disabled. Without a DOM, it returns `true` and the mutating methods do nothing.
 
 ## TextHelper
 File: `helpers/text/textHelper.ts`
