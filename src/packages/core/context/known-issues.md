@@ -40,7 +40,7 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
-- `useNavigation.goBack` delegates to browser history and can navigate outside the application when there is no suitable in-app history entry. React Router does not expose a reliable public API to inspect or clear the history stack.
+- `useNavigation.goBack` can still navigate outside the application when no `defaultBackPath` is supplied or when history tracking is unavailable. `NavigationRoutes` only knows entries created after it mounted.
 
 ## Outdated documentation
 - `src/providers/README.md` contains outdated navigation examples and feedback items with `type`/`content` and `getVisibleItemsOfType` — those feedback APIs do not exist.

@@ -14,7 +14,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { Link, MemoryRouter } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import {
   NavigationProvider,
   NavigationRoutes,
@@ -148,12 +148,24 @@ const QueryParamsControls = () => {
 };
 
 const RelativeNavigationControls = () => {
-  const { currentPath, goTo } = useNavigation();
+  const { goTo } = useNavigation();
 
   return (
     <div>
-      <output data-testid="current-path">{currentPath}</output>
       <button onClick={() => goTo({ path: "details" })}>Go to relative path</button>
+      <button
+        onClick={() =>
+          goTo({
+            path: "details?existing=1#section",
+            params: { existing: "2", added: "value" },
+          })
+        }
+      >
+        Go to relative path with params
+      </button>
+      <button onClick={() => goTo({ path: "/expenses" })}>
+        Go to root path
+      </button>
       <button onClick={() => goTo({ path: "?tab=overview" })}>
         Go to query-only path
       </button>
@@ -163,6 +175,68 @@ const RelativeNavigationControls = () => {
     </div>
   );
 };
+
+const FallbackNavigationControls = () => {
+  const { goBack, goTo } = useNavigation();
+
+  return (
+    <div>
+      <button onClick={() => goTo({ path: "/one" })}>Go to one</button>
+      <button onClick={() => goTo({ path: "/two" })}>Go to two</button>
+      <button
+        onClick={() =>
+          goBack({ defaultBackPath: "/fallback" })
+        }
+      >
+        Back with fallback
+      </button>
+      <button
+        onClick={() =>
+          goBack({ steps: 2, defaultBackPath: "/fallback" })
+        }
+      >
+        Back two with fallback
+      </button>
+    </div>
+  );
+};
+
+const LocationProbe = () => {
+  const location = useLocation();
+
+  return (
+    <output data-testid="router-location">
+      {JSON.stringify({
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash,
+      })}
+    </output>
+  );
+};
+
+const renderRelativeNavigation = (initialEntry: string) =>
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Routes>
+        <Route
+          path="/parent/current"
+          element={<RelativeNavigationControls />}
+        />
+      </Routes>
+      <LocationProbe />
+    </MemoryRouter>,
+  );
+
+const renderFallbackNavigation = (initialEntry: string) =>
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <NavigationRoutes routes={routes}>
+        <FallbackNavigationControls />
+        <LocationProbe />
+      </NavigationRoutes>
+    </MemoryRouter>,
+  );
 
 const renderQueryParams = (initialEntry = "/") =>
   render(
@@ -234,6 +308,89 @@ describe("NavigationProvider", () => {
     await waitFor(() => {
       expect(currentPath()).toBe("/first");
     });
+  });
+
+  it("uses defaultBackPath when no tracked in-app history entry is available", async () => {
+    renderFallbackNavigation("/initial");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back with fallback" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/fallback",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("prefers normal back navigation when tracked in-app history is available", async () => {
+    renderFallbackNavigation("/initial");
+    fireEvent.click(screen.getByRole("button", { name: "Go to one" }));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back with fallback" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/initial",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("uses defaultBackPath when tracked history has fewer entries than steps", async () => {
+    renderFallbackNavigation("/initial");
+    fireEvent.click(screen.getByRole("button", { name: "Go to one" }));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back two with fallback" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/fallback",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("replaces the current entry when navigating to defaultBackPath", async () => {
+    renderFallbackNavigation("/initial");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back with fallback" }),
+    );
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toContain(
+        '"/fallback"',
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Go to one" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Back with fallback" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/fallback",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
   });
 
   it("rejects invalid goBack step counts", () => {
@@ -366,31 +523,87 @@ describe("NavigationProvider", () => {
     expect(screen.queryByTestId("configured-route")).toBeNull();
   });
 
-  it("resolves relative, query-only, and hash-only paths from the URL root", async () => {
-    window.history.replaceState({}, "", "/parent/current?existing=value");
-
-    render(
-      <NavigationProvider routes={routes}>
-        <RelativeNavigationControls />
-      </NavigationProvider>,
-    );
-
+  it("resolves paths without a leading slash relative to the current route", async () => {
+    renderRelativeNavigation("/parent/current?existing=value");
     fireEvent.click(
       screen.getByRole("button", { name: "Go to relative path" }),
     );
-    await waitFor(() => expect(currentPath()).toBe("/details"));
 
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/parent/current/details",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("applies query params without changing relative path resolution", async () => {
+    renderRelativeNavigation("/parent/current");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Go to relative path with params" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/parent/current/details",
+          search: "?existing=2&added=value",
+          hash: "#section",
+        }),
+      ),
+    );
+  });
+
+  it("resolves paths with a leading slash from the router root", async () => {
+    renderRelativeNavigation("/parent/current");
+    fireEvent.click(screen.getByRole("button", { name: "Go to root path" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/expenses",
+          search: "",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("resolves query-only paths against the current route", async () => {
+    renderRelativeNavigation("/parent/current?existing=value#old");
     fireEvent.click(
       screen.getByRole("button", { name: "Go to query-only path" }),
     );
-    await waitFor(() => expect(currentPath()).toBe("/"));
-    expect(window.location.search).toBe("?tab=overview");
 
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/parent/current",
+          search: "?tab=overview",
+          hash: "",
+        }),
+      ),
+    );
+  });
+
+  it("resolves hash-only paths against the current route", async () => {
+    renderRelativeNavigation("/parent/current?existing=value#old");
     fireEvent.click(
       screen.getByRole("button", { name: "Go to hash-only path" }),
     );
-    await waitFor(() => expect(currentPath()).toBe("/"));
-    expect(window.location.hash).toBe("#section");
+
+    await waitFor(() =>
+      expect(screen.getByTestId("router-location").textContent).toBe(
+        JSON.stringify({
+          pathname: "/parent/current",
+          search: "",
+          hash: "#section",
+        }),
+      ),
+    );
   });
 
   it("renders children but not configured routes when isReady is false", () => {

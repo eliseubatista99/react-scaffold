@@ -41,7 +41,7 @@ type NavigationParamInput =
   | NavigationParamValue
   | readonly NavigationParamValue[];
 type GoToParams = { path: string; addToHistory?: boolean; params?: Record<string, NavigationParamInput> };
-type GoBackParams = { steps?: number };
+type GoBackParams = { steps?: number; defaultBackPath?: string };
 
 useNavigation(): {
   currentPath: string;                       // location.pathname
@@ -50,8 +50,8 @@ useNavigation(): {
   goBack: (data?: GoBackParams) => void;
 }
 ```
-- `goTo`: navigates to `path`, preserving its existing query string and hash. Values in `params` are serialized with JavaScript `String` and encoded by `URLSearchParams`: strings are unchanged before URL encoding, numbers use their JavaScript string representation, and booleans become `"true"` or `"false"`. Scalar `null`/`undefined` values are skipped, leaving any same-named query values already in `path` unchanged. Scalar values replace any existing query values for that key. Array values replace that key and append one query entry per non-null item, preserving array order; an empty array removes the existing key. By default navigation pushes a browser history entry; `addToHistory: false` replaces the current entry.
-- `goBack`: navigates back by `steps` browser history entries (default `1`). `steps` must be a positive safe integer; invalid values throw a `RangeError`. It can navigate outside the app if there is no suitable in-app entry; the React Router public API does not expose a reliable way to inspect or clear the browser history stack.
+- `goTo`: delegates path resolution to React Router. Paths starting with `/` resolve from the router root; paths without a leading slash resolve relative to the current route. Query-only and hash-only destinations follow React Router navigation semantics. When `params` are provided, the path's relative or absolute pathname and hash are preserved while query values are merged. Values in `params` are serialized with JavaScript `String` and encoded by `URLSearchParams`: strings are unchanged before URL encoding, numbers use their JavaScript string representation, and booleans become `"true"` or `"false"`. Scalar `null`/`undefined` values are skipped, leaving any same-named query values already in `path` unchanged. Scalar values replace any existing query values for that key. Array values replace that key and append one query entry per non-null item, preserving array order; an empty array removes the existing key. By default navigation pushes a browser history entry; `addToHistory: false` replaces the current entry.
+- `goBack`: navigates back by `steps` known in-app history entries (default `1`). `steps` must be a positive safe integer; invalid values throw a `RangeError`. If fewer tracked in-app entries are available than requested, `defaultBackPath` is navigated to with `replace`. The tracker observes entries while `NavigationRoutes` is mounted; entries created before it mounted or by a different router are not known. Without a `defaultBackPath`, the hook preserves the native React Router back behavior.
 - Migration: `useNavigation().history`, `clearHistory`, and the conditional `defaultBackPath` fallback have been removed. The React Router public API does not expose the information or operation needed to implement them reliably.
 - `useNavigation` works inside any compatible React Router; it does not require the legacy `NavigationProvider` when the app already provides a router.
 
