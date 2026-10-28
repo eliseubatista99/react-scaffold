@@ -27,7 +27,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Helpers
 - `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).
-- `TimeHelper.waitForCondition*` have no timeout.
 
 ## Providers
 - `NavigationRoutes` only knows entries created after it mounted; navigation history from before it mounted or from a separate router is not tracked.

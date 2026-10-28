@@ -59,8 +59,8 @@ TextHelper.isValidName(value: string): boolean             // Latin letters incl
 File: `helpers/timeHelper/timeHelper.ts` — uses `dayjs` + `dayjs/plugin/utc` (extended at module load).
 ```ts
 TimeHelper.waitForMilliseconds(ms: number): Promise<void>
-TimeHelper.waitForCondition(condition: () => boolean): Promise<void>               // polls every 100 ms, no timeout
-TimeHelper.waitForAsyncCondition(condition: () => Promise<boolean>): Promise<void> // polls every 100 ms, no timeout
+TimeHelper.waitForCondition(condition: () => boolean, options?: { timeoutMs?: number; signal?: AbortSignal }): Promise<void>
+TimeHelper.waitForAsyncCondition(condition: () => Promise<boolean>, options?: { timeoutMs?: number; signal?: AbortSignal }): Promise<void>
 TimeHelper.differenceInMonths(d1: Date, d2: Date): number                           // (y2-y1)*12 - m1 + m2
 TimeHelper.isDateOneAfterDateTwo(d1: Date, d2: Date): boolean                       // compares local calendar dates, ignoring time
 TimeHelper.isSameDate(d1?: Date, d2?: Date): boolean                                // year/month/date equality
@@ -70,6 +70,7 @@ TimeHelper.formatDateUTC(date?: string | null, format = "DD/MM/YYYYㆍHH:mm"): s
 ```
 - `month` in `getDateInUTC` is **0-based** (dayjs). `weekday` 0 = Sunday.
 - Format functions return `""` for empty input. The default format uses the Hangul character `ㆍ` (U+318D) as separator.
+- Condition waits poll every 100 ms, with no timeout unless `timeoutMs` is provided (0–2,147,483,647 ms). They reject with `TimeoutError` on timeout and `AbortError` when the optional `signal` is aborted. Errors from the condition are propagated. Aborting stops the wait but cannot cancel a condition callback already in progress.
 
 ## EmailHelper (not exported)
 File: `helpers/emailHelper/emailHelper.ts`

@@ -3,38 +3,149 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
+export interface WaitForConditionOptions {
+  timeoutMs?: number;
+  signal?: AbortSignal;
+}
+
+const MAX_TIMEOUT_MS = 2_147_483_647;
+
+const createWaitError = (
+  name: "AbortError" | "TimeoutError",
+  message: string,
+) => {
+  const error = new Error(message);
+  error.name = name;
+  return error;
+};
+
+const waitForCondition = (
+  condition: () => boolean | Promise<boolean>,
+  options: WaitForConditionOptions = {},
+): Promise<void> => {
+  const { timeoutMs, signal } = options;
+
+  if (
+    timeoutMs !== undefined &&
+    (!Number.isFinite(timeoutMs) ||
+      timeoutMs < 0 ||
+      timeoutMs > MAX_TIMEOUT_MS)
+  ) {
+    return Promise.reject(
+      new RangeError(
+        `timeoutMs must be between 0 and ${MAX_TIMEOUT_MS} milliseconds.`,
+      ),
+    );
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let pollTimer: ReturnType<typeof setTimeout> | undefined;
+    let timeoutTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const cleanup = () => {
+      if (pollTimer !== undefined) {
+        clearTimeout(pollTimer);
+      }
+
+      if (timeoutTimer !== undefined) {
+        clearTimeout(timeoutTimer);
+      }
+
+      signal?.removeEventListener("abort", handleAbort);
+    };
+
+    const settle = (callback: () => void) => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      cleanup();
+      callback();
+    };
+
+    const handleAbort = () => {
+      settle(() =>
+        reject(
+          createWaitError("AbortError", "The condition wait was aborted."),
+        ),
+      );
+    };
+
+    if (signal?.aborted) {
+      handleAbort();
+      return;
+    }
+
+    signal?.addEventListener("abort", handleAbort, { once: true });
+
+    if (timeoutMs !== undefined) {
+      timeoutTimer = setTimeout(
+        () =>
+          settle(() =>
+            reject(
+              createWaitError(
+                "TimeoutError",
+                `The condition was not met within ${timeoutMs} ms.`,
+              ),
+            ),
+          ),
+        timeoutMs,
+      );
+    }
+
+    const checkCondition = () => {
+      if (settled) {
+        return;
+      }
+
+      let result: boolean | Promise<boolean>;
+
+      try {
+        result = condition();
+      } catch (error) {
+        settle(() => reject(error));
+        return;
+      }
+
+      Promise.resolve(result).then(
+        (isConditionMet) => {
+          if (settled) {
+            return;
+          }
+
+          if (isConditionMet) {
+            settle(resolve);
+          } else {
+            pollTimer = setTimeout(checkCondition, 100);
+          }
+        },
+        (error: unknown) => settle(() => reject(error)),
+      );
+    };
+
+    checkCondition();
+  });
+};
+
 export class TimeHelper {
   static waitForMilliseconds = (ms: number): Promise<void> => {
     return new Promise((res) => setTimeout(res, ms));
   };
 
-  static waitForCondition = (condition: () => boolean): Promise<void> => {
-    return new Promise((resolve) => {
-      const checkCondition = () => {
-        if (condition()) {
-          resolve();
-        } else {
-          setTimeout(checkCondition, 100);
-        }
-      };
-      checkCondition();
-    });
+  static waitForCondition = (
+    condition: () => boolean,
+    options?: WaitForConditionOptions,
+  ): Promise<void> => {
+    return waitForCondition(condition, options);
   };
 
   static waitForAsyncCondition = (
-    condition: () => Promise<boolean>
+    condition: () => Promise<boolean>,
+    options?: WaitForConditionOptions,
   ): Promise<void> => {
-    return new Promise((resolve) => {
-      const checkCondition = async () => {
-        const result = await condition();
-        if (result) {
-          resolve();
-        } else {
-          setTimeout(checkCondition, 100);
-        }
-      };
-      checkCondition();
-    });
+    return waitForCondition(condition, options);
   };
 
   static differenceInMonths = (d1: Date, d2: Date): number => {
