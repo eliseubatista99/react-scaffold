@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useMemo, useRef } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export type NavigationParamValue = string | number | boolean | null | undefined;
 export type NavigationParamInput =
@@ -42,6 +42,14 @@ const appendValues = (
 
 export const useNavigationParams = (): NavigationParams => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { search } = useLocation();
+  const pendingSearchParams = useRef(new URLSearchParams(search));
+  const observedSearch = useRef(search);
+
+  if (observedSearch.current !== search) {
+    observedSearch.current = search;
+    pendingSearchParams.current = new URLSearchParams(search);
+  }
 
   const allParams = useMemo(
     () => Object.fromEntries(searchParams.entries()),
@@ -49,13 +57,8 @@ export const useNavigationParams = (): NavigationParams => {
   );
 
   const getMany = useCallback(
-    (keys: readonly string[]) => {
-      const result: Record<string, string | null> = {};
-      keys.forEach((key) => {
-        result[key] = searchParams.get(key);
-      });
-      return result;
-    },
+    (keys: readonly string[]) =>
+      Object.fromEntries(keys.map((key) => [key, searchParams.get(key)])),
     [searchParams],
   );
 
@@ -69,54 +72,61 @@ export const useNavigationParams = (): NavigationParams => {
     [searchParams],
   );
 
+  const updateSearchParams = useCallback(
+    (update: (params: URLSearchParams) => URLSearchParams) => {
+      const updatedParams = update(
+        new URLSearchParams(pendingSearchParams.current),
+      );
+      pendingSearchParams.current = new URLSearchParams(updatedParams);
+      setSearchParams(updatedParams);
+    },
+    [setSearchParams],
+  );
+
   const remove = useCallback(
     (key: string) => {
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete(key);
-      setSearchParams(newParams);
+      updateSearchParams((params) => {
+        params.delete(key);
+        return params;
+      });
     },
-    [searchParams, setSearchParams],
+    [updateSearchParams],
   );
 
   const removeMany = useCallback(
     (keys: readonly string[]) => {
-      const newParams = new URLSearchParams(searchParams);
-
-      keys.forEach((key) => {
-        newParams.delete(key);
+      updateSearchParams((params) => {
+        keys.forEach((key) => {
+          params.delete(key);
+        });
+        return params;
       });
-
-      setSearchParams(newParams);
     },
-    [searchParams, setSearchParams],
+    [updateSearchParams],
   );
 
-  const removeAll = useCallback(() => {
-    setSearchParams({});
-  }, [setSearchParams]);
+  const removeAll = useCallback(
+    () => updateSearchParams(() => new URLSearchParams()),
+    [updateSearchParams],
+  );
 
   const set = useCallback(
     (key: string, value: NavigationParamInput) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-
+      updateSearchParams((params) => {
         if (value === null || value === undefined) {
           params.delete(key);
         } else {
           appendValues(params, key, value);
         }
-
         return params;
       });
     },
-    [setSearchParams],
+    [updateSearchParams],
   );
 
   const setMany = useCallback(
     (values: Record<string, NavigationParamInput>) => {
-      setSearchParams((prev) => {
-        const params = new URLSearchParams(prev);
-
+      updateSearchParams((params) => {
         Object.entries(values).forEach(([key, value]) => {
           if (value === null || value === undefined) {
             params.delete(key);
@@ -124,11 +134,10 @@ export const useNavigationParams = (): NavigationParams => {
             appendValues(params, key, value);
           }
         });
-
         return params;
       });
     },
-    [setSearchParams],
+    [updateSearchParams],
   );
 
   return {

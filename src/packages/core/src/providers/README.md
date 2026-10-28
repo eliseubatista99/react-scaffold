@@ -45,6 +45,8 @@ const { currentPath, goBack, goTo } = useNavigation();
 
 Use `searchParams.get(key)` for the first string value and `searchParams.getAllValues(key)` for all values associated with a repeated query key. `searchParams.getAll()` returns a flat object where duplicate keys resolve to their last value. Query values are not automatically parsed; convert them explicitly when needed.
 
+Sequential `searchParams` updates made during the same event are composed in call order. Use `setMany` or `removeMany` when the changes form a single batch.
+
 ## Feedback Provider
 
 The feedback provider main purpose is to facilitate the management of dynamic feedback components that are meant to be hidden and shown, like modals, drawers, or toasts.
