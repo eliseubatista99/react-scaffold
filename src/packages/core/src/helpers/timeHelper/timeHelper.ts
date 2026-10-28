@@ -183,27 +183,30 @@ export class TimeHelper {
   };
 
   static getDateInUTC = (date: string | null | undefined) => {
-    try {
-      const utcDate = dayjs.utc(date);
-
-      const day = utcDate.date();
-      const month = utcDate.month();
-      const year = utcDate.year();
-      const hour = utcDate.hour();
-      const minute = utcDate.minute();
-      const weekday = utcDate.day();
-
-      return {
-        day,
-        month,
-        year,
-        hour,
-        minute,
-        weekday,
-      };
-    } catch (e) {
+    if (date === null || date === undefined) {
       return undefined;
     }
+
+    const utcDate = dayjs.utc(date);
+    if (!utcDate.isValid()) {
+      return undefined;
+    }
+
+    const day = utcDate.date();
+    const month = utcDate.month();
+    const year = utcDate.year();
+    const hour = utcDate.hour();
+    const minute = utcDate.minute();
+    const weekday = utcDate.day();
+
+    return {
+      day,
+      month,
+      year,
+      hour,
+      minute,
+      weekday,
+    };
   };
 
   static formatDateLocalTime = (
@@ -214,10 +217,12 @@ export class TimeHelper {
       return "";
     }
 
-    return dayjs
-      .utc(date)
-      .local()
-      .format(format || "DD/MM/YYYYㆍHH:mm");
+    const localDate = dayjs.utc(date);
+    if (!localDate.isValid()) {
+      return "";
+    }
+
+    return localDate.local().format(format || "DD/MM/YYYYㆍHH:mm");
   };
 
   static formatDateUTC = (
@@ -228,6 +233,11 @@ export class TimeHelper {
       return "";
     }
 
-    return dayjs.utc(date).format(format || "DD/MM/YYYYㆍHH:mm");
+    const utcDate = dayjs.utc(date);
+    if (!utcDate.isValid()) {
+      return "";
+    }
+
+    return utcDate.format(format || "DD/MM/YYYYㆍHH:mm");
   };
 }

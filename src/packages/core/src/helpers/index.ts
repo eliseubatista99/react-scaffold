@@ -1,3 +1,4 @@
+export * from "./emailHelper";
 export * from "./formsHelper";
 export * from "./numberHelper";
 export * from "./objectsHelper";

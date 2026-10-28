@@ -2,6 +2,25 @@ import { describe, expect, it } from "vitest";
 import { FormsHelper } from "../src/helpers/formsHelper";
 
 describe("FormsHelper", () => {
+  describe("getField", () => {
+    it("returns the first field with the requested name", () => {
+      const firstField = { name: "email", value: "first@example.com" };
+      const fields = [
+        firstField,
+        { name: "email", value: "second@example.com" },
+      ];
+
+      expect(FormsHelper.getField(fields, "email")).toBe(firstField);
+    });
+
+    it("returns undefined when no field matches", () => {
+      expect(FormsHelper.getField([], "missing")).toBeUndefined();
+      expect(
+        FormsHelper.getField([{ name: "email", value: "a@example.com" }], "name"),
+      ).toBeUndefined();
+    });
+  });
+
   describe("getFieldValue", () => {
     it.each([
       ["zero", 0],

@@ -93,6 +93,6 @@ components/<name>/
 
 - `README.md` (package): install `npm i @eliseubatista99/react-scaffold-core`; overview of Providers, Hooks, Helpers, Components.
 - `src/components/README.md`: documents only `Drawer`.
-- `src/helpers/README.md`: documents only `TextHelper` (`getPascalCase`, `isEqual`).
+- `src/helpers/README.md`: documents all exported helpers and their current behavior.
 - `src/hooks/README.md`: documents only `useFetch` (outdated usage `await fetch<SomeType>(url)`).
 - `src/providers/README.md`: documents Navigation/Feedback providers but is partly outdated (see known-issues).
