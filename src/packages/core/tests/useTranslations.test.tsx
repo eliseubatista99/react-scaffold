@@ -41,4 +41,45 @@ describe("useTranslations", () => {
     expect(result.current.getTranslation(translations.greeting)).toBe("Olá");
     expect(result.current.t("greeting")).toBe("Olá");
   });
+
+  it("interpolates string, number, and boolean values", () => {
+    const { result } = renderHook(() =>
+      useTranslations({
+        language: "en",
+        translations: {
+          values: {
+            en: "Name: {{name}}, count: {{count}}, active: {{active}}",
+          },
+        },
+      }),
+    );
+
+    expect(
+      result.current.t("values", {
+        name: "Ada",
+        count: 3,
+        active: false,
+      }),
+    ).toBe("Name: Ada, count: 3, active: false");
+  });
+
+  it("leaves placeholders unchanged for null and undefined values", () => {
+    const { result } = renderHook(() =>
+      useTranslations({
+        language: "en",
+        translations: {
+          values: {
+            en: "Null: {{nullValue}}, missing: {{undefinedValue}}",
+          },
+        },
+      }),
+    );
+
+    expect(
+      result.current.t("values", {
+        nullValue: null,
+        undefinedValue: undefined,
+      }),
+    ).toBe("Null: {{nullValue}}, missing: {{undefinedValue}}");
+  });
 });

@@ -98,7 +98,8 @@ File: `hooks/useTranslations/useTranslations.tsx`
 ```ts
 type Language = string;
 type Translation = Record<Language, string>;          // e.g. { en: "Hello", pt: "Olá" }
-type TranslationValues = Record<string, unknown>;
+type TranslationValue = string | number | boolean | null | undefined;
+type TranslationValues = Record<string, TranslationValue>;
 type TranslationList = { [key: string]: Translation };
 
 interface UseTranslationsInput { language: Language; translations: TranslationList; }
@@ -108,7 +109,7 @@ interface UseTranslationsOutput {
 }
 useTranslations(input: UseTranslationsInput): UseTranslationsOutput
 ```
-- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with `values[key]` (`replaceAll`). Returns `undefined` if the translation or the language entry is missing/empty.
+- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` for string, number, and boolean values. Null and undefined leave their placeholders unchanged. Returns `undefined` if the translation or the language entry is missing/empty.
 - `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; returns the key itself when the key or requested language is missing/empty.
 - No fallback language or pluralisation; no React context (language and dictionary are passed per call site).
 - These types are re-used by the `cv` package (`Translation`, `TranslationList`, `Language`).
