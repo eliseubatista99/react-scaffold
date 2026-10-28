@@ -25,14 +25,14 @@ import { NavigationRoutes } from "@eliseubatista99/react-scaffold-core";
 
 Existing applications can continue using `NavigationProvider` with the same `routes`, `isReady`, and `children` props. The wrapper remains available for compatibility and should only be removed in a future major release. New applications can use `NavigationRoutes` with `BrowserRouter`, `MemoryRouter`, or another compatible router.
 
-The navigation hook provides actions such as going to a path, going back, and reading the current path. Navigation history is managed by React Router and the browser.
+The navigation hook provides actions such as going to a path, going back, and reading the current path and observed app navigation history.
 
 Let's say we want to go to the about screen when clicking a button, and going to the previous step when clicking another button:
 
 ```ts
 import { useNavigation } from "@react-scaffold-eliseubatista99/core/providers";
 
-const { currentPath, goBack, goTo } = useNavigation();
+const { currentPath, history, goBack, goTo } = useNavigation();
 
 // Button to go to the about screen
 <button onClick={() => goTo("/about")}> About </button>;
@@ -40,6 +40,8 @@ const { currentPath, goBack, goTo } = useNavigation();
 // Button to go to previous screen
 <button onClick={() => goBack()}> Back </button>;
 ```
+
+`history` is an array of observed `pathname + search + hash` strings. It starts when `NavigationRoutes` mounts, tracks pushes, replacements, and known back/forward destinations, and trims forward entries after a new push. Without `NavigationRoutes`, it contains only the current location. It is not the browser's complete history stack.
 
 `goTo` follows React Router path resolution: paths starting with `/` resolve from the router root, while paths without a leading slash resolve relative to the current route. Query-only and hash-only paths follow React Router semantics. `goTo({ path, addToHistory: false })` replaces the current browser history entry. Query values accept strings, numbers, booleans, and arrays of those values; values use JavaScript `String` serialization and `URLSearchParams` URL encoding. Arrays become repeated query keys, and scalar nullish values are skipped. When `params` are supplied, existing query values and hashes in `path` are preserved and merged with `params`. An empty array removes existing values for that key. `goBack({ steps, defaultBackPath })` navigates back by a positive safe integer number of known in-app entries; invalid values throw a `RangeError`. If there are fewer tracked entries than requested, it replaces the current route with `defaultBackPath`. History tracking starts when `NavigationRoutes` mounts, so earlier entries or entries created by a separate router are not known. Without `defaultBackPath`, insufficient tracked history falls through to React Router's normal back behavior.
 

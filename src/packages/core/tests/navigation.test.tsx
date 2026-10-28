@@ -23,11 +23,12 @@ import {
 } from "../src/providers/navigation";
 
 const NavigationControls = () => {
-  const { currentPath, goBack, goTo, searchParams } = useNavigation();
+  const { currentPath, goBack, goTo, history, searchParams } = useNavigation();
 
   return (
     <div>
       <output data-testid="current-path">{currentPath}</output>
+      <output data-testid="navigation-history">{JSON.stringify(history)}</output>
       <output data-testid="query-params">
         {JSON.stringify({
           all: searchParams.getAll(),
@@ -292,6 +293,30 @@ describe("NavigationProvider", () => {
 
     await waitFor(() => {
       expect(currentPath()).toBe("/first");
+    });
+  });
+
+  it("exposes observed navigation history and trims entries after a new push", async () => {
+    renderNavigation();
+
+    fireEvent.click(screen.getByRole("button", { name: "Go first" }));
+    fireEvent.click(screen.getByRole("button", { name: "Go second" }));
+    fireEvent.click(screen.getByRole("button", { name: "Replace current" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("navigation-history").textContent).toBe(
+        JSON.stringify(["/", "/first", "/replacement"]),
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Go back" }));
+    await waitFor(() => expect(currentPath()).toBe("/first"));
+    fireEvent.click(screen.getByRole("button", { name: "Go second" }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("navigation-history").textContent).toBe(
+        JSON.stringify(["/", "/first", "/second"]),
+      );
     });
   });
 

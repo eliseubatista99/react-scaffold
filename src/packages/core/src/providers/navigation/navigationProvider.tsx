@@ -31,10 +31,16 @@ export const NavigationRoutes = ({
 }: NavigationRoutesProps) => {
   const location = useLocation();
   const navigationType = useNavigationType();
-  const trackerRef = React.useRef<NavigationHistoryTracker>({
-    entries: [location.key],
-    index: 0,
-  });
+  const [historyTracker, setHistoryTracker] =
+    React.useState<NavigationHistoryTracker>(() => ({
+      entries: [
+        {
+          key: location.key,
+          path: `${location.pathname}${location.search}${location.hash}`,
+        },
+      ],
+      index: 0,
+    }));
   const lastHandledKey = React.useRef(location.key);
 
   React.useEffect(() => {
@@ -44,31 +50,41 @@ export const NavigationRoutes = ({
 
     lastHandledKey.current = location.key;
 
-    if (navigationType === "PUSH") {
-      trackerRef.current.entries = trackerRef.current.entries.slice(
-        0,
-        trackerRef.current.index + 1,
+    setHistoryTracker((current) => {
+      const currentEntry = {
+        key: location.key,
+        path: `${location.pathname}${location.search}${location.hash}`,
+      };
+
+      if (navigationType === "PUSH") {
+        const entries = current.entries.slice(0, current.index + 1);
+        entries.push(currentEntry);
+        return { entries, index: entries.length - 1 };
+      }
+
+      if (navigationType === "REPLACE") {
+        const entries = [...current.entries];
+        entries[current.index] = currentEntry;
+        return { entries, index: current.index };
+      }
+
+      const previousIndex = current.entries.findIndex(
+        (entry) => entry.key === location.key,
       );
-      trackerRef.current.entries.push(location.key);
-      trackerRef.current.index += 1;
-      return;
-    }
 
-    if (navigationType === "REPLACE") {
-      trackerRef.current.entries[trackerRef.current.index] = location.key;
-      return;
-    }
+      if (previousIndex >= 0) {
+        return { ...current, index: previousIndex };
+      }
 
-    const previousIndex = trackerRef.current.entries.indexOf(location.key);
-
-    if (previousIndex >= 0) {
-      trackerRef.current.index = previousIndex;
-      return;
-    }
-
-    trackerRef.current.entries = [location.key];
-    trackerRef.current.index = 0;
-  }, [location.key, navigationType]);
+      return { entries: [currentEntry], index: 0 };
+    });
+  }, [
+    location.hash,
+    location.key,
+    location.pathname,
+    location.search,
+    navigationType,
+  ]);
 
   const routesList = routes.map((route, index) => (
     <Route
@@ -79,7 +95,7 @@ export const NavigationRoutes = ({
   ));
 
   return (
-    <NavigationHistoryContext.Provider value={trackerRef.current}>
+    <NavigationHistoryContext.Provider value={historyTracker}>
       {isReady && <Routes>{routesList}</Routes>}
       {children}
     </NavigationHistoryContext.Provider>

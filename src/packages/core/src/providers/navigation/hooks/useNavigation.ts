@@ -82,6 +82,10 @@ export const useNavigation = () => {
 
   return {
     currentPath: location.pathname,
+    history:
+      historyTracker?.entries.map((entry) => entry.path) ?? [
+        `${location.pathname}${location.search}${location.hash}`,
+      ],
     searchParams: navigationParams,
     goBack,
     goTo,

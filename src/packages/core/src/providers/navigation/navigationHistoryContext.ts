@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export interface NavigationHistoryTracker {
-  entries: string[];
+  entries: { key: string; path: string }[];
   index: number;
 }
 

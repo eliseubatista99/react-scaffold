@@ -18,7 +18,8 @@ type NavigationRoutesProps = NavigationProviderInputProps;
 ```
 - `NavigationRoutes` renders the configured routes and children inside an existing React Router. It supports `BrowserRouter`, `MemoryRouter`, and other compatible routers.
 - `NavigationProvider` is the backwards-compatible convenience wrapper that creates a `BrowserRouter` around `NavigationRoutes`. Its existing props and behavior remain unchanged in this release. Prefer `NavigationRoutes` when the application owns router setup; remove the compatibility wrapper only in a future major release.
-- Each configured route is rendered as a keyed `<Route>`. React Router and the browser own navigation; `NavigationRoutes` keeps a lightweight list of route-entry keys observed after it mounts so `goBack` can decide when to use `defaultBackPath`. It does not expose or mirror the browser's full history stack.
+- Each configured route is rendered as a keyed `<Route>`. `NavigationRoutes` tracks locations observed after it mounts, and `useNavigation().history` exposes them as path strings including query strings and hashes. The array follows push, replace, and observed back/forward navigation; a new push after going back discards the tracked forward entries. This is app-observed history, not the browser's complete history stack.
+- Without `NavigationRoutes`, `useNavigation().history` contains only the current location because no shared navigation observer is mounted.
 
 Composable setup:
 ```tsx
@@ -45,14 +46,15 @@ type GoBackParams = { steps?: number; defaultBackPath?: string };
 
 useNavigation(): {
   currentPath: string;                       // location.pathname
+  history: string[];                         // observed paths, including search and hash
   searchParams: ReturnType<typeof useNavigationParams>;
   goTo: (data: GoToParams) => void;
   goBack: (data?: GoBackParams) => void;
 }
 ```
 - `goTo`: delegates path resolution to React Router. Paths starting with `/` resolve from the router root; paths without a leading slash resolve relative to the current route. Query-only and hash-only destinations follow React Router navigation semantics. When `params` are provided, the path's relative or absolute pathname and hash are preserved while query values are merged. Values in `params` are serialized with JavaScript `String` and encoded by `URLSearchParams`: strings are unchanged before URL encoding, numbers use their JavaScript string representation, and booleans become `"true"` or `"false"`. Scalar `null`/`undefined` values are skipped, leaving any same-named query values already in `path` unchanged. Scalar values replace any existing query values for that key. Array values replace that key and append one query entry per non-null item, preserving array order; an empty array removes the existing key. By default navigation pushes a browser history entry; `addToHistory: false` replaces the current entry.
+- `history`: returns the tracked locations in navigation order as `pathname + search + hash` strings. It starts at the location where `NavigationRoutes` mounts, reflects `PUSH`, `REPLACE`, and known `POP` entries, and resets to the current location if a `POP` destination was not observed. It does not include navigation before the observer mounted.
 - `goBack`: `steps` defaults to `1` and must be a positive safe integer; invalid values throw a `RangeError`. When enough in-app entries observed by `NavigationRoutes` are available, it navigates back by the requested number of entries. Otherwise, when `defaultBackPath` is provided, it navigates there with `replace`; without a fallback it preserves the native React Router back behavior. The tracker only knows entries observed while `NavigationRoutes` is mounted, not earlier entries or entries created by a different router.
-- Migration: `useNavigation().history` and `clearHistory` have been removed. React Router's public API does not expose the information or operation needed to provide those APIs reliably.
 - `useNavigation` works inside any compatible React Router; it does not require the legacy `NavigationProvider` when the app already provides a router.
 
 ### useNavigationParams (internal, available via `useNavigation().searchParams`)
