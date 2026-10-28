@@ -46,15 +46,21 @@ export class TimeHelper {
   };
 
   static isDateOneAfterDateTwo = (d1: Date, d2: Date): boolean => {
-    if (d1.getFullYear() >= d2.getFullYear()) {
-      if (d1.getMonth() >= d2.getMonth()) {
-        return d1.getDay() > d2.getDay();
-      }
+    const year1 = d1.getFullYear();
+    const year2 = d2.getFullYear();
 
-      return false;
+    if (year1 !== year2) {
+      return year1 > year2;
     }
 
-    return false;
+    const month1 = d1.getMonth();
+    const month2 = d2.getMonth();
+
+    if (month1 !== month2) {
+      return month1 > month2;
+    }
+
+    return d1.getDate() > d2.getDate();
   };
 
   static isSameDate = (d1: Date | undefined, d2: Date | undefined): boolean => {

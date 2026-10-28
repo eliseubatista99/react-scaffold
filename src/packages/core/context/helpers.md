@@ -62,7 +62,7 @@ TimeHelper.waitForMilliseconds(ms: number): Promise<void>
 TimeHelper.waitForCondition(condition: () => boolean): Promise<void>               // polls every 100 ms, no timeout
 TimeHelper.waitForAsyncCondition(condition: () => Promise<boolean>): Promise<void> // polls every 100 ms, no timeout
 TimeHelper.differenceInMonths(d1: Date, d2: Date): number                           // (y2-y1)*12 - m1 + m2
-TimeHelper.isDateOneAfterDateTwo(d1: Date, d2: Date): boolean                       // buggy, see known-issues
+TimeHelper.isDateOneAfterDateTwo(d1: Date, d2: Date): boolean                       // compares local calendar dates, ignoring time
 TimeHelper.isSameDate(d1?: Date, d2?: Date): boolean                                // year/month/date equality
 TimeHelper.getDateInUTC(date?: string | null): { day, month, year, hour, minute, weekday } | undefined
 TimeHelper.formatDateLocalTime(date?: string | null, format = "DD/MM/YYYYㆍHH:mm"): string // utc → local

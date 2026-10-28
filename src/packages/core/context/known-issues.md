@@ -26,7 +26,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `NumericInputField` overwrites any consumer `onInput` prop.
 
 ## Helpers
-- `TimeHelper.isDateOneAfterDateTwo` is incorrect: uses `getDay()` (weekday) instead of `getDate()`, and returns `false` for a later year with an earlier month.
 - `ObjectsHelper.isSameObject` is shallow (docs elsewhere may call it deep).
 - `FormsHelper.getFieldValue` treats `0`/`""`/`false` as missing.
 - `TimeHelper.waitForCondition*` have no timeout.
