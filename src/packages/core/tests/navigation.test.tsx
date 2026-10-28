@@ -13,9 +13,10 @@ import {
   it,
   vi,
 } from "vitest";
-import { Link } from "react-router-dom";
+import { Link, MemoryRouter } from "react-router-dom";
 import {
   NavigationProvider,
+  NavigationRoutes,
   useNavigation,
   type NavigationProviderRoute,
 } from "../src/providers/navigation";
@@ -206,5 +207,33 @@ describe("NavigationProvider", () => {
     expect(consoleError).not.toHaveBeenCalledWith(
       expect.stringContaining("unique"),
     );
+  });
+
+  it("renders configured routes inside an application-owned router", async () => {
+    render(
+      <MemoryRouter initialEntries={["/inside-router"]}>
+        <NavigationRoutes
+          routes={[
+            {
+              path: "/inside-router",
+              render: <div data-testid="configured-route">Configured route</div>,
+            },
+          ]}
+        >
+          <NavigationControls />
+        </NavigationRoutes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId("configured-route")).toBeTruthy();
+    expect(currentPath()).toBe("/inside-router");
+
+    fireEvent.click(screen.getByRole("button", { name: "Go first" }));
+
+    await waitFor(() => {
+      expect(currentPath()).toBe("/first");
+    });
+
+    expect(screen.queryByTestId("configured-route")).toBeNull();
   });
 });

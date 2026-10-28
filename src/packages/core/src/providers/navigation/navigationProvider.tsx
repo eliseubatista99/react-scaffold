@@ -12,11 +12,13 @@ export interface NavigationProviderInputProps {
   children?: React.ReactNode;
 }
 
-export const NavigationProvider = ({
+export type NavigationRoutesProps = NavigationProviderInputProps;
+
+export const NavigationRoutes = ({
   isReady = true,
   routes,
   children,
-}: NavigationProviderInputProps) => {
+}: NavigationRoutesProps) => {
   const routesList = routes.map((route, index) => (
     <Route
       key={`${route.path}-${index}`}
@@ -26,11 +28,17 @@ export const NavigationProvider = ({
   ));
 
   return (
+    <>
+      {isReady && <Routes>{routesList}</Routes>}
+      {children}
+    </>
+  );
+};
+
+export const NavigationProvider = (props: NavigationProviderInputProps) => {
+  return (
     <BrowserRouter>
-      <>
-        {isReady && <Routes>{routesList}</Routes>}
-        {children}
-      </>
+      <NavigationRoutes {...props} />
     </BrowserRouter>
   );
 };

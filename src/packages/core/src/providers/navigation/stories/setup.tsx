@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import {
-  NavigationProvider,
+  NavigationRoutes,
   NavigationProviderInputProps,
   useNavigation,
 } from "../";
+import { BrowserRouter } from "react-router-dom";
 
 const BasicExampleScreen = ({ children }: { children?: React.ReactNode }) => {
   return (
@@ -87,8 +88,10 @@ const NavigationExampleInnerContent = () => {
 
 export const NavigationStoriesSetup = (props: NavigationProviderInputProps) => {
   return (
-    <NavigationProvider {...props}>
-      <NavigationExampleInnerContent />
-    </NavigationProvider>
+    <BrowserRouter>
+      <NavigationRoutes {...props}>
+        <NavigationExampleInnerContent />
+      </NavigationRoutes>
+    </BrowserRouter>
   );
 };

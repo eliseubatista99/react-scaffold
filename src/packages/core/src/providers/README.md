@@ -4,34 +4,28 @@ Providers are components that are instantiated in the root of the application, a
 
 ## Navigation Provider
 
-The navigation provider allows a easy configuration of your screens and also the actions related to the navigation.
-This provider is built upon the [react-router-dom](https://www.npmjs.com/package/react-router-dom)
+The navigation helpers are built upon [react-router-dom](https://www.npmjs.com/package/react-router-dom).
+`NavigationRoutes` renders configured screens inside a router owned by the application. `NavigationProvider` remains available as a backwards-compatible wrapper that creates a `BrowserRouter`.
 
 To get started, in the file where you place your providers (ex: main.tsx) import and configure the navigation provider. The routes parameter is a list of key-content pairs, were the key is the path to that screen, and the content is a ReactNode.
 
 ```js
-import { NavigationProvider } from "@react-scaffold-eliseubatista99/core/providers";
+import { BrowserRouter } from "react-router-dom";
+import { NavigationRoutes } from "@eliseubatista99/react-scaffold-core";
 
-<NavigationProvider
-  routes={[
-    {
-      path: "/home",
-      render: <HomeScreen />,
-    },
-    {
-      path: "/about",
-      render: <AboutScreen />,
-    },
-  ]}
->
-  {
-    // The provider handles the rendering of the screens,
-    // and supports anything as children
-  }
-</NavigationProvider>;
+<BrowserRouter>
+  <NavigationRoutes
+    routes={[
+      { path: "/home", render: <HomeScreen /> },
+      { path: "/about", render: <AboutScreen /> },
+    ]}
+  />
+</BrowserRouter>;
 ```
 
-The provider comes with a hook for navigation actions such as going to a path, going back, and reading the current path. Navigation history is managed by React Router and the browser.
+Existing applications can continue using `NavigationProvider` with the same `routes`, `isReady`, and `children` props. The wrapper remains available for compatibility and should only be removed in a future major release. New applications can use `NavigationRoutes` with `BrowserRouter`, `MemoryRouter`, or another compatible router.
+
+The navigation hook provides actions such as going to a path, going back, and reading the current path. Navigation history is managed by React Router and the browser.
 
 Let's say we want to go to the about screen when clicking a button, and going to the previous step when clicking another button:
 
