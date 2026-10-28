@@ -1,5 +1,8 @@
 import React from "react";
-import { FeedbackProviderContext } from "./feedbackContext";
+import {
+  FeedbackActionsContext,
+  FeedbackStateContext,
+} from "./feedbackContext";
 
 export interface FeedbackProviderInputProps {
   children?: React.ReactNode;
@@ -41,19 +44,27 @@ export const FeedbackProvider = ({ children }: FeedbackProviderInputProps) => {
     [isItemVisible, updateVisibleItems]
   );
 
-  const contextValue = React.useMemo(
+  const stateContextValue = React.useMemo(
     () => ({
       visibleItems,
       isItemVisible,
+    }),
+    [visibleItems, isItemVisible]
+  );
+
+  const actionsContextValue = React.useMemo(
+    () => ({
       showItem,
       hideItem,
     }),
-    [visibleItems, isItemVisible, showItem, hideItem]
+    [showItem, hideItem]
   );
 
   return (
-    <FeedbackProviderContext.Provider value={contextValue}>
-      {children}
-    </FeedbackProviderContext.Provider>
+    <FeedbackActionsContext.Provider value={actionsContextValue}>
+      <FeedbackStateContext.Provider value={stateContextValue}>
+        {children}
+      </FeedbackStateContext.Provider>
+    </FeedbackActionsContext.Provider>
   );
 };

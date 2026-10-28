@@ -84,9 +84,11 @@ Files: `providers/feedback/feedbackProvider.tsx`, `feedbackContext.ts`, `useFeed
 
 ```ts
 interface FeedbackProviderInputProps { children?: React.ReactNode; }
-interface FeedbackContextData {          // not exported from the package
-  visibleItems: string[];
+interface FeedbackStateContextData {
+  visibleItems: readonly string[];
   isItemVisible: (id: string) => boolean;
+}
+interface FeedbackActionsContextData {
   showItem: (id: string) => void;
   hideItem: (id: string) => void;
 }
@@ -98,13 +100,15 @@ interface FeedbackContextData {          // not exported from the package
 ### useFeedback
 ```ts
 useFeedback(): {
-  visibleItems: string[];
+  visibleItems: readonly string[];
   isItemVisible: (id: string) => boolean;   // synchronous read of current visibility
   showItem: (id: string) => void;
   hideItem: (id: string) => void;
 }
 ```
 - Must be called inside a `FeedbackProvider`; otherwise, it throws an error identifying the missing provider.
+- `useFeedbackActions()` returns only `showItem` and `hideItem`; action-only consumers can use it to avoid re-rendering when visibility changes.
+- `useFeedbackActions()` also throws if called outside a `FeedbackProvider`.
 
 ### Typical usage
 ```tsx

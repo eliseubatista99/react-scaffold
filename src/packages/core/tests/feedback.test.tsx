@@ -1,7 +1,17 @@
-import { act, cleanup, render, renderHook } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  renderHook,
+} from "@testing-library/react";
 import { memo, type PropsWithChildren } from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { FeedbackProvider, useFeedback } from "../src/providers/feedback";
+import {
+  FeedbackProvider,
+  useFeedback,
+  useFeedbackActions,
+} from "../src/providers/feedback";
 
 afterEach(cleanup);
 
@@ -14,6 +24,9 @@ describe("useFeedback", () => {
   it("throws when used outside a FeedbackProvider", () => {
     expect(() => renderHook(() => useFeedback())).toThrow(
       "useFeedback must be used within a FeedbackProvider.",
+    );
+    expect(() => renderHook(() => useFeedbackActions())).toThrow(
+      "useFeedbackActions must be used within a FeedbackProvider.",
     );
   });
 
@@ -122,6 +135,34 @@ describe("useFeedback", () => {
         <MemoizedConsumer />
       </FeedbackProvider>,
     );
+
+    expect(renderCount).toBe(1);
+  });
+
+  it("does not rerender action-only consumers when visibility changes", () => {
+    let renderCount = 0;
+    const MemoizedActionsConsumer = memo(() => {
+      useFeedbackActions();
+      renderCount += 1;
+      return null;
+    });
+    const VisibilityControls = () => {
+      const { showItem } = useFeedback();
+      return (
+        <button onClick={() => showItem("example-modal")}>Show modal</button>
+      );
+    };
+
+    const { getByRole } = render(
+      <FeedbackProvider>
+        <MemoizedActionsConsumer />
+        <VisibilityControls />
+      </FeedbackProvider>,
+    );
+
+    expect(renderCount).toBe(1);
+
+    fireEvent.click(getByRole("button", { name: "Show modal" }));
 
     expect(renderCount).toBe(1);
   });

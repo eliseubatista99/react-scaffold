@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from "../../../components";
+import { Modal, Toast } from "../../../components";
 import {
   FeedbackProvider,
   FeedbackProviderInputProps,
@@ -104,12 +104,7 @@ const FeedbackExampleInnerContent = () => {
       >
         I am a modal
       </Modal>
-      <Modal
-        id="example-toast"
-        onClickOutsideModal={() => hideItem("example-toast")}
-      >
-        I am a toast
-      </Modal>
+      <Toast id="example-toast">I am a toast</Toast>
     </>
   );
 };

@@ -1,11 +1,17 @@
 import React from "react";
 
-export interface FeedbackContextData {
-  visibleItems: string[];
+export interface FeedbackStateContextData {
+  visibleItems: readonly string[];
   isItemVisible: (id: string) => boolean;
+}
+
+export interface FeedbackActionsContextData {
   showItem: (id: string) => void;
   hideItem: (id: string) => void;
 }
 
-export const FeedbackProviderContext =
-  React.createContext<FeedbackContextData | undefined>(undefined);
+export const FeedbackStateContext =
+  React.createContext<FeedbackStateContextData | undefined>(undefined);
+
+export const FeedbackActionsContext =
+  React.createContext<FeedbackActionsContextData | undefined>(undefined);

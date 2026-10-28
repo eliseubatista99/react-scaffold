@@ -1,12 +1,26 @@
 import { useContext } from "react";
-import { FeedbackProviderContext } from "./feedbackContext";
+import {
+  FeedbackActionsContext,
+  FeedbackStateContext,
+} from "./feedbackContext";
 
 export const useFeedback = () => {
-  const feedbackContext = useContext(FeedbackProviderContext);
+  const stateContext = useContext(FeedbackStateContext);
+  const actionsContext = useContext(FeedbackActionsContext);
 
-  if (!feedbackContext) {
+  if (!stateContext || !actionsContext) {
     throw new Error("useFeedback must be used within a FeedbackProvider.");
   }
 
-  return feedbackContext;
+  return { ...stateContext, ...actionsContext };
+};
+
+export const useFeedbackActions = () => {
+  const actionsContext = useContext(FeedbackActionsContext);
+
+  if (!actionsContext) {
+    throw new Error("useFeedbackActions must be used within a FeedbackProvider.");
+  }
+
+  return actionsContext;
 };
