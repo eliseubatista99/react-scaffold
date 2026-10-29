@@ -1,7 +1,10 @@
-import { InputField, InputFieldProps } from "../inputField";
+import { InputField, type InputFieldProps } from "../inputField";
 import { useNumericInputFieldHelper } from "./numericInputField.hook";
 
-export type NumericInputFieldProps = Omit<InputFieldProps, "type"> & {
+export type NumericInputFieldProps = Omit<
+  InputFieldProps,
+  "type" | "min" | "max" | "pattern"
+> & {
   max?: number;
   min?: number;
   decimalScale?: number;
@@ -22,5 +25,5 @@ export const NumericInputField = ({
     ...props,
   });
 
-  return <InputField type="text" {...manipulatedProps} />;
+  return <InputField {...manipulatedProps} />;
 };

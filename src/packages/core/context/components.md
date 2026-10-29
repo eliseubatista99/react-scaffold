@@ -186,21 +186,21 @@ interface ModalProps {
 Files: `components/numericInputField/numericInputField.tsx`, `numericInputField.hook.ts` (`useNumericInputFieldHelper`, internal).
 
 ```ts
-type NumericInputFieldProps = Omit<InputFieldProps, "type"> & {
+type NumericInputFieldProps = Omit<
+  InputFieldProps,
+  "type" | "min" | "max" | "pattern"
+> & {
   max?: number;
   min?: number;
-  decimalScale?: number;    // default 2
+  decimalScale?: number;    // default 2; non-negative integer
   allowDecimals?: boolean;  // default true
   allowNegatives?: boolean; // default true
 };
 ```
-- Wraps `InputField` (`type="text"`, `pattern="^-?[0-9]*.?[0-9]*$"`) and sanitises the value inside an `onInput` handler on every keystroke (directly rewriting `target.value`):
-  1. strips characters other than digits, `.` and `-`;
-  2. negatives: only one leading `-` (all removed if `allowNegatives` is false);
-  3. decimals: single `.`, leading `.` becomes `0.`, `-.` becomes `-`; typing beyond `decimalScale` digits keeps the previous decimal part (all dots removed if `allowDecimals` is false);
-  4. min/max: out-of-range values revert to the previous valid value (stored in a `prevValue` ref). If `max` is undefined but `maxLength` is set, max becomes `"9".repeat(maxLength)`;
-  5. restores caret position after rewriting the value.
-- The consumer's own `onInput` prop is overwritten by the internal handler.
+- Wraps `InputField` with `type="text"` and a generated pattern matching the decimal/negative options. Defaults `inputMode` to `decimal` or `numeric`, while allowing a caller override.
+- Sanitizes input to digits, one optional leading minus, and one decimal point. A leading decimal point becomes `0.`; decimal digits are limited to `decimalScale` (clamped to a non-negative integer).
+- Preserves the existing range behavior: an out-of-range numeric value reverts to the last accepted value. If `max` is undefined and `maxLength` is set, max falls back to `"9".repeat(maxLength)`.
+- Attempts to preserve the caret after sanitizing. The consumer's `onInput` is called after sanitization rather than being overwritten.
 
 ## PageLayout
 Files: `components/pageLayout/pageLayout.tsx`, `pageLayout.hook.ts` (`usePageLayoutHelper`, internal).
