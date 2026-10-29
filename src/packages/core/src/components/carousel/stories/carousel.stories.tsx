@@ -37,7 +37,7 @@ const meta = {
   args: {
     content: [slide(), slide(), slide(), slide(), slide()],
     settings: {},
-    styles: { padding: "10px 24px" },
+    style: { padding: "10px 24px" },
   },
 } satisfies Meta<typeof Carousel>;
 

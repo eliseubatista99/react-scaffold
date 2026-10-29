@@ -52,7 +52,7 @@ components/<name>/
 
 ## Styling approach
 
-- Default visual style defined with inline `CSSProperties`; consumers override via `styles` (root) and specialised props (`containerStyles`, `inputStyles`, `checkboxStyles`, `checkedStyles`, `barStyles`, `backgroundStyles`, `contentStyles`, `childrenStyles`, `pageStyles`). Overrides are spread **after** defaults.
+- Default visual style defined with inline `CSSProperties`; components expose native `style` props for root styling when appropriate, alongside specialised props (`containerStyles`, `inputStyles`, `checkboxStyles`, `checkedStyles`, `barStyles`, `backgroundStyles`, `contentStyles`, `childrenStyles`, `pageStyles`). Overrides are applied **after** defaults.
 - `@emotion/styled` is used when pseudo-selectors/nested selectors are required:
   - `Carousel` (`.slick-*` overrides), `InputField` (focus/autofill), `TextAreaField` (scrollbar), `Form` (`SubmitButton`), `PageLayout` (page container).
 - Default palette: black borders `#000000`, grey `#969696ff`/`#d6d6d6ff`, overlay backdrop `#00000068`, progress fill `#f58b00ff`, toast `#534a4aff`.

@@ -1,31 +1,34 @@
-import { type CSSProperties } from "react";
-import Slider, { Settings } from "react-slick";
-
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Slider from "react-slick";
+import type { Settings } from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
 export interface CarouselSlideProps {
-  content: JSX.Element;
-  styles?: React.CSSProperties;
+  id?: React.Key;
+  content: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
-export interface CarouselProps {
+export interface CarouselProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "content"> {
   content: CarouselSlideProps[];
   settings?: Settings;
   gap?: number;
-  styles?: CSSProperties;
 }
 
-const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
+const ContainerDiv = styled.div`
   width: 100%;
   height: fit-content;
-
-  ${({ styles }) => styles && { ...styles }}
+  box-sizing: border-box;
 
   .slick-list {
     overflow: visible;
+  }
+
+  .slick-slider.slick-dotted {
+    margin-bottom: 25px;
   }
 
   .slick-dots {
@@ -51,23 +54,27 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
     width: 20px;
     height: 20px;
     margin: 0;
-    cursor: pointer;
   }
 
   .slick-dots li button {
-    font-size: 0;
-    line-height: 0;
+    position: relative;
     display: flex !important;
     align-items: center;
     justify-content: center;
     text-align: center;
-    width: 0;
+    width: 20px;
     height: 20px;
+    padding: 0;
     cursor: pointer;
     color: transparent;
     border: 0;
-    outline: none;
+    border-radius: 50%;
     background: transparent;
+  }
+
+  .slick-dots li button:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 2px;
   }
 
   .slick-dots li button:before {
@@ -81,9 +88,8 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
     position: absolute;
     top: 0;
     left: 0;
-    width: 0;
+    width: 20px;
     content: "•";
-    text-align: center;
     opacity: 0.25;
     color: black;
     -webkit-font-smoothing: antialiased;
@@ -96,14 +102,12 @@ const ContainerDiv = styled.div<{ styles?: React.CSSProperties }>`
   }
 `;
 
-const SlideDiv = styled.div<{ styles?: React.CSSProperties }>`
+const SlideDiv = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-width: fit-content;
   position: relative;
-
-  ${({ styles }) => styles && { ...styles }}
 
   > * {
     box-sizing: border-box;
@@ -111,17 +115,66 @@ const SlideDiv = styled.div<{ styles?: React.CSSProperties }>`
   }
 `;
 
+const getPositiveInteger = (value: number | undefined): number | undefined => {
+  if (value === undefined || !Number.isFinite(value)) {
+    return undefined;
+  }
+
+  return Math.max(1, Math.floor(value));
+};
+
 export const Carousel = ({
-  styles,
   content,
   settings,
   gap = 15,
+  style,
+  ...containerProps
 }: CarouselProps) => {
-  const [slidesToShow, setSlidesToShow] = React.useState<number>(1);
-  const carouselRef = React.useRef<HTMLDivElement>(null);
-  const firstSlideRef = React.useRef<HTMLDivElement>(null);
+  const configuredSlidesToShow = getPositiveInteger(settings?.slidesToShow);
+  const slideGap = Number.isFinite(gap) ? Math.max(0, gap) : 15;
+  const [slidesToShow, setSlidesToShow] = useState(configuredSlidesToShow ?? 1);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const firstSlideRef = useRef<HTMLDivElement>(null);
 
-  var carouselSettings: Settings = {
+  useEffect(() => {
+    const container = carouselRef.current;
+    const firstSlide = firstSlideRef.current;
+
+    const calculateSlidesToShow = () => {
+      if (configuredSlidesToShow !== undefined) {
+        setSlidesToShow(configuredSlidesToShow);
+        return;
+      }
+
+      const containerWidth = container?.getBoundingClientRect().width ?? 0;
+      const slideWidth = firstSlide?.getBoundingClientRect().width ?? 0;
+
+      if (containerWidth <= 0 || slideWidth <= 0) {
+        setSlidesToShow(1);
+        return;
+      }
+
+      const visibleSlides = Math.floor(containerWidth / slideWidth);
+      setSlidesToShow(
+        Math.min(content.length || 1, Math.max(1, visibleSlides)),
+      );
+    };
+
+    calculateSlidesToShow();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", calculateSlidesToShow);
+      return () => window.removeEventListener("resize", calculateSlidesToShow);
+    }
+
+    const observer = new ResizeObserver(calculateSlidesToShow);
+    if (container) observer.observe(container);
+    if (firstSlide) observer.observe(firstSlide);
+
+    return () => observer.disconnect();
+  }, [configuredSlidesToShow, content, slideGap]);
+
+  const carouselSettings: Settings = {
     dots: false,
     speed: 500,
     slidesToScroll: 1,
@@ -130,58 +183,31 @@ export const Carousel = ({
     arrows: false,
     rows: 1,
     ...settings,
+    slidesToShow,
   };
-
-  const slides = content.map((c, index) => (
-    <SlideDiv
-      ref={index === 0 ? firstSlideRef : undefined}
-      styles={{
-        paddingRight: `${gap}px`,
-        overflow: "visible",
-        // marginLeft: index !== 0 ? "0px" : margin,
-        ...c.styles,
-      }}
-      data-testid="carousel-slide-item"
-    >
-      {c.content}
-    </SlideDiv>
-  ));
-
-  const calculateSlidesToShow = () => {
-    if (carouselSettings.slidesToShow) {
-      setSlidesToShow(carouselSettings.slidesToShow);
-      return;
-    }
-
-    const containerWidth = (carouselRef.current?.offsetWidth || gap + 1) - gap;
-    const slideWidth = firstSlideRef.current?.offsetWidth || 1;
-
-    let res = Math.floor(containerWidth / slideWidth);
-
-    if (res < 1) {
-      res = 1;
-    } else if (res > content.length) {
-      res = content.length;
-    }
-
-    console.debug("Slides to show > ", {
-      container: containerWidth,
-      slide: slideWidth,
-      res,
-    });
-
-    setSlidesToShow(res);
-  };
-
-  React.useEffect(() => {
-    calculateSlidesToShow();
-  }, [carouselRef, firstSlideRef]);
 
   return (
-    <ContainerDiv ref={carouselRef} styles={{ ...styles }}>
-      {slides.length > 0 && (
-        <Slider {...carouselSettings} slidesToShow={slidesToShow}>
-          {slides}
+    <ContainerDiv
+      {...containerProps}
+      ref={carouselRef}
+      style={style}
+    >
+      {content.length > 0 && (
+        <Slider {...carouselSettings}>
+          {content.map((slide, index) => (
+            <SlideDiv
+              key={slide.id ?? index}
+              ref={index === 0 ? firstSlideRef : undefined}
+              style={{
+                paddingRight: `${slideGap}px`,
+                overflow: "visible",
+                ...slide.style,
+              }}
+              data-testid="carousel-slide-item"
+            >
+              {slide.content}
+            </SlideDiv>
+          ))}
         </Slider>
       )}
     </ContainerDiv>

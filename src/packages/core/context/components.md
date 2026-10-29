@@ -18,16 +18,21 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 File: `components/carousel/carousel.tsx` — external: `react-slick` (`Slider`, `Settings`), `slick-carousel/slick/slick.css`, `slick-carousel/slick/slick-theme.css`, `@emotion/styled`.
 
 ```ts
-interface CarouselSlideProps { content: JSX.Element; styles?: React.CSSProperties; }
-interface CarouselProps {
+interface CarouselSlideProps {
+  id?: React.Key;                // optional stable identity
+  content: React.ReactNode;
+  style?: React.CSSProperties;
+}
+interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   content: CarouselSlideProps[];
   settings?: Settings;   // react-slick settings, merged over defaults
   gap?: number;          // default 15 (px, applied as padding-right on each slide)
-  styles?: CSSProperties;
 }
 ```
 - Default slick settings: `{ dots: false, speed: 500, slidesToScroll: 1, infinite: false, variableWidth: true, arrows: false, rows: 1 }`.
-- Emotion wrapper overrides `.slick-*` classes: dots at `bottom: -25px`, 5px spacing, dot opacity `0.25` → `0.75` when active; width 100%, height fit-content.
+- `style` customizes the root container; slide `style` customizes each slide. Native `div` attributes are forwarded to the container, including `aria-label`.
+- If `settings.slidesToShow` is omitted, the component estimates the visible slide count from the container and first slide widths, updating with `ResizeObserver` or window resize. Invalid/non-positive configured counts are normalized to a positive integer.
+- Emotion wrapper styles the `.slick-*` classes; dots have a visible keyboard focus outline and reserve space below the carousel.
 - Importing core pulls in slick CSS (side-effect imports), so `slick-carousel` must be installed even if `Carousel` is not used.
 
 ## Checkbox
