@@ -24,7 +24,7 @@ export const Default: Story = {
 export const XboxPrimary: Story = {
   args: {
     children: "Sign In",
-    styles: {
+    style: {
       background: "#0f7441ff",
       color: "#ffffff",
       fontWeight: 600,
@@ -39,7 +39,7 @@ export const XboxPrimary: Story = {
 export const XboxSecondary: Story = {
   args: {
     children: "Log In",
-    styles: {
+    style: {
       background: "#535b5fff",
       color: "#ffffff",
       fontWeight: 600,

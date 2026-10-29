@@ -8,13 +8,10 @@ All components live in `src/components/<name>/`. Every component accepts style o
 File: `components/button/button.tsx`
 
 ```ts
-type ButtonProps = {
-  onClick: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  children?: React.ReactNode;
-  styles?: CSSProperties;
-};
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 ```
-- Renders a native `<button>`; flex row, centered.
+- Renders a native `<button>`; defaults to `type="button"` to avoid accidental form submission. Set `type="submit"` or `"reset"` when needed.
+- Supports native button attributes, including `onClick`, `disabled`, `aria-*`, `className`, and `style`. Use `style` to override the default styles.
 - Defaults: `border: none`, `borderRadius: 1000px`, `background: #d6d6d6ff`, `padding: 12px 18px`, `fontSize: 16px`.
 
 ## Carousel
