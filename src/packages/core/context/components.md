@@ -240,11 +240,13 @@ interface ProgressBarProps {
   percentage: number;
   min?: number;  // default 0
   max?: number;  // default 100
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   barStyles?: React.CSSProperties;
 }
 ```
-- `NumberHelper.clamp(percentage, min, max)`; track `width 90%`, `height 30px`, `1px solid #000`, radius 3px, white; fill `#f58b00ff` with width `${clamped}%`.
+- Renders a native `progressbar` region with `aria-valuemin`, `aria-valuemax`, and the clamped `aria-valuenow`. Provide an accessible name with `aria-label` or `aria-labelledby`.
+- `NumberHelper.clamp(percentage, min, max)` controls the fill width `${clamped}%`; `min` and `max` are clamp bounds and do not rescale the visual percentage. The track is `width 90%`, `height 30px`, `1px solid #000`, radius 3px, white; fill `#f58b00ff`.
+- Supports native `div` attributes. `style` customizes the track; `barStyles` customizes the fill.
 
 ## RadioButton
 File: `components/radioButton/radioButton.tsx`
