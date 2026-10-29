@@ -1838,6 +1838,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.17.27
+  resolution: "@types/lodash@npm:4.17.27"
+  checksum: 10c0/3769c022437664352a78234b8d9f6ba24693893552ef4192e507bbc7412dc621098afad0bc36f9d03855f629b143c01f3574afb2f818abcb447ebba066ad16bf
+  languageName: node
+  linkType: hard
+
 "@types/mdx@npm:^2.0.0":
   version: 2.0.14
   resolution: "@types/mdx@npm:2.0.14"
@@ -4544,6 +4551,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:^4.18.1":
+  version: 4.18.1
+  resolution: "lodash@npm:4.18.1"
+  checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
+  languageName: node
+  linkType: hard
+
 "loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
@@ -5325,6 +5339,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^9.0.17"
     "@storybook/addon-links": "npm:^9.0.17"
     "@storybook/react-vite": "npm:^9.0.17"
+    "@types/lodash": "npm:^4"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@types/react-slick": "npm:^0"
@@ -5336,6 +5351,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.9"
     eslint-plugin-storybook: "npm:^9.0.17"
     globals: "npm:^15.9.0"
+    lodash: "npm:^4.18.1"
     msw: "npm:^2.3.0"
     msw-storybook-addon: "npm:^2.0.3"
     react: "npm:^19.1.0"
