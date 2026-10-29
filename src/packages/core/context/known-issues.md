@@ -13,7 +13,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `PageLayout` header/footer `visibility: "fixed"` means `position: relative` (in flow), while the default is `sticky` — the name is counter-intuitive.
 - `Form` intentionally calls `onSubmit` with `hasErrors` even when validation fails; callers decide whether to proceed. `RadioButton` remains a visual-only control and is not collected by forms.
 - `Drawer` does not hide itself on swipe; consumer must call `hideItem` inside `onCloseDrawer`.
-- `NumericInputField` overwrites any consumer `onInput` prop.
 
 ## Providers
 - `NavigationRoutes` only knows entries created after it mounted; navigation history from before it mounted or from a separate router is not tracked.

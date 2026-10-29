@@ -11,7 +11,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     id: "example-loader",
-    styles: { background: "#000029" },
+    style: { background: "#000029" },
   },
 } satisfies Meta<typeof Loader>;
 
@@ -24,6 +24,6 @@ export const Opaque: Story = {
 
 export const Transparent: Story = {
   args: {
-    styles: { background: "#00000068" },
+    style: { background: "#00000068" },
   },
 };

@@ -50,7 +50,7 @@ const AnimationSpan = styled.span`
 
 const LoaderStoriesSetupInnerContent = ({
   children,
-  styles,
+  style,
   ...props
 }: LoaderProps) => {
   const { isItemVisible, showItem, hideItem } = useFeedback();
@@ -61,7 +61,7 @@ const LoaderStoriesSetupInnerContent = ({
         <button onClick={() => showItem(props.id)}>Show Loader</button>
       )}
 
-      <Loader {...props} styles={{ ...styles, gap: "30px" }}>
+      <Loader {...props} style={{ ...style, gap: "30px" }}>
         <div
           style={{
             width: "100%",

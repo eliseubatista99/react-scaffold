@@ -165,9 +165,9 @@ interface InputFieldProps {
 ## Loader (Feedback)
 File: `components/loader/loader.tsx`
 ```ts
-interface LoaderProps { id: string; children?: React.ReactNode; styles?: React.CSSProperties; }
+interface LoaderProps { id: string; children?: React.ReactNode; style?: React.CSSProperties; }
 ```
-- Full-screen fixed overlay (`zIndex 1000`, flex centered) rendered only when `isItemVisible(id)`. Content (spinner, text) is provided via `children`.
+- Full-screen fixed overlay (`zIndex 1000`, flex centered) rendered only when `isItemVisible(id)`. Content (spinner, text) is provided via `children`; `style` customizes the overlay.
 
 ## Modal (Feedback)
 File: `components/modal/modal.tsx`
