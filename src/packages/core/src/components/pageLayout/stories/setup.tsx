@@ -1,25 +1,6 @@
-import { useFeedback } from "../../../providers";
-import { Modal, ModalProps } from "../../modal";
 import { PageLayout, PageLayoutProps } from "../pageLayout";
 
-const ModalStoriesSetupInnerContent = (props: ModalProps) => {
-  const { isItemVisible, showItem, hideItem } = useFeedback();
-
-  return (
-    <>
-      {!isItemVisible(props.id) && (
-        <button onClick={() => showItem(props.id)}>Show Modal</button>
-      )}
-
-      <Modal {...props} onClickOutsideModal={() => hideItem(props.id)} />
-    </>
-  );
-};
-
-export const PageLayoutStoriesSetup = ({
-  children,
-  ...props
-}: PageLayoutProps) => {
+export const PageLayoutStoriesSetup = (props: PageLayoutProps) => {
   const header = props.header
     ? {
         ...props.header,

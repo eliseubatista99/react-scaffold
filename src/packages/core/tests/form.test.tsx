@@ -56,7 +56,7 @@ describe("Form", () => {
 
   it("returns checked checkbox values as booleans and only includes the selected radio", async () => {
     const onSubmit = vi.fn(
-      async (fields: FormFieldOutputData[]) => undefined,
+      async (_fields: FormFieldOutputData[]) => undefined,
     );
     render(
       createForm(

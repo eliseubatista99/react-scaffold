@@ -31,13 +31,11 @@ export const useInputFieldHelper = (props: InputFieldProps) => {
     }, props.onChangeDelayInMilliseconds);
   };
 
-  const handleOnFocus = (
-    event: React.FocusEvent<HTMLInputElement, Element>,
-  ) => {
+  const handleOnFocus = () => {
     props.onFocus?.();
   };
 
-  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
+  const handleOnBlur = () => {
     props.onBlur?.();
   };
 

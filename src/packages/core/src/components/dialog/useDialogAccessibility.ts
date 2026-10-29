@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
 
+export type DialogAccessibleName =
+  | { "aria-label": string; "aria-labelledby"?: string }
+  | { "aria-label"?: string; "aria-labelledby": string };
+
 const focusableElementsSelector = [
   "a[href]",
   "button:not([disabled])",

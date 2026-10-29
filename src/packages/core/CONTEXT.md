@@ -7,11 +7,13 @@
 | Field | Value |
 |---|---|
 | npm name | `@eliseubatista99/react-scaffold-core` |
-| Version | `1.2.7` |
+| Version | `1.2.12` |
 | Location | `src/packages/core` |
 | Entry | `src/index.ts` → `dist/index.es.js`, `dist/index.cjs.js`, `dist/index.d.ts` |
-| Peer deps | `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `slick-carousel ^1.8.1`, `dayjs ^1.11.19` |
-| Styling dep | `@emotion/styled` (devDependency only — **bundled** into the output, see known issues) |
+| Peer deps | `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `dayjs ^1.11.19` |
+| Runtime dependency | `lodash` |
+| Styling dependency | `@emotion/styled` (bundled into the output) |
+| Styling | Import `dist/react-scaffold-core.css` once; it contains the bundled Slick styles used by `Carousel` |
 | Depends on other scaffold packages | No |
 | Used by | `@eliseubatista99/react-scaffold-cv` (`Translation`, `TranslationList`, `Language`, `useTranslations`) |
 

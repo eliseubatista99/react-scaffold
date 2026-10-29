@@ -4,12 +4,6 @@
 
 A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
 
-## Installation
-
-```shell
-npm i @eliseubatista99/react-scaffold-core
-```
-
 @eliseubatista99/react-scaffold-core is a React library that provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
 
 It helps you write applications that behave consistently and are easy to test.
@@ -18,11 +12,17 @@ You can use this library together with any other library.
 
 ## Installation
 
-The recommended way is to install this package as soon as you start a new application with React.
-
-```
+```shell
 npm i @eliseubatista99/react-scaffold-core
 ```
+
+Import the package stylesheet once from your application entry point. It includes the styles used by `Carousel`:
+
+```ts
+import "@eliseubatista99/react-scaffold-core/dist/react-scaffold-core.css";
+```
+
+The package declares `react`, `react-dom`, `react-router-dom`, `react-slick`, and `dayjs` as peer dependencies. Make sure your package manager installs compatible versions. The Slick CSS is included in the stylesheet above; `slick-carousel` is not required by consuming applications.
 
 ## Content
 

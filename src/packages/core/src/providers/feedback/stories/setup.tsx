@@ -100,6 +100,7 @@ const FeedbackExampleInnerContent = () => {
       </div>
       <Modal
         id="example-modal"
+        aria-label="Example modal"
         onClickOutsideModal={() => hideItem("example-modal")}
       >
         I am a modal

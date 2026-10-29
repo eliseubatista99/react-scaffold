@@ -1,5 +1,8 @@
 import React from "react";
-import { useDialogAccessibility } from "../dialog/useDialogAccessibility";
+import {
+  useDialogAccessibility,
+  type DialogAccessibleName,
+} from "../dialog/useDialogAccessibility";
 import { useDrawerHelper } from "./drawer.hook";
 
 export interface DrawerHandleProps {
@@ -7,17 +10,15 @@ export interface DrawerHandleProps {
   style?: React.CSSProperties;
 }
 
-export interface DrawerProps {
+export type DrawerProps = DialogAccessibleName & {
   id: string;
   drawerCloseOffset?: number;
   children?: React.ReactNode;
   backgroundStyles?: React.CSSProperties;
   contentStyles?: React.CSSProperties;
   handle?: DrawerHandleProps;
-  "aria-label"?: string;
-  "aria-labelledby"?: string;
   onCloseDrawer?: () => void;
-}
+};
 
 export const Drawer = (props: DrawerProps) => {
   const {

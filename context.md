@@ -10,7 +10,7 @@ The repository root is **not** a library itself: it is a Vite + Storybook worksp
 
 | Package  | npm name                                   | Version | Purpose                                                                                         | Context                                                              |
 | -------- | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| core     | `@eliseubatista99/react-scaffold-core`     | 1.2.7   | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
+| core     | `@eliseubatista99/react-scaffold-core`     | 1.2.12  | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
 | pdf      | `@eliseubatista99/react-scaffold-pdf`      | 1.0.1   | PDF generation (`@react-pdf/renderer`), PDF preview and rendering (`react-pdf`)                 | [src/packages/pdf/context.md](src/packages/pdf/context.md)           |
 | cv       | `@eliseubatista99/react-scaffold-cv`       | 1.0.1   | CV/résumé PDF templates (Classic, Modern, Timeline), CV generator hooks, multi-language CV data | [src/packages/cv/context.md](src/packages/cv/context.md)             |
 | firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.16  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |

@@ -1,16 +1,17 @@
 import React from "react";
 import { useFeedback } from "../../providers";
-import { useDialogAccessibility } from "../dialog/useDialogAccessibility";
+import {
+  useDialogAccessibility,
+  type DialogAccessibleName,
+} from "../dialog/useDialogAccessibility";
 
-export interface ModalProps {
+export type ModalProps = DialogAccessibleName & {
   id: string;
   children?: React.ReactNode;
   backgroundStyles?: React.CSSProperties;
   contentStyles?: React.CSSProperties;
-  "aria-label"?: string;
-  "aria-labelledby"?: string;
   onClickOutsideModal?: () => void;
-}
+};
 
 export const Modal = ({
   id,

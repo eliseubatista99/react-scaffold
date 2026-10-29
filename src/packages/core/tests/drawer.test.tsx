@@ -25,12 +25,13 @@ const DrawerHarness = ({ onClose }: { onClose: () => void }) => {
       <button onClick={() => showItem("accessible-drawer")}>Open drawer</button>
       <Drawer
         id="accessible-drawer"
-        aria-label="Test drawer"
+        aria-labelledby="accessible-drawer-title"
         onCloseDrawer={() => {
           onClose();
           hideItem("accessible-drawer");
         }}
       >
+        <h2 id="accessible-drawer-title">Test drawer</h2>
         <button>Drawer action</button>
       </Drawer>
     </>
@@ -128,7 +129,6 @@ describe("Drawer accessibility and dismissal", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Open drawer" }));
-    const dialog = screen.getByRole("dialog", { name: "Test drawer" });
 
     fireEvent.click(screen.getByRole("button", { name: "Drawer action" }));
     expect(onClose).not.toHaveBeenCalled();

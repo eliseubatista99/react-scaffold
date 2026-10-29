@@ -4,10 +4,9 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Exports / packaging
 - `useNavigationParams` and `FeedbackProviderContext` are not exported (barrels only re-export the provider and main hook).
-- `@emotion/styled` is only a devDependency and is not in `rollupOptions.external`, so it (and its emotion runtime) is bundled into `dist`. `@emotion/react` is not declared anywhere in the package.
-- `react-slick`, `slick-carousel`, and `dayjs` are peer dependencies but are not externalized in `vite.config.ts`.
-- `Carousel` imports slick CSS files as side effects; importing the package requires `slick-carousel` CSS to resolve.
-- Library `name` in Vite config is the placeholder `MyComponentLibrary`.
+- Consumers must import `dist/react-scaffold-core.css` once to apply the bundled Slick styles used by `Carousel`.
+- `react-slick` and `dayjs` are external peer dependencies and must be available to consuming applications.
+- `@emotion/styled` is bundled to keep the CommonJS build compatible; `slick-carousel` is a development dependency whose CSS is bundled into the package stylesheet.
 
 ## Components
 - `PageLayout` header/footer `visibility: "fixed"` means `position: relative` (in flow), while the default is `sticky` — the name is counter-intuitive.

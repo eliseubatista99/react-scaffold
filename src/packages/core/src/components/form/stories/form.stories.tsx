@@ -130,9 +130,7 @@ const meta = {
         },
       },
     },
-    onSubmit: async (_) => {
-      //
-    },
+    onSubmit: async () => {},
     style: { boxSizing: "border-box", width: "90%", padding: "20px" },
   },
 } satisfies Meta<typeof Form>;

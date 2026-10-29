@@ -84,8 +84,8 @@ export const InputField = (props: InputFieldProps) => {
     step,
     pattern,
     disabled,
-    onChangeDelayInMilliseconds,
-    onClick,
+    onChangeDelayInMilliseconds: _onChangeDelayInMilliseconds,
+    onClick: _onClick,
     onInput,
     "aria-describedby": ariaDescribedBy,
     ...inputProps
