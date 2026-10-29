@@ -8,6 +8,23 @@ afterEach(() => {
 });
 
 describe("PageLayout", () => {
+  it("defaults descendants to relative positioning and allows explicit overrides", () => {
+    render(
+      <PageLayout>
+        <main data-testid="default-position">
+          <div data-testid="custom-position" style={{ position: "absolute" }} />
+        </main>
+      </PageLayout>,
+    );
+
+    expect(
+      window.getComputedStyle(screen.getByTestId("default-position")).position,
+    ).toBe("relative");
+    expect(
+      window.getComputedStyle(screen.getByTestId("custom-position")).position,
+    ).toBe("absolute");
+  });
+
   it("renders floating content as a viewport-anchored layer", () => {
     render(
       <PageLayout floatingContent={<button>Help</button>}>

@@ -37,9 +37,12 @@ const PageContainer = styled.div<{
 
   ${({ $containerStyles }) => $containerStyles && { ...$containerStyles }}
 
+  * {
+    position: relative;
+  }
+
   div {
     box-sizing: border-box;
-    position: relative;
   }
 `;
 
