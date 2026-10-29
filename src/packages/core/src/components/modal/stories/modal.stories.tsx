@@ -11,6 +11,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     id: "example-modal",
+    "aria-label": "Example modal",
     children: <div>Hello</div>,
   },
 } satisfies Meta<typeof Modal>;

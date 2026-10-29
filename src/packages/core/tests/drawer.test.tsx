@@ -1,4 +1,10 @@
-import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Drawer } from "../src/components/drawer";
 import { FeedbackProvider, useFeedback } from "../src/providers/feedback";
@@ -9,6 +15,26 @@ const OpenDrawerButton = () => {
   const { showItem } = useFeedback();
 
   return <button onClick={() => showItem("drag-drawer")}>Open drawer</button>;
+};
+
+const DrawerHarness = ({ onClose }: { onClose: () => void }) => {
+  const { showItem, hideItem } = useFeedback();
+
+  return (
+    <>
+      <button onClick={() => showItem("accessible-drawer")}>Open drawer</button>
+      <Drawer
+        id="accessible-drawer"
+        aria-label="Test drawer"
+        onCloseDrawer={() => {
+          onClose();
+          hideItem("accessible-drawer");
+        }}
+      >
+        <button>Drawer action</button>
+      </Drawer>
+    </>
+  );
 };
 
 const dispatchPointerEvent = (
@@ -65,5 +91,54 @@ describe("Drawer drag behavior", () => {
 
     dispatchPointerEvent(window, "pointerup", 100);
     expect(drawer.style.transform).toBe("translate3d(0px, 0px, 0)");
+  });
+});
+
+describe("Drawer accessibility and dismissal", () => {
+  it("closes with Escape and restores focus to the opener", () => {
+    const onClose = vi.fn();
+
+    render(
+      <FeedbackProvider>
+        <DrawerHarness onClose={onClose} />
+      </FeedbackProvider>,
+    );
+
+    const opener = screen.getByRole("button", { name: "Open drawer" });
+    opener.focus();
+    fireEvent.click(opener);
+
+    const dialog = screen.getByRole("dialog", { name: "Test drawer" });
+    const action = screen.getByRole("button", { name: "Drawer action" });
+
+    expect(document.activeElement).toBe(action);
+    fireEvent.keyDown(dialog, { key: "Escape" });
+
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(opener);
+  });
+
+  it("closes from the backdrop but not from clicks inside the drawer", () => {
+    const onClose = vi.fn();
+    const { container } = render(
+      <FeedbackProvider>
+        <DrawerHarness onClose={onClose} />
+      </FeedbackProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Open drawer" }));
+    const dialog = screen.getByRole("dialog", { name: "Test drawer" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Drawer action" }));
+    expect(onClose).not.toHaveBeenCalled();
+
+    const backdrop = container.querySelector('[role="dialog"]')?.parentElement;
+    if (!backdrop) {
+      throw new Error("Drawer backdrop was not rendered.");
+    }
+
+    fireEvent.click(backdrop);
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

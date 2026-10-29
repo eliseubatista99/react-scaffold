@@ -11,6 +11,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     id: "example-drawer",
+    "aria-label": "Example drawer",
     drawerCloseOffset: 20,
     children: <div>Hello</div>,
   },

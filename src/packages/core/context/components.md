@@ -53,7 +53,7 @@ type CheckboxProps = {
 Files: `components/drawer/drawer.tsx`, `drawer.hook.ts` (`useDrawerHelper`, internal).
 
 ```ts
-interface DrawerHandleProps { render: React.ReactNode; styles?: CSSProperties; }
+interface DrawerHandleProps { render: React.ReactNode; style?: CSSProperties; }
 interface DrawerProps {
   id: string;
   drawerCloseOffset?: number;     // default 15 (px)
@@ -61,12 +61,16 @@ interface DrawerProps {
   backgroundStyles?: CSSProperties;
   contentStyles?: CSSProperties;
   handle?: DrawerHandleProps;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
   onCloseDrawer?: () => void;
 }
 ```
 - Bottom sheet. Backdrop: `position: fixed`, full viewport, `#00000068`, `zIndex 1000`. Content anchored to bottom with top radii 16px. Optional handle area (24px high) at the top.
 - `useDrawerHelper` uses `useDrag` on the handle ref: while dragging down the content moves down (`drawerBottomDistance = -distanceY`, capped at 0 when dragging up). When the drag distance reaches `drawerHeight - drawerCloseOffset`, `onCloseDrawer()` is called and position resets. Releasing resets position to 0.
-- The drawer does **not** hide itself: `onCloseDrawer` must call `hideItem(id)`.
+- Accessible modal dialog: provide `aria-label` or `aria-labelledby`; focus moves into the drawer, Tab is contained, Escape closes through `onCloseDrawer`, and focus returns to its previous element when hidden.
+- Backdrop clicks and swipe-to-close both call `onCloseDrawer`. The drawer does **not** hide itself: the consumer must call `hideItem(id)`.
+- The panel scrolls when content exceeds the available height. Dragging is restricted to the handle area.
 - Visibility: `isItemVisible(id)` from `useFeedback`.
 
 ## Form
@@ -166,11 +170,14 @@ interface ModalProps {
   children?: React.ReactNode;
   backgroundStyles?: React.CSSProperties;
   contentStyles?: React.CSSProperties;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
   onClickOutsideModal?: () => void;
 }
 ```
-- Backdrop: fixed, centered via `top/left 50%` + `translate(-50%, -50%)`, `minHeight 100vh`, `#00000068`, `zIndex 1000`. Click calls `onClickOutsideModal`.
-- Content: `width 90%`, `maxWidth 375px`, `minHeight 80px`, `maxHeight 50%`, white, radius 16px, `padding 24px`, `zIndex 1001`; click `stopPropagation`.
+- Backdrop: fixed full viewport, centered content, `#00000068`, `zIndex 1000`. Clicking the backdrop calls `onClickOutsideModal`.
+- Content: `width 90%`, `maxWidth 375px`, `minHeight 80px`, `maxHeight 90vh`, white, radius 16px, `padding 24px`, `zIndex 1001`; scrolls when content exceeds available height.
+- Accessible modal dialog: provide `aria-label` or `aria-labelledby`; focus moves into the modal, Tab is contained, Escape calls `onClickOutsideModal`, and focus returns to its previous element when hidden.
 - Does not hide itself; consumer calls `hideItem(id)`.
 
 ## NumericInputField

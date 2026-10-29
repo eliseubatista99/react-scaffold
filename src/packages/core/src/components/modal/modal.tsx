@@ -1,11 +1,14 @@
 import React from "react";
 import { useFeedback } from "../../providers";
+import { useDialogAccessibility } from "../dialog/useDialogAccessibility";
 
 export interface ModalProps {
   id: string;
   children?: React.ReactNode;
   backgroundStyles?: React.CSSProperties;
   contentStyles?: React.CSSProperties;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
   onClickOutsideModal?: () => void;
 }
 
@@ -14,23 +17,28 @@ export const Modal = ({
   children,
   backgroundStyles,
   contentStyles,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   onClickOutsideModal,
 }: ModalProps) => {
   const { isItemVisible } = useFeedback();
+  const isVisible = isItemVisible(id);
+  const { dialogRef, handleKeyDown } = useDialogAccessibility(
+    isVisible,
+    onClickOutsideModal,
+  );
 
   return (
     <>
-      {isItemVisible(id) && (
+      {isVisible && (
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            width: "auto",
+            height: "auto",
             minHeight: "100vh",
             background: "#00000068",
             position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            inset: 0,
             zIndex: 1000,
             display: "flex",
             flexDirection: "column",
@@ -38,17 +46,28 @@ export const Modal = ({
             justifyContent: "center",
             ...backgroundStyles,
           }}
-          onClick={() => {
-            onClickOutsideModal?.();
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              onClickOutsideModal?.();
+            }
           }}
         >
           <div
+            ref={dialogRef}
+            id={id}
+            role="dialog"
+            aria-modal="true"
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
             style={{
               width: "90%",
               maxWidth: "375px",
               height: "fit-content",
               minHeight: "80px",
-              maxHeight: "50%",
+              maxHeight: "90vh",
+              overflowY: "auto",
               background: "#ffffff",
               borderRadius: "16px",
               display: "flex",
