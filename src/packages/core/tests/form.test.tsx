@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormFieldOutputData } from "../src/types";
+import { Button } from "../src/components/button";
 import { Form } from "../src/components/form";
 
 afterEach(cleanup);
@@ -52,6 +53,56 @@ describe("Form", () => {
     fireEvent.click(submitButton);
 
     return waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+  });
+
+  it("submits without nesting a custom button inside another button", async () => {
+    const onSubmit = vi.fn(async () => undefined);
+    const onClick = vi.fn();
+
+    render(
+      createForm(
+        {
+          onSubmit,
+          submitSection: {
+            submitButton: {
+              content: <Button onClick={onClick}>Save</Button>,
+            },
+          },
+        },
+        <input name="name" defaultValue="Ada" />,
+      ),
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Save" });
+    expect(submitButton.parentElement?.closest("button")).toBeNull();
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(onClick).toHaveBeenCalledOnce();
+      expect(onSubmit).toHaveBeenCalledOnce();
+    });
+  });
+
+  it("does not submit twice when content has its own submit button", async () => {
+    const onSubmit = vi.fn(async () => undefined);
+    render(
+      createForm(
+        {
+          onSubmit,
+          submitSection: {
+            submitButton: {
+              content: <button>Save</button>,
+            },
+          },
+        },
+        <input name="name" defaultValue="Ada" />,
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
   });
 
   it("returns checked checkbox values as booleans and only includes the selected radio", async () => {
