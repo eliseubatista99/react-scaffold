@@ -1,33 +1,30 @@
-import { type CSSProperties } from "react";
+import React, { type CSSProperties } from "react";
 
-export type RadioButtonProps = {
+export type RadioButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "type" | "aria-pressed"
+> & {
   checked: boolean;
   customUncheckedRender?: React.ReactNode;
   customCheckedRender?: React.ReactNode;
-  onClick?: (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-
-  styles?: CSSProperties;
   checkedStyles?: CSSProperties;
 };
 
 export const RadioButton = ({
   checked,
-  onClick,
-  styles,
+  style,
   checkedStyles,
   customCheckedRender,
   customUncheckedRender,
+  ...buttonProps
 }: RadioButtonProps) => {
-  const finalStyles: React.CSSProperties = checked
-    ? { ...styles, ...checkedStyles }
-    : { ...styles };
-
   return (
-    <div
-      onClick={(e) => {
-        onClick?.(e);
-      }}
+    <button
+      {...buttonProps}
+      type="button"
+      aria-pressed={checked}
       style={{
+        padding: 0,
         width: "25px",
         height: "25px",
         borderRadius: "50%",
@@ -38,7 +35,8 @@ export const RadioButton = ({
         alignItems: "center",
         justifyContent: "center",
         display: "flex",
-        ...finalStyles,
+        ...(checked ? checkedStyles : undefined),
+        ...style,
       }}
     >
       {checked && (
@@ -57,6 +55,6 @@ export const RadioButton = ({
         </>
       )}
       {!checked && customUncheckedRender}
-    </div>
+    </button>
   );
 };

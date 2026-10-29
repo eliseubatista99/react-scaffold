@@ -41,12 +41,13 @@ type CheckboxProps = {
   customUncheckedRender?: React.ReactNode;
   customCheckedRender?: React.ReactNode;
   onToggle?: (checked: boolean) => void;
-  styles?: CSSProperties;
+  style?: CSSProperties;
   checkboxStyles?: CSSProperties;
 };
 ```
-- Controlled: renders a hidden `<input type="checkbox" name>` (so it participates in `Form`) and a 25×25 visual box (`borderRadius 4px`, `1px solid #969696ff`, black when checked, white when unchecked).
-- Click calls `onToggle(!checked)`. Custom renders replace the default box for each state.
+- Controlled native checkbox with a visually hidden input and a 25×25 visual box (`borderRadius 4px`, `1px solid #969696ff`, black when checked, white when unchecked). The optional label is associated with the input.
+- Supports native input attributes such as `disabled`, `required`, `value`, `aria-*`, and `onBlur`. `style` overrides the wrapper defaults; `checkboxStyles` customizes the visual box. `onToggle` receives the newly checked state. Keyboard focus has a visible indicator.
+- Custom renders replace the default box for each state.
 
 ## Drawer (Feedback)
 Files: `components/drawer/drawer.tsx`, `drawer.hook.ts` (`useDrawerHelper`, internal).
@@ -230,12 +231,13 @@ type RadioButtonProps = {
   checked: boolean;
   customUncheckedRender?: React.ReactNode;
   customCheckedRender?: React.ReactNode;
-  onClick?: (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  styles?: CSSProperties;
+  style?: CSSProperties;
   checkedStyles?: CSSProperties;
 };
 ```
-- 25×25 circle, `2px solid` border (`#969696ff` unchecked / `#000` checked), checked fill black with an inner white dot (40%). Purely visual: no hidden `<input>`, so it is **not** collected by `Form`.
+- Selectable visual control, rendered as a native `<button type="button">` with `aria-pressed`; use `aria-label` or another accessible name.
+- Supports native button attributes other than `type` and `aria-pressed`, plus standard keyboard interaction. `style` overrides defaults; `checkedStyles` apply only when checked and may be overridden by `style`.
+- 25×25 circle, `2px solid` border (`#969696ff` unchecked / `#000` checked), checked fill black with an inner white dot (40%). It does not render a radio input and is not collected by `Form`.
 
 ## SvgImage
 File: `components/svgImage/svgImage.tsx` — uses `csstype` `Property` types.
