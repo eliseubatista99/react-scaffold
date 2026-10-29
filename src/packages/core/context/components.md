@@ -103,9 +103,15 @@ interface FormProps {
 ## Image
 File: `components/image/image.tsx`
 ```ts
-type ImageProps = { src: string; alt?: string; onClick?: () => void; styles?: CSSProperties; };
+type ImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "style" | "onClick"> & {
+  src: string;
+  alt?: string;
+  onClick?: () => void;
+  style?: CSSProperties;
+};
 ```
-- `<img>` with `objectFit: cover`, `display: flex`.
+- Renders a native `<img>` and supports its attributes, including `loading`, `decoding`, `srcSet`, and `aria-*`. `style` overrides the image defaults.
+- When `onClick` is provided, the image becomes keyboard-operable with button role and focus support; provide meaningful `alt` text or `aria-label`.
 
 ## InputField
 Files: `components/inputField/inputField.tsx`, `inputField.hook.ts` (`useInputFieldHelper`, internal).
@@ -253,10 +259,11 @@ type SvgImageProps = {
   src: React.ReactElement<React.SVGProps<SVGElement>>; // inner SVG nodes
   alt?: string;
   onClick?: () => void;
-  styles?: CSSProperties;
+  style?: CSSProperties;
 };
 ```
-- Renders `<svg xmlns=... viewBox width height fill stroke>{src}</svg>`.
+- Renders an `<svg>` with the provided inner nodes, supporting native SVG attributes such as `className`, `aria-*`, and `focusable`. `style` overrides the default display.
+- Meaningful `alt` text labels the SVG; an SVG without text is hidden from assistive technology by default. When `onClick` is provided, it becomes keyboard-operable with button role and focus support; provide meaningful `alt` text or `aria-label`.
 
 ## TextAreaField
 File: `components/textAreaField/textAreaField.tsx`
