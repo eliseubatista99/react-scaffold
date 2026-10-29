@@ -24,7 +24,7 @@ export const Primary: Story = {
 
 export const WithCustomStyles: Story = {
   args: {
-    styles: {
+    style: {
       background: "red",
     },
   },

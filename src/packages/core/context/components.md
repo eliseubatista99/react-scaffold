@@ -302,12 +302,14 @@ File: `components/toast/toast.tsx`
 interface ToastProps {
   id: string;
   children?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   durationInSeconds?: number; // default 3
 }
 ```
 - Fixed at `top: 10px`, horizontally centered, `100×40px`, `#534a4aff`, white text, radius 20px, `3px solid #000`, `zIndex 1000`.
-- When it becomes visible, schedules `hideItem(id)` after `durationInSeconds` (auto-hide). A ref (`isVisibleCache`) avoids re-scheduling on re-render. The timeout is never cleared on unmount.
+- Has `role="status"`, `aria-live="polite"`, and `aria-atomic="true"` by default; supports native div attributes and allows overriding the live-region semantics.
+- When it becomes visible, schedules `hideItem(id)` after `durationInSeconds`; the timer is reset when the ID/duration/visibility changes and cleared when hidden or unmounted.
+- Use `style` to override the default toast appearance.
 
 ## Typography
 File: `components/typography/typography.tsx`

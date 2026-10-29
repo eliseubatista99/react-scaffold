@@ -13,7 +13,6 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 - `PageLayout.floatingContent` is declared and destructured but never rendered.
 - `PageLayout` header/footer `visibility: "fixed"` actually means `position: relative` (in flow), while the default is `sticky` — naming is counter-intuitive. `page.extraHeight` is computed but unused; `calculateExtraHeight` has stale `useCallback` deps.
 - `Form` intentionally calls `onSubmit` with `hasErrors` even when validation fails; callers decide whether to proceed. `RadioButton` remains a visual-only control and is not collected by forms.
-- `Toast` timeout is not cleared on unmount; effect deps omit `id`/`durationInSeconds`.
 - `Drawer` does not hide itself on swipe; consumer must call `hideItem` inside `onCloseDrawer`.
 - `NumericInputField` overwrites any consumer `onInput` prop.
 
