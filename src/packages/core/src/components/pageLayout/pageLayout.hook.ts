@@ -1,71 +1,48 @@
-import React from "react";
-import { PageLayoutProps } from "./pageLayout";
+import React, { useEffect, useRef, useState } from "react";
+import type { PageLayoutProps } from "./pageLayout";
 
 export const usePageLayoutHelper = (props: PageLayoutProps) => {
-  const headerRef = React.useRef<HTMLDivElement>(null);
-  const footerRef = React.useRef<HTMLDivElement>(null);
-  const sidebarRef = React.useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
 
-  const [headerHeight, setHeaderHeight] = React.useState<number>(24);
-  const [footerHeight, setFooterHeight] = React.useState<number>(24);
-  const [sidebarWidth, setSidebarWidth] = React.useState<number>(300);
+  useEffect(() => {
+    const header = headerRef.current;
+    const footer = footerRef.current;
 
-  const executeHeaderCalculations = React.useCallback(() => {
-    if (!headerRef.current) {
-      return;
+    const updateDimensions = () => {
+      setHeaderHeight(header?.getBoundingClientRect().height ?? 0);
+      setFooterHeight(footer?.getBoundingClientRect().height ?? 0);
+    };
+
+    updateDimensions();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateDimensions);
+      return () => window.removeEventListener("resize", updateDimensions);
     }
 
-    setHeaderHeight(headerRef.current.clientHeight);
-  }, [headerRef, headerRef.current]);
+    const observer = new ResizeObserver(updateDimensions);
+    if (header) observer.observe(header);
+    if (footer) observer.observe(footer);
 
-  const executeFooterCalculations = React.useCallback(() => {
-    if (!footerRef.current) {
-      return;
-    }
-
-    setFooterHeight(footerRef.current.clientHeight);
-  }, [footerRef, footerRef.current]);
-
-  const executeSidebarCalculations = React.useCallback(() => {
-    if (!sidebarRef.current) {
-      return;
-    }
-
-    setSidebarWidth(sidebarRef.current.clientWidth);
-  }, [sidebarRef, sidebarRef.current]);
-
-  const calculateExtraHeight = React.useCallback(() => {
-    let extra = 0;
-
-    if (props.header?.visibility === "always") {
-      extra = extra + (headerHeight || 0);
-    }
-
-    if (props.footer?.visibility === "always") {
-      extra = extra + (footerHeight || 0);
-    }
-
-    return extra;
-  }, [footerRef, footerRef.current]);
-
-  React.useEffect(() => {
-    executeHeaderCalculations();
-  }, [executeHeaderCalculations, headerRef, headerRef.current]);
-
-  React.useEffect(() => {
-    executeFooterCalculations();
-  }, [executeFooterCalculations, footerRef, footerRef.current]);
-
-  React.useEffect(() => {
-    executeSidebarCalculations();
-  }, [executeSidebarCalculations, sidebarRef, sidebarRef.current]);
+    return () => observer.disconnect();
+  }, [
+    props.header,
+    props.header?.content,
+    props.header?.style,
+    props.footer,
+    props.footer?.content,
+    props.footer?.style,
+  ]);
 
   return {
     header: {
       ...props.header,
       visible: props.header !== undefined,
       height:
-        !props.header || props.header?.visibility === "fixed"
+        !props.header || props.header.visibility === "fixed"
           ? 0
           : headerHeight,
       ref: headerRef,
@@ -74,19 +51,14 @@ export const usePageLayoutHelper = (props: PageLayoutProps) => {
       ...props.footer,
       visible: props.footer !== undefined,
       height:
-        !props.footer || props.footer?.visibility === "fixed"
+        !props.footer || props.footer.visibility === "fixed"
           ? 0
           : footerHeight,
       ref: footerRef,
     },
     sidebar: {
       ...props.sidebar,
-      width: sidebarWidth,
       visible: props.sidebar !== undefined,
-      ref: sidebarRef,
-    },
-    page: {
-      extraHeight: calculateExtraHeight(),
     },
   };
 };

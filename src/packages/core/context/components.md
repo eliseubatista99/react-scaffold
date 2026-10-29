@@ -209,13 +209,13 @@ Files: `components/pageLayout/pageLayout.tsx`, `pageLayout.hook.ts` (`usePageLay
 interface PageLayoutHeaderAndFooterProps {
   content: React.ReactNode;
   visibility?: "always" | "fixed";
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 interface PageLayoutProps {
   header?: PageLayoutHeaderAndFooterProps;
   footer?: PageLayoutHeaderAndFooterProps;
   sidebar?: Omit<PageLayoutHeaderAndFooterProps, "visibility">;
-  floatingContent?: React.ReactNode;   // declared but NOT rendered
+  floatingContent?: React.ReactNode;   // fixed at the viewport's bottom-right
   allowScroll?: boolean;               // default true
   reserveSpaceForScrollbar?: boolean;  // scrollbarGutter: "stable"
   containerStyles?: React.CSSProperties;
@@ -223,10 +223,10 @@ interface PageLayoutProps {
   children?: React.ReactNode;
 }
 ```
-- DOM ids: `#page-container` (emotion, flex column, 100% height) → `#page-header` → body wrapper → `#page-sidebar` (width 30%) + `#page-body` → `#page-content` (scroll area) → `#page-footer`.
+- DOM ids: `#page-container` (emotion, flex column, 100% height) → `#page-header` → body wrapper → `#page-sidebar` (width 30%) + `#page-body` → `#page-content` (scroll area) → `#page-footer`; `#page-floating-content` is rendered as a fixed viewport overlay when provided.
 - Header/footer: `position: sticky` by default; `relative` when `visibility: "fixed"` (the name is counter-intuitive: "fixed" means it is part of the normal flow and not overlaying the content).
-- Hook measures header/footer height (`clientHeight`, initial 24) and sidebar width (initial 300). For non-"fixed" header/footer, the body wrapper gets negative `marginTop`/`marginBottom` and the content gets matching `paddingTop`/`paddingBottom`, so content scrolls under sticky bars.
-- `page.extraHeight` (sum of "always" header/footer heights) is calculated but not used by the component.
+- Header/footer sizes are measured with `ResizeObserver` (with a window-resize fallback); sticky bars overlap the scrolling content, which receives matching top/bottom padding.
+- `style` customizes each header, footer, or sidebar wrapper. `containerStyles` and `pageStyles` continue to target the outer container and scrollable page content.
 
 ## ProgressBar
 File: `components/progressBar/progressBar.tsx`

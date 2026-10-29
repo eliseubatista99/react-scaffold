@@ -65,6 +65,7 @@ export const PageLayoutStoriesSetup = ({
         >
           {Array.from({ length: 30 }, (_, i) => i + 1).map((i) => (
             <div
+              key={i}
               style={{
                 background: `rgba(60, 60, 60, ${100 / i})`,
                 width: "300px",

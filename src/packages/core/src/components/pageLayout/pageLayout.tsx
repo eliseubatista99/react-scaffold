@@ -4,7 +4,7 @@ import { usePageLayoutHelper } from "./pageLayout.hook";
 export interface PageLayoutHeaderAndFooterProps {
   content: React.ReactNode;
   visibility?: "always" | "fixed";
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
 export interface PageLayoutProps {
@@ -19,7 +19,9 @@ export interface PageLayoutProps {
   children?: React.ReactNode;
 }
 
-const PageContainer = styled.div<{ styles?: React.CSSProperties }>`
+const PageContainer = styled.div<{
+  $containerStyles?: React.CSSProperties;
+}>`
   min-height: 100%;
   max-height: 100%;
   width: 100%;
@@ -33,7 +35,7 @@ const PageContainer = styled.div<{ styles?: React.CSSProperties }>`
   display: flex;
   flex-direction: column;
 
-  ${({ styles }) => styles && { ...styles }}
+  ${({ $containerStyles }) => $containerStyles && { ...$containerStyles }}
 
   div {
     box-sizing: border-box;
@@ -55,9 +57,7 @@ export const PageLayout = (props: PageLayoutProps) => {
   return (
     <PageContainer
       id="page-container"
-      styles={{
-        ...containerStyles,
-      }}
+      $containerStyles={containerStyles}
     >
       {header.visible && (
         <div
@@ -74,7 +74,7 @@ export const PageLayout = (props: PageLayoutProps) => {
             flexDirection: "row",
             height: "fit-content",
             boxSizing: "border-box",
-            ...header.styles,
+            ...header.style,
           }}
         >
           {header.content}
@@ -93,12 +93,11 @@ export const PageLayout = (props: PageLayoutProps) => {
       >
         {sidebar.visible && (
           <div
-            ref={sidebar.ref}
             id="page-sidebar"
             style={{
               width: "30%",
               display: "flex",
-              ...sidebar.styles,
+              ...sidebar.style,
             }}
           >
             {sidebar.content}
@@ -122,7 +121,7 @@ export const PageLayout = (props: PageLayoutProps) => {
               display: "flex",
               flexDirection: "column",
               flex: 1,
-              minHeight: "100%",
+              minHeight: 0,
               scrollbarGutter: reserveSpaceForScrollbar ? "stable" : undefined,
               paddingLeft: "0px",
               paddingRight: "0px",
@@ -151,10 +150,23 @@ export const PageLayout = (props: PageLayoutProps) => {
             flexDirection: "row",
             height: "fit-content",
             boxSizing: "border-box",
-            ...footer.styles,
+            ...footer.style,
           }}
         >
           {footer.content}
+        </div>
+      )}
+      {floatingContent && (
+        <div
+          id="page-floating-content"
+          style={{
+            position: "fixed",
+            right: "24px",
+            bottom: "24px",
+            zIndex: 1000,
+          }}
+        >
+          {floatingContent}
         </div>
       )}
     </PageContainer>
