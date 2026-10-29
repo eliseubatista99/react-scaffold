@@ -120,7 +120,7 @@ interface InputFieldProps {
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;        // e.g. validation error
   step?: string | number;
-  placeHolder?: string;
+  placeholder?: string;
   autoComplete?: HTMLInputAutoCompleteAttribute; // default "off"
   value?: string;                          // controlled
   initialValue?: string;                   // uncontrolled (defaultValue)
@@ -135,13 +135,15 @@ interface InputFieldProps {
   onClick?: () => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
-  styles?: CSSProperties;
+  style?: CSSProperties;
 }
 ```
-- Layout: emotion container (width 100%, `maxWidth 357px`, gap 8px) → label → input row (height 47px, `2px solid #000000`, radius 5px, left icon, input, right icon) → bottom message.
-- Emotion CSS removes focus outline and autofill background.
+- Layout: emotion container (width 100%, `maxWidth 357px`, gap 8px) → associated label → input row (height 47px, `2px solid #000000`, radius 5px, left icon, input, right icon) → optional description.
+- Supports native input attributes (including `placeholder`, `aria-*`, `required`, and `readOnly`). Generates an input ID when one is not supplied, associates the label, and connects the bottom message with `aria-describedby`.
+- The row displays a visible focus outline when its input receives keyboard focus. `style` customizes the outer wrapper; `containerStyles` and `inputStyles` customize the row and input respectively.
 - `ref` is a regular prop (React 19 style).
 - `onChange` is debounced with `setTimeout` when `onChangeDelayInMilliseconds` is set (previous timeout cleared).
+- Pending debounced changes are canceled when the component unmounts.
 
 ## Loader (Feedback)
 File: `components/loader/loader.tsx`
@@ -265,7 +267,7 @@ interface TextAreaFieldProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;
-  placeHolder?: string;
+  placeholder?: string;
   value?: string;
   initialValue?: string;
   onChange?: (value: string) => void;

@@ -1,12 +1,20 @@
 import styled from "@emotion/styled";
-import {
-  HTMLInputAutoCompleteAttribute,
-  type CSSProperties,
-  type HTMLInputTypeAttribute,
-} from "react";
+import React, { useId } from "react";
 import { useInputFieldHelper } from "./inputField.hook";
 
-export interface InputFieldProps {
+export interface InputFieldProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    | "name"
+    | "type"
+    | "value"
+    | "defaultValue"
+    | "onChange"
+    | "onFocus"
+    | "onBlur"
+    | "onClick"
+    | "style"
+  > {
   ref?: React.Ref<HTMLInputElement>;
   name: string;
   onChangeDelayInMilliseconds?: number;
@@ -14,23 +22,16 @@ export interface InputFieldProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;
-  step?: string | number;
-  placeHolder?: string;
-  autoComplete?: HTMLInputAutoCompleteAttribute;
+  type?: React.HTMLInputTypeAttribute;
   value?: string;
   initialValue?: string;
-  pattern?: string;
-  maxLength?: number;
-  disabled?: boolean;
-  type?: HTMLInputTypeAttribute;
-  onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
   onClick?: () => void;
-  inputStyles?: CSSProperties;
-  containerStyles?: CSSProperties;
-  styles?: CSSProperties;
+  inputStyles?: React.CSSProperties;
+  containerStyles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
 const ContainerDiv = styled.div`
@@ -42,6 +43,11 @@ const ContainerDiv = styled.div`
     border: none;
     outline: none;
     background: none;
+  }
+
+  > div:focus-within {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 
   input:autofill {
@@ -56,15 +62,17 @@ const ContainerDiv = styled.div`
 export const InputField = (props: InputFieldProps) => {
   const { onValueChanged, handleOnBlur, handleOnFocus, handleOnClick } =
     useInputFieldHelper(props);
+  const generatedId = useId();
 
   const {
     ref,
     name,
+    id,
     label,
     leftIcon,
     rightIcon,
     bottomMessage,
-    placeHolder,
+    placeholder,
     autoComplete = "off",
     value,
     initialValue,
@@ -72,12 +80,23 @@ export const InputField = (props: InputFieldProps) => {
     maxLength,
     inputStyles,
     containerStyles,
-    styles,
+    style,
     step,
     pattern,
     disabled,
+    onChangeDelayInMilliseconds,
+    onClick,
     onInput,
+    "aria-describedby": ariaDescribedBy,
+    ...inputProps
   } = props;
+  const inputId = id ?? generatedId;
+  const descriptionId = `${inputId}-description`;
+  const hasLabel = label !== undefined && label !== null && label !== false;
+  const hasBottomMessage =
+    bottomMessage !== undefined &&
+    bottomMessage !== null &&
+    bottomMessage !== false;
 
   return (
     <ContainerDiv
@@ -85,10 +104,10 @@ export const InputField = (props: InputFieldProps) => {
         width: "100%",
         maxWidth: "357px",
         gap: "8px",
-        ...styles,
+        ...style,
       }}
     >
-      {label}
+      {hasLabel && <label htmlFor={inputId}>{label}</label>}
       <div
         onClick={() => handleOnClick()}
         style={{
@@ -114,13 +133,15 @@ export const InputField = (props: InputFieldProps) => {
       >
         {leftIcon}
         <input
+          {...inputProps}
           ref={ref}
+          id={inputId}
           name={name}
           type={type}
           autoComplete={autoComplete}
           step={step}
           maxLength={maxLength}
-          placeholder={placeHolder}
+          placeholder={placeholder}
           value={value}
           defaultValue={initialValue}
           onChange={onValueChanged}
@@ -129,6 +150,11 @@ export const InputField = (props: InputFieldProps) => {
           onInput={onInput}
           pattern={pattern}
           disabled={disabled}
+          aria-describedby={
+            hasBottomMessage
+              ? [ariaDescribedBy, descriptionId].filter(Boolean).join(" ")
+              : ariaDescribedBy
+          }
           style={{
             flex: 1,
             border: "none",
@@ -146,7 +172,9 @@ export const InputField = (props: InputFieldProps) => {
         {rightIcon}
       </div>
 
-      {bottomMessage}
+      {hasBottomMessage && (
+        <div id={descriptionId}>{bottomMessage}</div>
+      )}
     </ContainerDiv>
   );
 };
