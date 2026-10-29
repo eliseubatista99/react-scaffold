@@ -1,131 +1,148 @@
 import {
-  Auth,
+  type ActionCodeSettings,
+  type Auth,
   createUserWithEmailAndPassword,
-  getAuth,
+  onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  updateEmail,
+  signOut,
   updatePassword,
   updateProfile,
-  User,
+  type User,
+  verifyBeforeUpdateEmail,
 } from "firebase/auth";
 import React from "react";
 
-import { FirebaseApp } from "firebase/app";
-import { FirebaseAppHelper } from "../../helpers";
-import { FirebaseAuthProviderContext } from "./firebaseAuthContext";
+import {
+  FirebaseAuthProviderContext,
+  type FirebaseAuthContextData,
+} from "./firebaseAuthContext";
 
 export interface FirebaseAuthProviderInputProps {
+  auth: Auth;
   children?: React.ReactNode;
 }
 
 export const FirebaseAuthProvider = ({
+  auth,
   children,
 }: FirebaseAuthProviderInputProps) => {
-  const app = React.useRef<FirebaseApp | null>(null);
-  const auth = React.useRef<Auth | null>(null);
-  const [isInitialized, setIsInitialized] = React.useState(false);
-  const currentUserRef = React.useRef<User | null | undefined>(undefined);
-  const [currentUser, setCurrentUserState] = React.useState<
-    User | null | undefined
+  const [authSnapshot, setAuthSnapshot] = React.useState<
+    { auth: Auth; user: User | null } | undefined
   >(undefined);
-
-  const setCurrentUser = (user: User | null) => {
-    currentUserRef.current = user;
-    setCurrentUserState(user);
-  };
-
-  const signUp = async (email: string, password: string, username: string) => {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth.current!,
-      email,
-      password,
-    );
-
-    await updateProfile(userCredential.user, {
-      displayName: username,
-    });
-
-    return userCredential;
-  };
-
-  const logIn = async (email: string, password: string) => {
-    return await signInWithEmailAndPassword(auth.current!, email, password);
-  };
-
-  const logout = async () => {
-    return auth.current?.signOut();
-  };
-
-  const resetPassword = async (email: string) => {
-    await sendPasswordResetEmail(auth.current!, email);
-
-    return currentUserRef.current;
-  };
-
-  const updateUserEmail = async (email: string) => {
-    if (currentUserRef.current) {
-      await updateEmail(currentUserRef.current, email);
-    }
-
-    return currentUserRef.current;
-  };
-
-  const updateUserPassword = async (password: string) => {
-    if (currentUserRef.current) {
-      await updatePassword(currentUserRef.current, password);
-    }
-
-    return currentUserRef.current;
-  };
-
-  const updateUserName = async (name: string) => {
-    if (currentUserRef.current) {
-      await updateProfile(currentUserRef.current, {
-        displayName: name,
-      });
-    }
-
-    return currentUserRef.current;
-  };
+  const [userProfileRevision, setUserProfileRevision] = React.useState(0);
+  const currentUser =
+    authSnapshot?.auth === auth ? authSnapshot.user : undefined;
 
   React.useEffect(() => {
-    if (!FirebaseAppHelper.isAppInitialized()) {
-      throw new Error(
-        "Firebase app is not initialized. Please call FirebaseAppHelper.initializeApp() with your Firebase configuration.",
-      );
-    }
-
-    app.current = FirebaseAppHelper.getApp();
-
-    auth.current = getAuth(app.current!);
-
-    if (!auth.current) {
-      throw new Error("Firebase Auth is not initialized");
-    }
-
-    const unsubscribe = auth.current.onAuthStateChanged((user: User | null) => {
-      console.debug("FirebaseAuthProvider > AuthStateChanged > ", { user });
-      setCurrentUser(user);
-      setIsInitialized(true);
+    let isActive = true;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (isActive) {
+        setAuthSnapshot({ auth, user });
+      }
     });
 
-    return unsubscribe;
-  }, []);
+    return () => {
+      isActive = false;
+      unsubscribe();
+    };
+  }, [auth]);
+
+  const value = React.useMemo<FirebaseAuthContextData>(() => {
+    const isInitialized = currentUser !== undefined;
+
+    const requireCurrentUser = () => {
+      const user = auth.currentUser;
+      if (user) {
+        return user;
+      }
+
+      if (!isInitialized) {
+        throw new Error("Firebase Auth is still initializing.");
+      }
+
+      throw new Error("A signed-in user is required for this operation.");
+    };
+
+    const signUp = async (
+      email: string,
+      password: string,
+      username: string,
+    ) => {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      try {
+        await updateProfile(userCredential.user, {
+          displayName: username,
+        });
+        setUserProfileRevision((revision) => revision + 1);
+      } catch (profileError) {
+        return {
+          userCredential,
+          profileUpdate: "failed" as const,
+          profileError,
+        };
+      }
+
+      return { userCredential, profileUpdate: "success" as const };
+    };
+
+    const logIn = (email: string, password: string) =>
+      signInWithEmailAndPassword(auth, email, password);
+
+    const logout = () => signOut(auth);
+
+    const resetPassword = (email: string) =>
+      sendPasswordResetEmail(auth, email);
+
+    const updateUserEmail = async (
+      email: string,
+      actionCodeSettings?: ActionCodeSettings | null,
+    ): Promise<void> => {
+      await verifyBeforeUpdateEmail(
+        requireCurrentUser(),
+        email,
+        actionCodeSettings,
+      );
+    };
+
+    const updateUserPassword = async (password: string) => {
+      const user = requireCurrentUser();
+      await updatePassword(user, password);
+
+      return user;
+    };
+
+    const updateUserName = async (name: string) => {
+      const user = requireCurrentUser();
+      await updateProfile(user, {
+        displayName: name,
+      });
+      setUserProfileRevision((revision) => revision + 1);
+
+      return user;
+    };
+
+    return {
+      currentUser,
+      isInitialized,
+      signUp,
+      logIn,
+      logout,
+      resetPassword,
+      updateEmail: updateUserEmail,
+      updatePassword: updateUserPassword,
+      updateName: updateUserName,
+    };
+  }, [auth, currentUser, userProfileRevision]);
 
   return (
     <FirebaseAuthProviderContext.Provider
-      value={{
-        currentUser: currentUser,
-        isInitialized: isInitialized,
-        signUp,
-        logIn,
-        logout,
-        resetPassword,
-        updateEmail: updateUserEmail,
-        updatePassword: updateUserPassword,
-        updateName: updateUserName,
-      }}
+      value={value}
     >
       {children}
     </FirebaseAuthProviderContext.Provider>

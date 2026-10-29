@@ -2,25 +2,49 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
+  query,
   setDoc,
-  UpdateData,
+  type QueryConstraint,
+  type UpdateData,
   updateDoc,
   writeBatch,
 } from "firebase/firestore";
 import { FirebaseAppHelper } from "../../helpers";
+
+const MAX_FIRESTORE_BATCH_SIZE = 500;
 
 export type FirestoreItem<T> = {
   id: string;
   data: T;
 };
 
+export type FirestoreDataParser<T> = (value: unknown) => T;
+
+export type FirestoreQueryOptions<T> = {
+  constraints?: QueryConstraint[];
+  parse: FirestoreDataParser<T>;
+  predicate?: (data: T) => boolean;
+};
+
+const applyConstraints = (
+  collectionRef: ReturnType<typeof collection>,
+  constraints?: QueryConstraint[],
+) =>
+  constraints?.length ? query(collectionRef, ...constraints) : collectionRef;
+
 export const useFirestore = () => {
   const firestore = () => {
     const app = FirebaseAppHelper.getApp();
+    if (!app) {
+      throw new Error(
+        "Wrap the application in FirebaseProvider before using Firestore.",
+      );
+    }
 
-    return getFirestore(app!);
+    return getFirestore(app);
   };
 
   const addItem = async <TOutput extends object>(
@@ -29,90 +53,108 @@ export const useFirestore = () => {
     item: TOutput,
   ) => {
     const collectionRef = collection(firestore(), collectionName);
-    const data = doc(collectionRef, path);
+    const documentRef = doc(collectionRef, path);
 
-    await setDoc(data, { ...item });
+    await setDoc(documentRef, { ...item });
   };
 
   const getItem = async <TOutput extends object>(
     collectionName: string,
     path: string,
+    parse: FirestoreDataParser<TOutput>,
   ): Promise<FirestoreItem<TOutput> | null> => {
     const collectionRef = collection(firestore(), collectionName);
-    const data = doc(collectionRef, path);
+    const documentRef = doc(collectionRef, path);
+    const snapshot = await getDoc(documentRef);
 
-    if (data === null) {
+    if (!snapshot.exists()) {
       return null;
     }
 
-    return { id: data.id, data: data as TOutput };
+    return { id: snapshot.id, data: parse(snapshot.data()) };
   };
 
   const getItems = async <TOutput extends object>(
     collectionName: string,
-    predicate?: (data: TOutput) => boolean,
+    options: FirestoreQueryOptions<TOutput>,
   ): Promise<FirestoreItem<TOutput>[]> => {
+    const { constraints, parse, predicate } = options;
     const collectionRef = collection(firestore(), collectionName);
+    const snapshot = await getDocs(applyConstraints(collectionRef, constraints));
 
-    const data = await getDocs(collectionRef);
+    const items = snapshot.docs
+      .filter((document) => document.exists())
+      .map((document): FirestoreItem<TOutput> => ({
+        id: document.id,
+        data: parse(document.data()),
+      }));
 
-    const nonNullData = data.docs.filter((doc) => doc.exists());
-
-    let mappedData = nonNullData.map((doc): FirestoreItem<TOutput> => {
-      const docData = doc.data() as TOutput;
-      return { id: doc.id, data: docData };
-    });
-
-    if (predicate) {
-      mappedData = mappedData.filter((doc) => predicate(doc.data));
-    }
-
-    return mappedData;
+    return predicate
+      ? items.filter((item) => predicate(item.data))
+      : items;
   };
 
   const updateItem = async <TOutput extends object>(
     collectionName: string,
     path: string,
-    newValues: Partial<TOutput>,
+    newValues: UpdateData<TOutput>,
   ) => {
     const collectionRef = collection(firestore(), collectionName);
+    const documentRef = doc(collectionRef, path);
 
-    const docRef = doc(collectionRef, path);
-    await updateDoc(docRef, newValues as UpdateData<TOutput>);
+    await updateDoc(documentRef, newValues);
   };
 
   const deleteItem = async (collectionName: string, path: string) => {
     const collectionRef = collection(firestore(), collectionName);
+    const documentRef = doc(collectionRef, path);
 
-    const docRef = doc(collectionRef, path);
-    await deleteDoc(docRef);
+    await deleteDoc(documentRef);
   };
 
   const updateManyItems = async <TOutput extends object>(
     collectionName: string,
-    predicate: (data: TOutput) => boolean,
-    newValues: Partial<TOutput>,
+    options: FirestoreQueryOptions<TOutput>,
+    newValues: UpdateData<TOutput>,
   ) => {
+    const { constraints, parse, predicate } = options;
+    if (!predicate && !constraints?.length) {
+      throw new Error(
+        "updateManyItems requires a predicate or at least one Firestore query constraint.",
+      );
+    }
+
     const db = firestore();
     const collectionRef = collection(db, collectionName);
+    const snapshot = await getDocs(applyConstraints(collectionRef, constraints));
+    const documentsToUpdate = snapshot.docs.filter((document) => {
+      if (!document.exists()) {
+        return false;
+      }
 
-    const snapshot = await getDocs(collectionRef);
-
-    const docsToUpdate = snapshot.docs.filter((doc) => {
-      if (!doc.exists()) return false;
-      const data = doc.data() as TOutput;
-      return predicate(data);
+      const data = parse(document.data());
+      return predicate ? predicate(data) : true;
     });
 
-    const batch = writeBatch(db);
+    for (
+      let offset = 0;
+      offset < documentsToUpdate.length;
+      offset += MAX_FIRESTORE_BATCH_SIZE
+    ) {
+      const batch = writeBatch(db);
+      const batchDocuments = documentsToUpdate.slice(
+        offset,
+        offset + MAX_FIRESTORE_BATCH_SIZE,
+      );
 
-    docsToUpdate.forEach((doc) => {
-      batch.update(doc.ref, newValues as UpdateData<TOutput>);
-    });
+      batchDocuments.forEach((document) => {
+        batch.update(document.ref, newValues);
+      });
 
-    await batch.commit();
+      await batch.commit();
+    }
 
-    return docsToUpdate.length;
+    return documentsToUpdate.length;
   };
 
   return {

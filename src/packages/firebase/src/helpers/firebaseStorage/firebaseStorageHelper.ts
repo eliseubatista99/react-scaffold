@@ -1,4 +1,5 @@
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { FirebaseAppHelper } from "../firebaseApp";
 
 type UploadFileInput = {
   file: File;
@@ -18,7 +19,14 @@ export class FirebaseStorageHelper {
   };
 
   static uploadFile = async (input: UploadFileInput): Promise<string> => {
-    const storage = getStorage();
+    const app = FirebaseAppHelper.getApp();
+    if (!app) {
+      throw new Error(
+        "Wrap the application in FirebaseProvider before using Firebase Storage.",
+      );
+    }
+
+    const storage = getStorage(app);
     const fileName = input.fileName ?? input.file.name;
     const path = input.path ?? "files";
 

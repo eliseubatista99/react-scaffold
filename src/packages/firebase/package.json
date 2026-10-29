@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
@@ -32,6 +32,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "npm --prefix ../core test -- --root ../firebase --pool=threads --maxWorkers=1 tests",
     "start": "vite"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@
 ## package.json
 - `name`: `@eliseubatista99/react-scaffold-firebase`, `version`: `1.0.16`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
-- Scripts: `dev` = `tsc && vite`, `start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
+- Scripts: `dev` = `tsc && vite`, `start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `test` = provider and hook tests via Vitest, `preview` = `vite preview`.
 - `peerDependencies`: `firebase ^12.19.0`, `react ^19.1.0`, `react-dom ^19.1.0`.
 - `devDependencies`: eslint stack, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `rimraf`, `typescript ~5.8.3`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`.
 - `firebase` is not in devDependencies (must be installed separately to build locally); it is also absent from the root workspace `package.json`.
@@ -24,8 +24,7 @@
 - Helpers: static classes in `helpers/<name>/<name>Helper.ts`.
 - Hooks: `hooks/<useName>/<useName>.ts` or `<useName>.hook.tsx`.
 - Provider pattern identical to core: `<name>Context.ts` (defaults) + `<name>Provider.tsx` + `use<Name>.ts`.
-- `console.debug` logs on auth state changes.
-- No Storybook stories and no tests (would require a Firebase project or emulator).
+- No Storybook stories. Provider tests use mocked Firebase Auth and do not require a Firebase project or emulator.
 
 ## README
 - `README.md`: install `npm i @eliseubatista99/react-scaffold-firebase` (duplicated section); lists Providers, Hooks, Helpers.
