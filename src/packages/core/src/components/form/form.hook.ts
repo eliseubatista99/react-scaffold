@@ -1,9 +1,46 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useDidMount } from "../../hooks";
-import { FormFieldOutputData } from "../../types";
-import { FormProps } from "./form";
+import type { FormFieldOutputData } from "../../types";
+import type { FormProps } from "./form";
 
 type FormMoment = "change" | "submit" | "mount";
+type FormControl =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement;
+
+const getInputData = (input: FormControl): FormFieldOutputData => {
+  if (input instanceof HTMLInputElement) {
+    if (input.type === "checkbox") {
+      return { name: input.name, value: input.checked };
+    }
+
+    if (input.type === "radio" && !input.checked) {
+      return { name: input.name, value: undefined };
+    }
+  }
+
+  if (input instanceof HTMLSelectElement && input.multiple) {
+    return {
+      name: input.name,
+      value: Array.from(input.selectedOptions, (option) => option.value),
+    };
+  }
+
+  return {
+    name: input.name,
+    value: input.value.trim(),
+  };
+};
+
+const shouldValidateConfigurationOnMoment = (
+  moment: FormMoment,
+  configurationShouldValidateOnChange: boolean | null | undefined,
+  configurationShouldValidateOnMount: boolean | null | undefined,
+) =>
+  (moment === "change" && configurationShouldValidateOnChange === true) ||
+  (moment === "mount" && configurationShouldValidateOnMount === true) ||
+  moment === "submit";
 
 export const useFormHelper = ({
   onPreSubmit,
@@ -12,83 +49,84 @@ export const useFormHelper = ({
   onMount,
   configurations,
 }: FormProps) => {
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const isSubmittingRef = React.useRef<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const isSubmittingRef = useRef(false);
+  const onMountRef = useRef(onMount);
+  onMountRef.current = onMount;
 
-  const getInputData = (
-    input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
-  ): FormFieldOutputData => {
-    const name = input.name;
-
-    return {
-      name,
-      value: input.value?.trim(),
-    };
-  };
-
-  const getFieldsData = () => {
-    if (!formRef.current?.elements) {
+  const getFieldsData = useCallback((): FormFieldOutputData[] => {
+    if (!formRef.current) {
       return [];
     }
 
-    const inputs = Array.from(formRef.current?.elements).filter(
-      (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
-        !!el.getAttribute("name"),
+    const controls = Array.from(formRef.current.elements).filter(
+      (element): element is FormControl =>
+        (element instanceof HTMLInputElement ||
+          element instanceof HTMLTextAreaElement ||
+          element instanceof HTMLSelectElement) &&
+        element.name.length > 0,
     );
 
-    const result: FormFieldOutputData[] = [];
-
-    for (const input of inputs) {
-      result.push(getInputData(input));
+    const radioGroups = new Map<
+      string,
+      { selected?: HTMLInputElement; first: HTMLInputElement }
+    >();
+    for (const control of controls) {
+      if (control instanceof HTMLInputElement && control.type === "radio") {
+        const group = radioGroups.get(control.name) ?? { first: control };
+        if (control.checked) {
+          group.selected = control;
+        }
+        radioGroups.set(control.name, group);
+      }
     }
 
-    return result;
-  };
+    return controls
+      .filter(
+        (control) =>
+          !(control instanceof HTMLInputElement && control.type === "radio") ||
+          radioGroups.get(control.name)?.selected === control ||
+          (!radioGroups.get(control.name)?.selected &&
+            radioGroups.get(control.name)?.first === control),
+      )
+      .map(getInputData);
+  }, []);
 
-  const shouldValidateConfigurationOnMoment = (
-    moment: FormMoment,
-    configurationShouldValidateOnChange: boolean | null | undefined,
-    configurationShouldValidateOnMount: boolean | null | undefined,
-  ) => {
-    return (
-      (moment === "change" && configurationShouldValidateOnChange) ||
-      (moment === "mount" && configurationShouldValidateOnMount) ||
-      moment === "submit"
-    );
-  };
-
-  const validateField = async (
-    data: FormFieldOutputData,
-    moment: FormMoment,
-  ): Promise<FormFieldOutputData> => {
-    try {
-      const configuration = (configurations || []).find(
-        (c) => c.name === data.name,
+  const validateField = useCallback(
+    async (
+      data: FormFieldOutputData,
+      moment: FormMoment,
+    ): Promise<FormFieldOutputData> => {
+      const configuration = configurations?.find(
+        (field) => field.name === data.name,
       );
 
       if (!configuration) {
         return data;
       }
 
-      var stringValue = data.value as string;
-      var numericValue = data.value as number;
+      const stringValue =
+        typeof data.value === "string"
+          ? data.value
+          : data.value === false || data.value == null
+            ? ""
+            : String(data.value);
+      const numericValue =
+        stringValue.trim() === "" ? Number.NaN : Number(stringValue);
+      const hasNumericValue = Number.isFinite(numericValue);
 
-      //Empty validation
       if (
-        configuration.emptyValidation &&
-        configuration.emptyValidation.allow === false &&
-        !stringValue &&
+        configuration.emptyValidation?.allow === false &&
+        stringValue.length === 0 &&
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.emptyValidation.validateOnChange,
           configuration.emptyValidation.validateOnMount,
         )
       ) {
-        data.error = configuration.emptyValidation.errorMessage;
-        return data;
+        return { ...data, error: configuration.emptyValidation.errorMessage };
       }
 
-      //Min length validation
       if (
         configuration.minLengthValidation &&
         stringValue.length < configuration.minLengthValidation.value &&
@@ -98,11 +136,12 @@ export const useFormHelper = ({
           configuration.minLengthValidation.validateOnMount,
         )
       ) {
-        data.error = configuration.minLengthValidation.errorMessage;
-        return data;
+        return {
+          ...data,
+          error: configuration.minLengthValidation.errorMessage,
+        };
       }
 
-      //Max length validation
       if (
         configuration.maxLengthValidation &&
         stringValue.length > configuration.maxLengthValidation.value &&
@@ -112,12 +151,13 @@ export const useFormHelper = ({
           configuration.maxLengthValidation.validateOnMount,
         )
       ) {
-        data.error = configuration.maxLengthValidation.errorMessage;
-        return data;
+        return {
+          ...data,
+          error: configuration.maxLengthValidation.errorMessage,
+        };
       }
 
-      if (!isNaN(numericValue)) {
-        //Min value validation
+      if (hasNumericValue) {
         if (
           configuration.minValueValidation &&
           numericValue < configuration.minValueValidation.value &&
@@ -127,11 +167,12 @@ export const useFormHelper = ({
             configuration.minValueValidation.validateOnMount,
           )
         ) {
-          data.error = configuration.minValueValidation.errorMessage;
-          return data;
+          return {
+            ...data,
+            error: configuration.minValueValidation.errorMessage,
+          };
         }
 
-        //Max value validation
         if (
           configuration.maxValueValidation &&
           numericValue > configuration.maxValueValidation.value &&
@@ -141,140 +182,145 @@ export const useFormHelper = ({
             configuration.maxValueValidation.validateOnMount,
           )
         ) {
-          data.error = configuration.maxValueValidation.errorMessage;
-          return data;
+          return {
+            ...data,
+            error: configuration.maxValueValidation.errorMessage,
+          };
         }
       }
 
-      //Exact value validation
       if (
         configuration.exactValueValidation &&
-        configuration.exactValueValidation.value !== data.value &&
         shouldValidateConfigurationOnMoment(
           moment,
           configuration.exactValueValidation.validateOnChange,
           configuration.exactValueValidation.validateOnMount,
         )
       ) {
-        data.error = configuration.exactValueValidation.errorMessage;
-        return data;
+        const expectedValue = configuration.exactValueValidation.value;
+        const matches =
+          data.value === expectedValue ||
+          (typeof data.value === "string" &&
+            data.value.trim() !== "" &&
+            Number.isFinite(Number(data.value)) &&
+            Number(data.value) === expectedValue);
+
+        if (!matches) {
+          return {
+            ...data,
+            error: configuration.exactValueValidation.errorMessage,
+          };
+        }
       }
 
-      for (let i = 0; i < (configuration.validations || []).length; i++) {
-        const validationItem = configuration.validations?.[i];
-
+      for (const validation of configuration.validations ?? []) {
         if (
           !shouldValidateConfigurationOnMoment(
             moment,
-            validationItem?.validateOnChange,
-            validationItem?.validateOnMount,
+            validation.validateOnChange,
+            validation.validateOnMount,
           )
         ) {
           continue;
         }
 
-        const error = await configuration.validations?.[i].validate?.(
-          data.value,
-        );
-
+        const error = await validation.validate(data.value);
         if (error) {
-          data.error = error;
-          return data;
+          return { ...data, error };
         }
       }
-    } catch (e) {
-      console.error(`Form > Failed To Validate Field ${data.name}: `, e);
-    }
 
-    return data;
-  };
-
-  const validateAllFields = useCallback(async (moment: FormMoment) => {
-    let result = getFieldsData();
-    result = await Promise.all(
-      result.map(async (res) => await validateField(res, moment)),
-    );
-
-    const fieldsWithErrors = result.find((i) => i.error !== undefined);
-
-    return { fields: result, hasErrors: fieldsWithErrors !== undefined };
-  }, []);
-
-  const handleSubmitForm = React.useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      try {
-        if (isSubmittingRef.current) {
-          return;
-        }
-
-        isSubmittingRef.current = true;
-
-        onPreSubmit?.();
-
-        // Preventing the page from reloading
-        event.preventDefault();
-        event.stopPropagation();
-        const result = await validateAllFields("submit");
-
-        isSubmittingRef.current = false;
-
-        onSubmit?.(result.fields, result.hasErrors);
-      } catch (e) {
-        isSubmittingRef.current = false;
-        console.error("Form > OnSubmit > Error submitting: ", e);
-      }
+      return data;
     },
-    [onSubmit, onPreSubmit],
+    [configurations],
   );
 
-  const handleOnChange = React.useCallback(
+  const validateAllFields = useCallback(
+    async (moment: FormMoment) => {
+      const fields = await Promise.all(
+        getFieldsData().map((field) => validateField(field, moment)),
+      );
+
+      return {
+        fields,
+        hasErrors: fields.some((field) => field.error !== undefined),
+      };
+    },
+    [getFieldsData, validateField],
+  );
+
+  const handleSubmitForm = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (isSubmittingRef.current) {
+        return;
+      }
+
+      isSubmittingRef.current = true;
+
       try {
-        const changedElement = event.target as HTMLInputElement;
+        onPreSubmit?.();
+        const result = await validateAllFields("submit");
+        await onSubmit(result.fields, result.hasErrors);
+      } catch (error) {
+        console.error("Form > OnSubmit > Error submitting: ", error);
+      } finally {
+        isSubmittingRef.current = false;
+      }
+    },
+    [onPreSubmit, onSubmit, validateAllFields],
+  );
 
-        var allFieldsValidation = await validateAllFields("change");
-        let result = getInputData(changedElement);
+  const handleOnChange = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      const target = event.target;
+      if (
+        !(target instanceof HTMLInputElement) &&
+        !(target instanceof HTMLTextAreaElement) &&
+        !(target instanceof HTMLSelectElement)
+      ) {
+        return;
+      }
 
-        result = await validateField(result, "change");
+      if (!target.name) {
+        return;
+      }
 
-        console.debug("Form > On Change > ", { result, allFieldsValidation });
+      try {
+        const [result, allFieldsValidation] = await Promise.all([
+          validateField(getInputData(target), "change"),
+          validateAllFields("change"),
+        ]);
 
-        onChange?.(
+        await onChange?.(
           result,
           allFieldsValidation.fields,
           allFieldsValidation.hasErrors,
         );
-      } catch (e) {
-        console.error("Form > onChange > Error changing: ", e);
+      } catch (error) {
+        console.error("Form > onChange > Error changing: ", error);
       }
     },
-    [onSubmit, onPreSubmit],
+    [onChange, validateAllFields, validateField],
   );
 
-  const handleOnMount = React.useCallback(async () => {
+  const handleOnMount = useCallback(async () => {
     try {
       const result = await validateAllFields("mount");
-
-      onMount?.(result.fields, result.hasErrors);
-    } catch (e) {
-      console.error("Form > onChange > Error changing: ", e);
+      await onMountRef.current?.(result.fields, result.hasErrors);
+    } catch (error) {
+      console.error("Form > onMount > Error validating: ", error);
     }
-  }, [onSubmit, onPreSubmit]);
-
-  const submitForm = (_: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (formRef.current) {
-      formRef.current.requestSubmit();
-    }
-  };
+  }, [validateAllFields]);
 
   useDidMount(() => {
-    handleOnMount();
+    void handleOnMount();
   });
 
-  //   <form onSubmit={handleSubmitForm}></form>;
   return {
     ref: formRef,
-    submitForm,
     handleFormSubmission: handleSubmitForm,
     handleFormChange: handleOnChange,
   };

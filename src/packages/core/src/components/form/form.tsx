@@ -1,10 +1,12 @@
-import styled from "@emotion/styled";
 import React from "react";
-import { FormFieldConfiguration, FormFieldOutputData } from "../../types";
+import type {
+  FormFieldConfiguration,
+  FormFieldOutputData,
+} from "../../types";
 import { useFormHelper } from "./form.hook";
 
 export interface FormSubmitButton {
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   content: React.ReactNode;
 }
 
@@ -12,7 +14,7 @@ export interface FormSubmitSection {
   renderBeforeSubmitButton?: React.ReactNode;
   submitButton: FormSubmitButton;
   renderAfterSubmitButton?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
 export interface FormProps {
@@ -27,31 +29,13 @@ export interface FormProps {
     data: FormFieldOutputData[],
     hasErrors?: boolean,
   ) => Promise<void>;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }
 
-const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 0;
-
-  ${({ styles }) => styles && { ...styles }}
-
-  > * {
-    pointer-events: none;
-  }
-`;
-
 export const Form = (props: FormProps) => {
-  const { children, styles, childrenStyles, submitSection } = props;
-  const { ref, handleFormSubmission, submitForm, handleFormChange } =
-    useFormHelper(props);
+  const { children, style, childrenStyles, submitSection } = props;
+  const { ref, handleFormSubmission, handleFormChange } = useFormHelper(props);
 
   return (
     <form
@@ -64,7 +48,7 @@ export const Form = (props: FormProps) => {
         flexDirection: "column",
         gap: "8px",
         flex: 1,
-        ...styles,
+        ...style,
       }}
     >
       <div
@@ -89,18 +73,26 @@ export const Form = (props: FormProps) => {
           flexWrap: "wrap",
           alignItems: "center",
           justifyContent: "center",
-          ...submitSection.styles,
+          ...submitSection.style,
         }}
       >
         {submitSection.renderBeforeSubmitButton}
-        <SubmitButton
-          onClick={submitForm}
-          styles={{
-            ...submitSection.submitButton.styles,
+        <button
+          type="submit"
+          style={{
+            display: "flex",
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            background: "none",
+            border: "none",
+            margin: 0,
+            padding: 0,
+            ...submitSection.submitButton.style,
           }}
         >
           {submitSection.submitButton.content}
-        </SubmitButton>
+        </button>
         {submitSection.renderAfterSubmitButton}
       </div>
     </form>

@@ -12,14 +12,7 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 ## Components
 - `PageLayout.floatingContent` is declared and destructured but never rendered.
 - `PageLayout` header/footer `visibility: "fixed"` actually means `position: relative` (in flow), while the default is `sticky` — naming is counter-intuitive. `page.extraHeight` is computed but unused; `calculateExtraHeight` has stale `useCallback` deps.
-- `Form`:
-  - `exactValueValidation.value` is typed `number` (type named `FormFieldUnknownValueValidation`) but compared with `!==` against the string field value, so it always fails for numbers.
-  - Numeric validations cast the string value with `as number`; comparisons rely on JS coercion.
-  - `minLengthValidation`/`maxLengthValidation` call `.length` on the value — works only because values are strings.
-  - Submission is not blocked when `hasErrors` is true.
-  - `handleOnChange` has wrong `useCallback` deps (`[onSubmit, onPreSubmit]`), so a changing `onChange` prop can be stale.
-  - Uses `var` in `validateField`.
-  - `RadioButton` has no hidden input, so it is not collected by `Form` (unlike `Checkbox`).
+- `Form` intentionally calls `onSubmit` with `hasErrors` even when validation fails; callers decide whether to proceed. `RadioButton` remains a visual-only control and is not collected by forms.
 - `Toast` timeout is not cleared on unmount; effect deps omit `id`/`durationInSeconds`.
 - `Drawer` does not hide itself on swipe; consumer must call `hideItem` inside `onCloseDrawer`.
 - `NumericInputField` overwrites any consumer `onInput` prop.

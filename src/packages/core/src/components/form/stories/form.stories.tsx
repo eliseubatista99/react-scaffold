@@ -124,16 +124,8 @@ const meta = {
     },
     submitSection: {
       submitButton: {
-        content: (
-          <Button
-            onClick={() => {
-              //click
-            }}
-          >
-            Submit
-          </Button>
-        ),
-        styles: {
+        content: <span>Submit</span>,
+        style: {
           marginTop: "auto",
         },
       },
@@ -141,7 +133,7 @@ const meta = {
     onSubmit: async (_) => {
       //
     },
-    styles: { boxSizing: "border-box", width: "90%", padding: "20px" },
+    style: { boxSizing: "border-box", width: "90%", padding: "20px" },
   },
 } satisfies Meta<typeof Form>;
 
@@ -165,16 +157,8 @@ export const WithAnotherButton: Story = {
         </Button>
       ),
       submitButton: {
-        content: (
-          <Button
-            onClick={() => {
-              //click
-            }}
-          >
-            Submit
-          </Button>
-        ),
-        styles: {
+        content: <span>Submit</span>,
+        style: {
           marginTop: "auto",
         },
       },

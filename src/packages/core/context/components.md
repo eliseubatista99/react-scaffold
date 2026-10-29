@@ -77,12 +77,12 @@ interface DrawerProps {
 Files: `components/form/form.tsx`, `form.hook.ts` (`useFormHelper`, internal). Types in `src/types/types.ts`.
 
 ```ts
-interface FormSubmitButton { styles?: React.CSSProperties; content: React.ReactNode; }
+interface FormSubmitButton { style?: React.CSSProperties; content: React.ReactNode; }
 interface FormSubmitSection {
   renderBeforeSubmitButton?: React.ReactNode;
   submitButton: FormSubmitButton;
   renderAfterSubmitButton?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 interface FormProps {
   children?: React.ReactNode;
@@ -92,16 +92,18 @@ interface FormProps {
   onPreSubmit?: () => void;
   onSubmit: (data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
   onChange?: (changedField: FormFieldOutputData, data: FormFieldOutputData[], hasErrors?: boolean) => Promise<void>;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }
 ```
-- Uncontrolled native `<form>`. Field data is collected from `form.elements` that have a `name` attribute; value is `element.value.trim()` (always a string).
-- Submit section renders `renderBeforeSubmitButton`, an emotion `SubmitButton` (`div`, children have `pointer-events: none`) whose click calls `formRef.current.requestSubmit()`, then `renderAfterSubmitButton`. Has `data-testid="submit-section"`.
+- Native `<form>` with an actual `type="submit"` button. Submit content should be presentational content, not another interactive button.
+- Named inputs, textareas, and selects are collected. Text values are trimmed strings; checkbox values are booleans; multi-select values are arrays; only the selected radio per group is included.
 - **Validation moments:** `"mount"` (via `useDidMount` → `onMount`), `"change"` (native form `onChange` → validates all fields + the changed field → `onChange`), `"submit"` (`onSubmit`). On `submit` every configured rule runs; on `change`/`mount` a rule runs only if its `validateOnChange` / `validateOnMount` flag is true.
-- Rule order per field (first failure wins, sets `error`): `emptyValidation` (when `allow === false`) → `minLengthValidation` → `maxLengthValidation` → (only if `!isNaN(value)`) `minValueValidation` → `maxValueValidation` → `exactValueValidation` (`!==` comparison) → each custom `validations[i].validate(value)` (sync or async, returns error string or `undefined`).
+- Rule order per field (first failure wins): `emptyValidation` → `minLengthValidation` → `maxLengthValidation` → `minValueValidation` → `maxValueValidation` → `exactValueValidation` (numeric text is compared numerically) → custom validations.
 - `hasErrors` is `true` if any field has an `error`.
-- Submit flow: guard `isSubmittingRef` → `onPreSubmit()` → `preventDefault` → validate → `onSubmit(fields, hasErrors)`. Submission is not blocked when there are errors; consumers must check `hasErrors`.
+- Submission is not blocked when there are errors; `onSubmit(fields, hasErrors)` is always called after validation so consumers can preserve their existing behavior and decide whether to proceed.
+- Concurrent submissions are ignored until the current `onSubmit` promise settles. Callback errors are logged; validator errors prevent submission rather than appearing as successful validation.
+- `style` customizes the form; `childrenStyles` customizes the fields wrapper; `submitSection.style` and `submitSection.submitButton.style` customize the submit section and button.
 - Use `FormsHelper` to read values from the output array.
 
 ## Image
