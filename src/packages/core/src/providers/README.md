@@ -4,41 +4,35 @@ Providers are components that are instantiated in the root of the application, a
 
 ## Navigation Provider
 
-The navigation provider allows a easy configuration of your screens and also the actions related to the navigation.
-This provider is built upon the [react-router-dom](https://www.npmjs.com/package/react-router-dom)
+The navigation helpers are built upon [react-router-dom](https://www.npmjs.com/package/react-router-dom).
+`NavigationRoutes` renders configured screens inside a router owned by the application. `NavigationProvider` remains available as a backwards-compatible wrapper that creates a `BrowserRouter`.
 
 To get started, in the file where you place your providers (ex: main.tsx) import and configure the navigation provider. The routes parameter is a list of key-content pairs, were the key is the path to that screen, and the content is a ReactNode.
 
 ```js
-import { NavigationProvider } from "@react-scaffold-eliseubatista99/core/providers";
+import { BrowserRouter } from "react-router-dom";
+import { NavigationRoutes } from "@eliseubatista99/react-scaffold-core";
 
-<NavigationProvider
-  routes={[
-    {
-      path: "/home",
-      render: <HomeScreen />,
-    },
-    {
-      path: "/about",
-      render: <AboutScreen />,
-    },
-  ]}
->
-  {
-    // The provider handles the rendering of the screens,
-    // and supports anything as children
-  }
-</NavigationProvider>;
+<BrowserRouter>
+  <NavigationRoutes
+    routes={[
+      { path: "/home", render: <HomeScreen /> },
+      { path: "/about", render: <AboutScreen /> },
+    ]}
+  />
+</BrowserRouter>;
 ```
 
-The provider comes with an hook to handle the necessary navigation actions, like going to a path, going back, getting the current path and even replacing the entire history with something else.
+Existing applications can continue using `NavigationProvider` with the same `routes`, `isReady`, and `children` props. The wrapper remains available for compatibility and should only be removed in a future major release. New applications can use `NavigationRoutes` with `BrowserRouter`, `MemoryRouter`, or another compatible router.
+
+The navigation hook provides actions such as going to a path, going back, and reading the current path and observed app navigation history.
 
 Let's say we want to go to the about screen when clicking a button, and going to the previous step when clicking another button:
 
 ```ts
-import { useNavigation } from "@react-scaffold-eliseubatista99/core/providers";
+import { useNavigation } from "@eliseubatista99/react-scaffold-core";
 
-const { currentPath, goBack, goTo, replaceHistory } = useNavigation();
+const { currentPath, history, goBack, goTo } = useNavigation();
 
 // Button to go to the about screen
 <button onClick={() => goTo("/about")}> About </button>;
@@ -47,48 +41,53 @@ const { currentPath, goBack, goTo, replaceHistory } = useNavigation();
 <button onClick={() => goBack()}> Back </button>;
 ```
 
+`history` is an array of observed `pathname + search + hash` strings. It starts when `NavigationRoutes` mounts, tracks pushes, replacements, and known back/forward destinations, and trims forward entries after a new push. Without `NavigationRoutes`, it contains only the current location. It is not the browser's complete history stack.
+
+`goTo` follows React Router path resolution: paths starting with `/` resolve from the router root, while paths without a leading slash resolve relative to the current route. Query-only and hash-only paths follow React Router semantics. `goTo({ path, addToHistory: false })` replaces the current browser history entry. Query values accept strings, numbers, booleans, and arrays of those values; values use JavaScript `String` serialization and `URLSearchParams` URL encoding. Arrays become repeated query keys, and scalar nullish values are skipped. When `params` are supplied, existing query values and hashes in `path` are preserved and merged with `params`. An empty array removes existing values for that key. `goBack({ steps, defaultBackPath })` navigates back by a positive safe integer number of known in-app entries; invalid values throw a `RangeError`. If there are fewer tracked entries than requested, it uses `defaultBackPath` when provided, otherwise it only goes back as far as the observed in-app history allows. History tracking starts when `NavigationRoutes` mounts, so earlier entries or entries created by a separate router are not known. Without `NavigationRoutes`, `goBack` uses `defaultBackPath` when provided and otherwise does nothing, since the router's previous entry cannot be confirmed as part of the application.
+
+Use `searchParams.get(key)` for the first string value and `searchParams.getAllValues(key)` for all values associated with a repeated query key. `searchParams.getAll()` returns a flat object where duplicate keys resolve to their last value; its function reference stays stable until the query changes. Query values are not automatically parsed; convert them explicitly when needed.
+
+Sequential `searchParams` updates made during the same event are composed in call order. Use `setMany` or `removeMany` when the changes form a single batch.
+
 ## Feedback Provider
 
-The feedback provider main purpose is to facilitate the management of dynamic feedback components that are meant to be hidden and shown, like modals, drawers, or toasts.
+`FeedbackProvider` tracks visible item IDs for feedback UI such as modals, drawers, toasts, and loaders. It accepts `children`; it does not take an `items` registry or render feedback content itself. The feedback components render their own content and use the shared IDs to determine visibility.
 
-To get started, in the file where you place your providers (ex: main.tsx) import and configure the feedback provider. The items parameter is a list of thos dynamic feedback components.
+Wrap the part of the application that needs feedback state:
 
-The id is used to identify the component, the type can be used to group that component in a category, and the content is what should be rendered when the component is visible.
+```tsx
+import { FeedbackProvider } from "@eliseubatista99/react-scaffold-core";
 
-```ts
-import { FeedbackProvider } from "@react-scaffold-eliseubatista99/core/providers";
-
-<FeedbackProvider
-  items={[
-    {
-      id: "example-modal",
-      type: "modal",
-      content: exampleModal,
-    },
-    {
-      id: "example-toast",
-      type: "toast",
-      content: exampleToast,
-    },
-  ]}
-></FeedbackProvider>;
+function App() {
+  return (
+    <FeedbackProvider>
+      <FeedbackControls />
+    </FeedbackProvider>
+  );
+}
 ```
 
-The provider comes with an hook to handle the necessary presentation actions. Considering the example above, let's say we want to show the example modal only if there are no other modals visible:
+Use `useFeedback` in a descendant to show or hide an item and check its visibility:
 
-```ts
-import { useFeedback } from "@react-scaffold-eliseubatista99/core/providers";
+`useFeedback` must be called inside a `FeedbackProvider`; it throws an error if no provider is present above the component.
 
-const { showItem, hideItem, isItemVisible, getVisibleItemsOfType } =
-  useFeedback();
+```tsx
+import { useFeedback } from "@eliseubatista99/react-scaffold-core";
 
-<>
-  //Check if there are any visible modals
-  {!getVisibleItemsOfType("drawer").length > 0 && (
-    // Show the component with the id "example-modal" on click
-    <button onClick={() => showItem("example-modal")}>Show Modal</button>
-  )}
-</>;
+function FeedbackControls() {
+  const { visibleItems, isItemVisible, showItem, hideItem } = useFeedback();
+  const itemId = "example-modal";
+
+  return (
+    <>
+      <button onClick={() => showItem(itemId)}>Show modal</button>
+      {isItemVisible(itemId) && (
+        <button onClick={() => hideItem(itemId)}>Hide modal</button>
+      )}
+      <p>Visible items: {visibleItems.join(", ")}</p>
+    </>
+  );
+}
 ```
 
-This example shows the use of getVisibleItemsOfType and showItem actions, but there are more useful actions on the hook (hideItem, isItemVisible);
+`showItem(id)` adds an ID only if it is not already visible; `hideItem(id)` removes it. `isItemVisible(id)` reads the current visibility synchronously, including changes made immediately before the call. `visibleItems` is exposed as a readonly array and is the React state snapshot used for rendering; it updates on the next render. Consumers that only need to show or hide items can use `useFeedbackActions()` to avoid re-rendering when visibility changes. Built-in components such as `Modal`, `Drawer`, `Toast`, and `Loader` use this provider state; render them with the same ID used by `showItem` and `hideItem`.

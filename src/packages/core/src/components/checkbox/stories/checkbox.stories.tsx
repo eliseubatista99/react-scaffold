@@ -10,7 +10,7 @@ const meta = {
   },
   tags: ["autodocs"],
   args: {
-    label: <p>This is a checkbox</p>,
+    label: "This is a checkbox",
     name: "check",
     checked: false,
     customCheckedRender: (

@@ -2,7 +2,9 @@ export type Language = string;
 
 export type Translation = Record<Language, string>;
 
-export type TranslationValues = Record<string, unknown>;
+export type TranslationValue = string | number | boolean | null | undefined;
+
+export type TranslationValues = Record<string, TranslationValue>;
 
 export declare type TranslationList = {
   [key: string]: Translation;
@@ -45,7 +47,7 @@ export const useTranslations = (
       Object.keys(values).forEach((key) => {
         const value = values[key];
 
-        res = res.replaceAll(`{{${key}}}`, `${value}`);
+        res = res.replaceAll(`{{${key}}}`, String(value));
       });
     }
 

@@ -1,7 +1,19 @@
 import type { Property } from "csstype";
-import React, { type CSSProperties } from "react";
+import type React from "react";
 
-export type SvgImageProps = {
+export type SvgImageProps = Omit<
+  React.SVGProps<SVGSVGElement>,
+  | "children"
+  | "viewBox"
+  | "width"
+  | "height"
+  | "fill"
+  | "stroke"
+  | "style"
+  | "onClick"
+  | "onKeyDown"
+  | "role"
+> & {
   viewBox?: string;
   width?: Property.Width;
   height?: Property.Height;
@@ -10,7 +22,10 @@ export type SvgImageProps = {
   src: React.ReactElement<React.SVGProps<SVGElement>>;
   alt?: string;
   onClick?: () => void;
-  styles?: CSSProperties;
+  style?: React.CSSProperties;
+  role?: React.AriaRole;
+  tabIndex?: number;
+  onKeyDown?: React.KeyboardEventHandler<SVGSVGElement>;
 };
 
 export const SvgImage = ({
@@ -22,33 +37,50 @@ export const SvgImage = ({
   fill = "#000000",
   alt = "",
   onClick,
-  styles,
+  style,
+  role,
+  tabIndex,
+  onKeyDown,
+  "aria-label": ariaLabel,
+  "aria-hidden": ariaHidden,
+  ...svgProps
 }: SvgImageProps) => {
+  const isInteractive = onClick !== undefined;
+
   return (
-    <div
+    <svg
+      {...svgProps}
+      width={width}
+      height={height}
+      viewBox={viewBox}
+      fill={fill}
+      stroke={stroke}
+      xmlns="http://www.w3.org/2000/svg"
+      role={role ?? (isInteractive ? "button" : alt ? "img" : undefined)}
+      aria-label={ariaLabel ?? (alt || undefined)}
+      aria-hidden={
+        ariaHidden ?? (!isInteractive && !alt ? true : undefined)
+      }
+      tabIndex={tabIndex ?? (isInteractive ? 0 : undefined)}
       style={{
-        width: "fit-content",
-        height: "fit-content",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        ...styles,
+        ...style,
       }}
-      onClick={() => onClick?.()}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+
+        if (
+          isInteractive &&
+          !event.defaultPrevented &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
-      <svg
-        width={width}
-        height={height}
-        viewBox={viewBox}
-        fill={fill}
-        stroke={stroke}
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          display: "flex",
-        }}
-      >
-        {src}
-      </svg>
-    </div>
+      {src}
+    </svg>
   );
 };

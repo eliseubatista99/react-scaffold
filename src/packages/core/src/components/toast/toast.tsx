@@ -1,38 +1,53 @@
 import React from "react";
 import { useFeedback } from "../../providers";
 
-export interface ToastProps {
+export interface ToastProps
+  extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "id" | "style" | "role" | "aria-live" | "aria-atomic"
+  > {
   id: string;
-  children?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   durationInSeconds?: number;
+  role?: React.AriaRole;
+  "aria-live"?: React.AriaAttributes["aria-live"];
+  "aria-atomic"?: React.AriaAttributes["aria-atomic"];
 }
 
 export const Toast = ({
   id,
   children,
-  styles,
+  style,
   durationInSeconds = 3,
+  role = "status",
+  "aria-live": ariaLive = "polite",
+  "aria-atomic": ariaAtomic = true,
+  ...toastProps
 }: ToastProps) => {
-  const isVisibleCache = React.useRef<boolean>(false);
   const { isItemVisible, hideItem } = useFeedback();
+  const isVisible = isItemVisible(id);
 
   React.useEffect(() => {
-    const isToastVisible = isItemVisible(id);
-
-    if (isVisibleCache.current !== isToastVisible) {
-      isVisibleCache.current = isToastVisible;
-
-      if (isToastVisible) {
-        setTimeout(() => hideItem(id), durationInSeconds * 1000);
-      }
+    if (!isVisible) {
+      return;
     }
-  }, [isVisibleCache, isItemVisible, hideItem]);
+
+    const timeoutId = window.setTimeout(
+      () => hideItem(id),
+      durationInSeconds * 1000,
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [durationInSeconds, hideItem, id, isVisible]);
 
   return (
     <>
-      {isItemVisible(id) && (
+      {isVisible && (
         <div
+          {...toastProps}
+          role={role}
+          aria-live={ariaLive}
+          aria-atomic={ariaAtomic}
           style={{
             width: "100px",
             height: "40px",
@@ -49,7 +64,7 @@ export const Toast = ({
             alignItems: "center",
             justifyContent: "center",
             border: "solid 3px #000000ff",
-            ...styles,
+            ...style,
           }}
         >
           {children}

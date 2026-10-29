@@ -54,6 +54,7 @@ export const WithSidebar: Story = {
         >
           {Array.from({ length: 30 }, (_, i) => i + 1).map((i) => (
             <div
+              key={i}
               style={{
                 background: `rgba(120, 2000, 60, ${100 / i})`,
                 width: "300px",
@@ -86,8 +87,9 @@ export const WithFixedHeader: Story = {
     ...baseArgs,
     header: {
       ...baseArgs.header,
+      content: baseArgs.header?.content ?? <></>,
       visibility: "fixed",
-    } as any,
+    },
     footer: undefined,
   },
 };
@@ -105,8 +107,9 @@ export const WithFixedFooter: Story = {
     ...baseArgs,
     footer: {
       ...baseArgs.footer,
+      content: baseArgs.footer?.content ?? <></>,
       visibility: "fixed",
-    } as any,
+    },
     header: undefined,
   },
 };

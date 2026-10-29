@@ -11,16 +11,23 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "MyComponentLibrary",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom"], // evita que estas libs sejam incluídas no bundle
+      external: [
+        /^react(?:\/.*)?$/,
+        /^react-dom(?:\/.*)?$/,
+        /^react-router-dom(?:\/.*)?$/,
+        "react-slick",
+        /^dayjs(?:\/.*)?$/,
+        "lodash/isEqual",
+      ],
       output: {
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
+          "react-router-dom": "ReactRouterDOM",
         },
       },
     },

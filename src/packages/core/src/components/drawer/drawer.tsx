@@ -1,30 +1,53 @@
-import React, { type CSSProperties } from "react";
+import React from "react";
+import {
+  useDialogAccessibility,
+  type DialogAccessibleName,
+} from "../dialog/useDialogAccessibility";
 import { useDrawerHelper } from "./drawer.hook";
 
 export interface DrawerHandleProps {
   render: React.ReactNode;
-  styles?: CSSProperties;
+  style?: React.CSSProperties;
 }
 
-export interface DrawerProps {
+export type DrawerProps = DialogAccessibleName & {
   id: string;
   drawerCloseOffset?: number;
   children?: React.ReactNode;
-  backgroundStyles?: CSSProperties;
-  contentStyles?: CSSProperties;
+  backgroundStyles?: React.CSSProperties;
+  contentStyles?: React.CSSProperties;
   handle?: DrawerHandleProps;
   onCloseDrawer?: () => void;
-}
+};
 
 export const Drawer = (props: DrawerProps) => {
-  const { children, backgroundStyles, contentStyles, handle } = props;
+  const {
+    children,
+    backgroundStyles,
+    contentStyles,
+    handle,
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    onCloseDrawer,
+  } = props;
   const {
     isVisible,
     drawerParentRef,
     drawerRef,
     handleRef,
-    drawerBottomDistance,
+    dragStyle,
   } = useDrawerHelper(props);
+  const { dialogRef, handleKeyDown } = useDialogAccessibility(
+    isVisible,
+    onCloseDrawer,
+  );
+  const assignDialogRef = React.useCallback(
+    (element: HTMLDivElement | null) => {
+      dialogRef.current = element;
+      drawerRef(element);
+    },
+    [dialogRef, drawerRef],
+  );
 
   return (
     <>
@@ -32,27 +55,41 @@ export const Drawer = (props: DrawerProps) => {
         <div
           ref={drawerParentRef}
           style={{
-            width: "100%",
-            height: "100%",
+            width: "auto",
+            height: "auto",
             minHeight: "100vh",
             left: 0,
             top: 0,
+            right: 0,
+            bottom: 0,
             background: "#00000068",
             position: "fixed",
             zIndex: 1000,
             display: "flex",
             flexDirection: "column",
-            touchAction: "none",
             ...backgroundStyles,
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              onCloseDrawer?.();
+            }
           }}
         >
           <div
-            ref={drawerRef}
+            ref={assignDialogRef}
+            id={props.id}
+            role="dialog"
+            aria-modal="true"
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            tabIndex={-1}
+            onKeyDown={handleKeyDown}
             style={{
               width: "100%",
               height: "fit-content",
               minHeight: "80px",
               maxHeight: "90%",
+              overflowY: "auto",
               background: "#ffffff",
               borderTopLeftRadius: "16px",
               borderTopRightRadius: "16px",
@@ -63,8 +100,9 @@ export const Drawer = (props: DrawerProps) => {
               padding: "24px",
               zIndex: 1001,
               position: "absolute",
-              bottom: `${drawerBottomDistance}px`,
+              bottom: 0,
               ...contentStyles,
+              ...dragStyle,
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -81,7 +119,8 @@ export const Drawer = (props: DrawerProps) => {
                 height: "24px",
                 width: "100%",
                 cursor: "pointer",
-                ...handle?.styles,
+                touchAction: "none",
+                ...handle?.style,
               }}
             >
               {handle?.render}

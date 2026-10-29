@@ -10,6 +10,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     percentage: 70,
+    "aria-label": "Progress",
   },
 } satisfies Meta<typeof ProgressBar>;
 

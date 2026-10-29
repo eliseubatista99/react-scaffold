@@ -7,9 +7,10 @@ All hooks live in `src/hooks/<useName>/` and are exported from the package root.
 ## useDidMount
 File: `hooks/useDidMount/useDidMount.ts`
 ```ts
-export const useDidMount = (arg: () => void) => useEffect(arg, []);
+export const useDidMount = (callback: EffectCallback): void => useEffect(callback, []);
 ```
-- Runs the callback once after mount. The callback may return a cleanup function. Under React `StrictMode` (dev) it runs twice.
+- Runs the callback after the component mounts and supports an optional cleanup function.
+- Like `useEffect`, development `StrictMode` performs an extra setup/cleanup cycle on initial mount. The callback is therefore not guaranteed to run exactly once; cleanup must safely undo the effect's setup.
 
 ## useDrag
 File: `hooks/useDrag/useDrag.tsx` — depends on `usePointer`.
@@ -22,33 +23,46 @@ interface DragData {
   isDragging: boolean;
 }
 interface UseDragInput {
-  ref?: React.RefObject<HTMLDivElement | null>;
+  axis?: "both" | "x" | "y";
+  bounds?: boolean; // defaults to true; false allows movement outside the container
+  resetOnDragEnd?: boolean;
   onDragStart?: (data: DragData) => void;
   onDrag?: (data: DragData) => void;
   onDragEnd?: (data: DragData) => void;
 }
-useDrag(input: UseDragInput): void
+interface UseDragOutput {
+  ref: React.RefCallback<HTMLElement>;
+  containerRef: React.RefCallback<HTMLElement>;
+  handleRef: React.RefCallback<HTMLElement>;
+  position: { x: number; y: number } | null;
+  isDragging: boolean;
+  style: React.CSSProperties;
+}
+useDrag(input?: UseDragInput): UseDragOutput
 ```
-- `pointerdown` on `ref.current` starts the drag (prevents default, stops propagation, stores start position, calls `onDragStart`).
-- Global pointer moves (tracked by `usePointer`) call `onDrag` while dragging; pointer up calls `onDragEnd` and clears the start position.
-- Attaches lazily once `ref.current` exists (polls every 300 ms with an un-cancellable `while` loop) by **assigning** `ref.current.onpointerdown` (overwrites any existing handler) and sets `ref.current.style.touchAction = "none"`.
-- Distances are computed from the previous stored position (one update behind) and the `if (start && pos)` checks treat coordinate `0` as missing.
-- Emits `console.debug` logs on every pointer move.
-- Used by `Drawer`.
+- Attach `ref` to the movable element and `containerRef` to its bounds container (or omit the container ref to use the element's parent). `handleRef` optionally attaches dragging to a separate handle; otherwise the element itself is the handle.
+- Apply the returned `style` to the movable element. The hook uses a CSS transform and owns that transform while active.
+- The default bounds keep the element inside the container's visible inner area, excluding borders and accounting for its scroll offset. `bounds: false` permits overflow; `axis: "x"` or `"y"` restricts movement to one axis.
+- Position is retained after release by default; `resetOnDragEnd: true` returns the element to its position at the start of the drag.
+- Position is measured from the container's top-left and is `null` until the element ref is attached. Callback data includes the current `position`, movement `delta`, and drag state.
+- Primary pointer events start dragging; `pointerup`, `pointercancel`, or window blur ends it. The hook restores the handle's previous `touch-action` style on cleanup.
+- Used by `Drawer`, which opts into vertical unbounded movement for its swipe-to-close gesture.
 
 ## useFetch
 File: `hooks/useFetch/useFetch.ts`
 ```ts
 type FetchOutput<TOut> = { result: TOut | undefined; statusCode: number; error?: unknown };
+type FetchOptions = object;
 
 const { get, post, put, patch, delete: del } = useFetch();
-get<T>(url: string, options?: Record<string, any>, headers?: HeadersInit): Promise<FetchOutput<T>>
+get<T>(url: string, options?: FetchOptions, headers?: HeadersInit): Promise<FetchOutput<T>>
 // post / put / patch / delete have the same signature
 ```
 - `get` and `delete`: `options` become query string (`URLSearchParams`; arrays → repeated keys; `null`/`undefined` skipped). No body.
 - `post`, `put`, `patch`: `options` are sent as `JSON.stringify(options)` body with `Content-Type: application/json` (overridable via `headers`).
-- Response is always parsed with `response.json()`; parse failures (e.g. 204/empty or non-JSON) return `{ result: undefined, statusCode, error }`.
-- Network errors from `fetch` itself are **not** caught (the promise rejects).
+- Existing query strings and URL fragments are preserved when adding query parameters. `HeadersInit` inputs are normalized with `Headers`.
+- Non-empty responses are parsed as JSON; empty responses (including 204) return `{ result: undefined, statusCode }`. Invalid JSON returns `{ result: undefined, statusCode, error }`.
+- Network errors from `fetch` itself are **not** caught (the promise rejects). HTTP error statuses do not reject; callers should inspect `statusCode`.
 - HTTP error statuses are not thrown; check `statusCode`.
 
 ## useOnScreen
@@ -56,7 +70,7 @@ File: `hooks/useOnScreen/useOnScreen.tsx`
 ```ts
 useOnScreen(ref: RefObject<HTMLElement | null>): boolean
 ```
-- Memoised `IntersectionObserver` (default options) observing `ref.current` on mount; returns `isIntersecting`. Disconnects on unmount. Does not re-observe if the ref element changes later.
+- Returns `false` during server rendering and while `IntersectionObserver` is unavailable. Observes the current `ref.current` with default options, re-observes when the referenced element changes, and disconnects the observer on cleanup.
 
 ## usePointer
 File: `hooks/usePointer/usePointer.ts`
@@ -64,7 +78,9 @@ File: `hooks/usePointer/usePointer.ts`
 type MousePositionData = { x?: number; y?: number };
 usePointer(): { pointerPosition: MousePositionData; isPointerDown: boolean }
 ```
-- Global `window` listeners for `pointermove` (updates position with `clientX/clientY`), `pointerdown`, `pointerup`. Re-renders on every pointer move.
+- Tracks primary pointer events only. `pointerPosition` updates from primary `pointermove` coordinates; repeated identical coordinates do not create new state.
+- `isPointerDown` tracks the first active primary pointer ID and resets on its `pointerup` or `pointercancel`; events from other pointer IDs are ignored until it ends.
+- Registers global `window` listeners in an effect and removes them on unmount.
 
 ## useResponsive
 File: `hooks/useResponsive/useResponsive.ts`
@@ -72,26 +88,29 @@ File: `hooks/useResponsive/useResponsive.ts`
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 type Size = "mobile" | "tablet" | "desktop";
 type BreakpointConfiguration = Record<Breakpoint, number>;
+type BreakpointConfigurationOverrides = Partial<BreakpointConfiguration>;
 const defaultBreakpoints = { xs: 0, sm: 420, md: 768, lg: 991, xl: 1200, xxl: 1440 };
 
-interface UseResponsiveInput { breakpointConfiguration?: BreakpointConfiguration; }
+interface UseResponsiveInput { breakpointConfiguration?: BreakpointConfigurationOverrides; }
 interface UseResponsiveOutput {
   currentWidth: number; currentHeight: number;
   currentBreakpoint: Breakpoint; currentSize: Size;
 }
 useResponsive(input?: UseResponsiveInput): UseResponsiveOutput
 ```
-- Config is merged over `defaultBreakpoints` (the type requires all keys; use a spread/cast to override partially).
+- Config is merged over `defaultBreakpoints`; overrides may specify only the breakpoints being changed.
 - Breakpoint: `< sm → xs`, `< md → sm`, `< lg → md`, `< xl → lg`, `< xxl → xl`, else `xxl`.
-- Size: `<= sm → mobile`, `<= md → tablet`, else `desktop`.
-- Uses `window.innerWidth/innerHeight` on `resize` (no debounce). Reads `window` during initial render (not SSR-safe).
+- Size uses the same range boundaries as breakpoint classification: `< sm → mobile`, `sm–<lg → tablet`, `>= lg → desktop`.
+- Starts with a `0 × 0` snapshot so server rendering and the initial hydration render match; reads the actual viewport and listens for resize in an effect.
+- Recalculates when the breakpoint configuration changes. Resize updates are immediate (no debounce).
 
 ## useTranslations
 File: `hooks/useTranslations/useTranslations.tsx`
 ```ts
 type Language = string;
 type Translation = Record<Language, string>;          // e.g. { en: "Hello", pt: "Olá" }
-type TranslationValues = Record<string, unknown>;
+type TranslationValue = string | number | boolean | null | undefined;
+type TranslationValues = Record<string, TranslationValue>;
 type TranslationList = { [key: string]: Translation };
 
 interface UseTranslationsInput { language: Language; translations: TranslationList; }
@@ -101,7 +120,7 @@ interface UseTranslationsOutput {
 }
 useTranslations(input: UseTranslationsInput): UseTranslationsOutput
 ```
-- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with `values[key]` (`replaceAll`). Returns `undefined` if the translation or the language entry is missing/empty.
-- `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; **falls back to the key itself** when the key or language is missing.
-- No fallback language; no pluralisation; no React context (language and dictionary are passed per call site).
+- `getTranslation(translation, values)`: returns `translation[language]`, replacing every `{{key}}` with the value's string representation. Null, undefined, arrays, and objects therefore appear as `null`, `undefined`, or their normal JavaScript string conversion. Returns `undefined` if the translation or the language entry is missing/empty.
+- `t(key, values)`: looks up `translations[key]` and resolves it with `getTranslation`; returns the key itself when the key or requested language is missing/empty.
+- No fallback language or pluralisation; no React context (language and dictionary are passed per call site).
 - These types are re-used by the `cv` package (`Translation`, `TranslationList`, `Language`).

@@ -1,14 +1,16 @@
 import React from "react";
-import { useFetch } from "../useFetch";
+import { useFetch, type FetchOutput } from "../useFetch";
 
 export interface useFetchStoriesSetupProps {
   url: string;
-  type: any;
+  type: unknown;
 }
 
 export const UseFetchStoriesSetup = (props: useFetchStoriesSetupProps) => {
   const [isFetching, setIsFetching] = React.useState(false);
-  const [response, setResponse] = React.useState<any>(undefined);
+  const [response, setResponse] = React.useState<
+    FetchOutput<typeof props.type> | undefined
+  >(undefined);
 
   const { get } = useFetch();
 

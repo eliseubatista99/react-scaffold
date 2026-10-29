@@ -1,28 +1,40 @@
-import { type CSSProperties } from "react";
+import styled from "@emotion/styled";
+import type React from "react";
 
-export type CheckboxProps = {
+export type CheckboxProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "checked" | "defaultChecked" | "onChange" | "onToggle" | "style"
+> & {
   name: string;
   checked?: boolean;
   label?: React.ReactNode;
   customUncheckedRender?: React.ReactNode;
   customCheckedRender?: React.ReactNode;
   onToggle?: (checked: boolean) => void;
-  styles?: CSSProperties;
-  checkboxStyles?: CSSProperties;
+  style?: React.CSSProperties;
+  checkboxStyles?: React.CSSProperties;
 };
+
+const CheckboxContainer = styled.label`
+  input:focus-visible + span {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+`;
 
 export const Checkbox = ({
   name,
-  checked,
+  checked = false,
   onToggle,
-  styles,
+  style,
   label,
   checkboxStyles,
   customCheckedRender,
   customUncheckedRender,
+  ...inputProps
 }: CheckboxProps) => {
   return (
-    <div
+    <CheckboxContainer
       style={{
         width: "fit-content",
         height: "fit-content",
@@ -31,55 +43,44 @@ export const Checkbox = ({
         flexDirection: "row",
         gap: "10px",
         alignItems: "center",
-        ...styles,
+        ...style,
       }}
     >
-      <div
+      <input
+        {...inputProps}
+        type="checkbox"
+        name={name}
+        checked={checked}
+        onChange={(event) => onToggle?.(event.currentTarget.checked)}
         style={{
-          width: "fit-content",
-          height: "fit-content",
-          position: "relative",
+          position: "absolute",
+          opacity: 0,
+          width: "25px",
+          height: "25px",
+          margin: 0,
+          cursor: "pointer",
+        }}
+      />
+      <span
+        aria-hidden="true"
+        style={{
+          width: "25px",
+          height: "25px",
+          flexShrink: 0,
+          borderRadius: "4px",
+          border: "1px solid #969696ff",
+          background: checked ? "#000" : "#fff",
           display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+          ...checkboxStyles,
         }}
       >
-        <input
-          type="checkbox"
-          name={name}
-          checked={checked}
-          onChange={(_) => {
-            //
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle?.(!checked);
-          }}
-          style={{
-            position: "absolute",
-            opacity: 0,
-            width: "100%",
-            height: "100%",
-            cursor: "pointer",
-          }}
-        />
-        <div
-          style={{
-            width: "25px",
-            height: "25px",
-            borderRadius: "4px",
-            border: "1px solid #969696ff",
-            background: checked ? "#000" : "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-            ...checkboxStyles,
-          }}
-        >
-          {checked && customCheckedRender}
-          {!checked && customUncheckedRender}
-        </div>
-      </div>
+        {checked && customCheckedRender}
+        {!checked && customUncheckedRender}
+      </span>
       {label}
-    </div>
+    </CheckboxContainer>
   );
 };

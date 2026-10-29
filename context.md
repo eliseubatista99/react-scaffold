@@ -1,6 +1,6 @@
 # React Scaffold — Project Context
 
-> Main context file for the repository. Each package has its own `CONTEXT.md` plus a `context/` folder with detailed documents.
+> Main context file for the repository. Each package has its own `context.md` plus a `context/` folder with detailed documents.
 
 ## 1. Purpose
 
@@ -8,12 +8,12 @@
 
 The repository root is **not** a library itself: it is a Vite + Storybook workspace used to develop, document and showcase the packages located in `src/packages/*`.
 
-| Package | npm name | Version | Purpose | Context |
-|---|---|---|---|---|
-| core | `@eliseubatista99/react-scaffold-core` | 1.2.7 | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms | [src/packages/core/CONTEXT.md](src/packages/core/CONTEXT.md) |
-| pdf | `@eliseubatista99/react-scaffold-pdf` | 1.0.1 | PDF generation (`@react-pdf/renderer`), PDF preview and rendering (`react-pdf`) | [src/packages/pdf/CONTEXT.md](src/packages/pdf/CONTEXT.md) |
-| cv | `@eliseubatista99/react-scaffold-cv` | 1.0.1 | CV/résumé PDF templates (Classic, Modern, Timeline), CV generator hooks, multi-language CV data | [src/packages/cv/CONTEXT.md](src/packages/cv/CONTEXT.md) |
-| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.16 | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper | [src/packages/firebase/CONTEXT.md](src/packages/firebase/CONTEXT.md) |
+| Package  | npm name                                   | Version | Purpose                                                                                         | Context                                                              |
+| -------- | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| core     | `@eliseubatista99/react-scaffold-core`     | 1.2.12  | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
+| pdf      | `@eliseubatista99/react-scaffold-pdf`      | 1.0.1   | PDF generation (`@react-pdf/renderer`), PDF preview and rendering (`react-pdf`)                 | [src/packages/pdf/context.md](src/packages/pdf/context.md)           |
+| cv       | `@eliseubatista99/react-scaffold-cv`       | 1.0.1   | CV/résumé PDF templates (Classic, Modern, Timeline), CV generator hooks, multi-language CV data | [src/packages/cv/context.md](src/packages/cv/context.md)             |
+| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.16  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |
 
 ## 2. Package dependency graph
 
@@ -62,7 +62,7 @@ Each package folder has the same structure:
 
 ```
 src/packages/<name>/
-├── CONTEXT.md            Package main context file
+├── context.md            Package main context file
 ├── context/              Detailed package context documents
 ├── package.json          Publishable manifest (files: ["dist/"])
 ├── package-lock.json
@@ -79,6 +79,7 @@ src/packages/<name>/
 ## 4. Tooling
 
 ### Root workspace
+
 - **Package manager:** `yarn@4.10.3` (`packageManager` field) with `nodeLinker: node-modules`. A `package-lock.json` also exists.
 - **Root `package.json`:** name `react-scaffold-eliseubatista99`, private, `type: module`. Description/author/repository fields are leftovers from the Chromatic `intro-storybook-react-template`.
 - **Root devDependencies** include every runtime peer of the packages (react 19, react-dom 19, react-router-dom 7, react-slick, slick-carousel, dayjs, @emotion/react, @emotion/styled, @react-pdf/renderer 4, react-pdf 10, react-to-pdf 2, msw 2, msw-storybook-addon) and the four scaffold packages with version `"*"` (installed from npm).
@@ -86,21 +87,24 @@ src/packages/<name>/
 - `resolutions`: `jackspeak@2.1.1`.
 
 ### Root scripts
-| Script | Command | Notes |
-|---|---|---|
-| `start` | `tsc && storybook dev -p 6006` | Type-check, then Storybook |
-| `dev` | `vite` | Runs the default boilerplate App |
-| `build` | `vite build & storybook build` | `&` runs in background on POSIX / sequentially on Windows cmd |
-| `preview` | `vite preview` | |
-| `storybook` | `storybook dev -p 6006` | Main development workflow |
-| `build-storybook` | `storybook build` | Outputs `storybook-static/` |
-| `init-msw` | `msw init public/` | MSW worker (not currently used by stories) |
-| `clean-vite` | `vite --force` | Forces dependency re-optimization |
+
+| Script            | Command                        | Notes                                                         |
+| ----------------- | ------------------------------ | ------------------------------------------------------------- |
+| `start`           | `tsc && storybook dev -p 6006` | Type-check, then Storybook                                    |
+| `dev`             | `vite`                         | Runs the default boilerplate App                              |
+| `build`           | `vite build & storybook build` | `&` runs in background on POSIX / sequentially on Windows cmd |
+| `preview`         | `vite preview`                 |                                                               |
+| `storybook`       | `storybook dev -p 6006`        | Main development workflow                                     |
+| `build-storybook` | `storybook build`              | Outputs `storybook-static/`                                   |
+| `init-msw`        | `msw init public/`             | MSW worker (not currently used by stories)                    |
+| `clean-vite`      | `vite --force`                 | Forces dependency re-optimization                             |
 
 ### Package scripts (identical in all packages)
+
 `dev`/`start`: `vite` (firebase `dev` = `tsc && vite`), `build`: `rimraf dist && vite build`, `clean`: `rm -rf dist`, `lint`: `eslint .`, `preview`: `vite preview`.
 
 ### Storybook (v9, `@storybook/react-vite`)
+
 - `stories`: `../src/**/*.mdx`, `../src/**/*.stories.@(js|jsx|ts|tsx)` — picks up stories from **all packages**.
 - `staticDirs`: `../public`. Addons: `@storybook/addon-links`, `@storybook/addon-docs`.
 - `preview.ts`: only control matchers (`/(background|color)$/i` → color, `/Date$/` → date). No global decorators/providers.
@@ -109,16 +113,19 @@ src/packages/<name>/
 - When a hook/provider needs a wrapper, a co-located `stories/setup.tsx` exports a `*StoriesSetup` component used as the story `component`.
 
 ### Deployment
+
 - `netlify.toml`: build `npm run build`, publish `storybook-static/`, SPA redirect `/* → /index.html (200)`.
 
 ### TypeScript
+
 - Root: `tsconfig.json` references `tsconfig.app.json` (ES2020, bundler resolution, `noEmit`, strict, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, `jsx: react-jsx`, include `src`) and `tsconfig.node.json`.
 - Packages: `tsconfig.json` with `target/module: ESNext`, `jsx: react-jsx`, `declaration`, `declarationDir: dist`, `emitDeclarationOnly`, `strict`, `moduleResolution: Node`, `skipLibCheck`.
 
 ### Package build (Vite library mode — same pattern in every package)
+
 - Entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, files `dist/index.es.js` / `dist/index.cjs.js`.
 - `vite-plugin-dts({ insertTypesEntry: true })` generates `dist/index.d.ts`.
-- `rollupOptions.external: ["react", "react-dom"]` (firebase also externalizes all `firebase/*` modules).
+- `rollupOptions.external`: core externalizes `react`, `react-dom`, and `react-router-dom`; firebase also externalizes all `firebase/*` modules. Core keeps React Router external so its exported navigation APIs share the consuming application's router context.
 - `pdf` and `cv` additionally use `vite-plugin-static-copy` to copy `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` into `dist/`, and `assetsInclude: ["**/*.pdf"]`.
 - `package.json`: `main: dist/index.cjs.js`, `module: dist/index.es.js`, `types: dist/index.d.ts`, `files: ["dist/"]`, `publishConfig.access: public`, MIT license.
 
@@ -132,15 +139,16 @@ src/packages/<name>/
 - **Visibility pattern (core):** overlays (`Modal`, `Drawer`, `Toast`, `Loader`) are driven by string ids through `FeedbackProvider` (`showItem(id)` / `hideItem(id)`).
 - **i18n pattern:** `Translation = Record<string, string>` (e.g. `{ en: "...", pt: "..." }`) resolved by `useTranslations` from core.
 - **Comments:** some source comments are in Portuguese (e.g. in `vite.config.ts`). Some UI strings in stories/cv component are in Portuguese.
-- **No automated tests** exist in the repository (no test runner configured). Validation is done visually via Storybook.
+- Automated tests currently exist for the core navigation provider (`src/packages/core/tests/navigation.test.tsx`, Vitest + Testing Library); the other packages do not yet have test suites. Storybook remains the primary visual validation workflow.
 
 ## 6. Development workflow
 
 1. Install: `yarn install` (or `npm install`) at the root; for building a package, also install inside `src/packages/<name>`.
 2. Develop/preview: `yarn storybook` at the root (port 6006).
 3. Build a package: `cd src/packages/<name>` → `npm run build` → outputs `dist/`.
-4. Publish: bump `version` in the package `package.json` and publish to npm (manual; no CI workflow present).
-5. Changelog: documented on GitHub Releases (per README).
+4. Run core navigation tests: `cd src/packages/core` → `npm test`.
+5. Publish: bump `version` in the package `package.json` and publish to npm (manual; no CI workflow present).
+6. Changelog: documented on GitHub Releases (per README).
 
 ## 7. Known repository-level issues
 
@@ -154,13 +162,15 @@ src/packages/<name>/
 
 ## 8. Context file index
 
-| File | Content |
-|---|---|
-| [src/packages/core/CONTEXT.md](src/packages/core/CONTEXT.md) | Core overview and API index |
-| [src/packages/core/context/](src/packages/core/context/) | `build-and-conventions.md`, `components.md`, `hooks.md`, `helpers.md`, `providers.md`, `types.md`, `known-issues.md` |
-| [src/packages/pdf/CONTEXT.md](src/packages/pdf/CONTEXT.md) | Pdf overview and API index |
-| [src/packages/pdf/context/](src/packages/pdf/context/) | `build-and-conventions.md`, `components.md`, `hooks.md`, `known-issues.md` |
-| [src/packages/cv/CONTEXT.md](src/packages/cv/CONTEXT.md) | CV overview and API index |
-| [src/packages/cv/context/](src/packages/cv/context/) | `build-and-conventions.md`, `types.md`, `templates.md`, `hooks-and-components.md`, `i18n.md`, `known-issues.md` |
-| [src/packages/firebase/CONTEXT.md](src/packages/firebase/CONTEXT.md) | Firebase overview and API index |
-| [src/packages/firebase/context/](src/packages/firebase/context/) | `build-and-conventions.md`, `providers.md`, `hooks.md`, `helpers.md`, `known-issues.md` |
+Personal AI preferences are maintained by category in [ai-preferences/preferences.md](ai-preferences/preferences.md), with focused guidance files in [ai-preferences/](ai-preferences/). Workspace instructions in [.github/copilot-instructions.md](.github/copilot-instructions.md) point agents to these preferences.
+
+| File                                                                 | Content                                                                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [src/packages/core/context.md](src/packages/core/context.md)         | Core overview and API index                                                                                          |
+| [src/packages/core/context/](src/packages/core/context/)             | `build-and-conventions.md`, `components.md`, `hooks.md`, `helpers.md`, `providers.md`, `types.md`, `known-issues.md` |
+| [src/packages/pdf/context.md](src/packages/pdf/context.md)           | Pdf overview and API index                                                                                           |
+| [src/packages/pdf/context/](src/packages/pdf/context/)               | `build-and-conventions.md`, `components.md`, `hooks.md`, `known-issues.md`                                           |
+| [src/packages/cv/context.md](src/packages/cv/context.md)             | CV overview and API index                                                                                            |
+| [src/packages/cv/context/](src/packages/cv/context/)                 | `build-and-conventions.md`, `types.md`, `templates.md`, `hooks-and-components.md`, `i18n.md`, `known-issues.md`      |
+| [src/packages/firebase/context.md](src/packages/firebase/context.md) | Firebase overview and API index                                                                                      |
+| [src/packages/firebase/context/](src/packages/firebase/context/)     | `build-and-conventions.md`, `providers.md`, `hooks.md`, `helpers.md`, `known-issues.md`                              |

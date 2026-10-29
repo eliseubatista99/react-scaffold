@@ -1,10 +1,12 @@
-import styled from "@emotion/styled";
 import React from "react";
-import { FormFieldConfiguration, FormFieldOutputData } from "../../types";
+import type {
+  FormFieldConfiguration,
+  FormFieldOutputData,
+} from "../../types";
 import { useFormHelper } from "./form.hook";
 
 export interface FormSubmitButton {
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   content: React.ReactNode;
 }
 
@@ -12,7 +14,7 @@ export interface FormSubmitSection {
   renderBeforeSubmitButton?: React.ReactNode;
   submitButton: FormSubmitButton;
   renderAfterSubmitButton?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
 export interface FormProps {
@@ -27,31 +29,80 @@ export interface FormProps {
     data: FormFieldOutputData[],
     hasErrors?: boolean,
   ) => Promise<void>;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
   childrenStyles?: React.CSSProperties;
 }
 
-const SubmitButton = styled.div<{ styles?: React.CSSProperties }>`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  margin: 0;
-  padding: 0;
+const hasInteractiveContent = (content: React.ReactNode): boolean =>
+  React.Children.toArray(content).some((child) => {
+    if (
+      !React.isValidElement<{
+        children?: React.ReactNode;
+        onClick?: unknown;
+        role?: string;
+        tabIndex?: number;
+      }>(child)
+    ) {
+      return false;
+    }
 
-  ${({ styles }) => styles && { ...styles }}
+    if (child.type === React.Fragment) {
+      return hasInteractiveContent(child.props.children);
+    }
 
-  > * {
-    pointer-events: none;
-  }
-`;
+    if (typeof child.type !== "string") {
+      return true;
+    }
+
+    return (
+      ["a", "button", "input", "select", "summary", "textarea"].includes(
+        child.type,
+      ) ||
+      child.props.onClick !== undefined ||
+      child.props.role === "button" ||
+      child.props.tabIndex !== undefined ||
+      hasInteractiveContent(child.props.children)
+    );
+  });
 
 export const Form = (props: FormProps) => {
-  const { children, styles, childrenStyles, submitSection } = props;
-  const { ref, handleFormSubmission, submitForm, handleFormChange } =
-    useFormHelper(props);
+  const { children, style, childrenStyles, submitSection } = props;
+  const { ref, handleFormSubmission, handleFormChange } = useFormHelper(props);
+  const shouldAvoidButtonWrapper = hasInteractiveContent(
+    submitSection.submitButton.content,
+  );
+  const submitButtonStyle = {
+    display: "flex",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    background: "none",
+    border: "none",
+    margin: 0,
+    padding: 0,
+    ...submitSection.submitButton.style,
+  } satisfies React.CSSProperties;
+
+  const handleSubmitContentClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    const target = event.target;
+    if (target instanceof Element) {
+      const submitControl = target.closest("button, input");
+      if (
+        (submitControl instanceof HTMLButtonElement &&
+          submitControl.type === "submit") ||
+        (submitControl instanceof HTMLInputElement &&
+          ["submit", "image"].includes(submitControl.type))
+      ) {
+        return;
+      }
+    }
+
+    ref.current?.requestSubmit();
+  };
 
   return (
     <form
@@ -64,7 +115,7 @@ export const Form = (props: FormProps) => {
         flexDirection: "column",
         gap: "8px",
         flex: 1,
-        ...styles,
+        ...style,
       }}
     >
       <div
@@ -89,18 +140,22 @@ export const Form = (props: FormProps) => {
           flexWrap: "wrap",
           alignItems: "center",
           justifyContent: "center",
-          ...submitSection.styles,
+          ...submitSection.style,
         }}
       >
         {submitSection.renderBeforeSubmitButton}
-        <SubmitButton
-          onClick={submitForm}
-          styles={{
-            ...submitSection.submitButton.styles,
-          }}
-        >
-          {submitSection.submitButton.content}
-        </SubmitButton>
+        {shouldAvoidButtonWrapper ? (
+          <div
+            onClick={handleSubmitContentClick}
+            style={submitButtonStyle}
+          >
+            {submitSection.submitButton.content}
+          </div>
+        ) : (
+          <button type="submit" style={submitButtonStyle}>
+            {submitSection.submitButton.content}
+          </button>
+        )}
         {submitSection.renderAfterSubmitButton}
       </div>
     </form>

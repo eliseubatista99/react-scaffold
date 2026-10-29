@@ -10,7 +10,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     name: "example-input-field",
-    placeHolder: "This is an example input field",
+    placeholder: "This is an example input field",
     onFocus: () => {
       console.debug("InputField > OnFocus");
     },

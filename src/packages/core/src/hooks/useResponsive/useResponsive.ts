@@ -5,6 +5,8 @@ export type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 export type Size = "mobile" | "tablet" | "desktop";
 
 export type BreakpointConfiguration = Record<Breakpoint, number>;
+export type BreakpointConfigurationOverrides =
+  Partial<BreakpointConfiguration>;
 
 export const defaultBreakpoints: BreakpointConfiguration = {
   xs: 0,
@@ -23,34 +25,52 @@ export interface UseResponsiveOutput {
 }
 
 export interface UseResponsiveInput {
-  breakpointConfiguration?: BreakpointConfiguration;
+  breakpointConfiguration?: BreakpointConfigurationOverrides;
 }
 
 export const useResponsive = (
   input?: UseResponsiveInput
 ): UseResponsiveOutput => {
-  const breakpointConfiguration = {
-    ...defaultBreakpoints,
-    ...input?.breakpointConfiguration,
-  };
-
-  const [state, setState] = useState<UseResponsiveOutput>(
-    getResponsiveOutputFromWindow(breakpointConfiguration)
+  const overrides = input?.breakpointConfiguration;
+  const breakpointConfiguration = useMemo(
+    () => ({
+      ...defaultBreakpoints,
+      ...overrides,
+    }),
+    [
+      overrides?.xs,
+      overrides?.sm,
+      overrides?.md,
+      overrides?.lg,
+      overrides?.xl,
+      overrides?.xxl,
+    ],
   );
 
-  const handleResize = () => {
-    setState(getResponsiveOutputFromWindow(breakpointConfiguration));
-  };
+  const [state, setState] = useState<UseResponsiveOutput>(() =>
+    getResponsiveOutput(0, 0, breakpointConfiguration),
+  );
 
   useEffect(() => {
+    const handleResize = () => {
+      setState(
+        getResponsiveOutput(
+          window.innerWidth,
+          window.innerHeight,
+          breakpointConfiguration,
+        ),
+      );
+    };
+
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [breakpointConfiguration]);
 
-  return useMemo(() => state, [state]);
+  return state;
 };
 
 const getCurrentBreakpoint = (
@@ -76,20 +96,20 @@ const getCurrentSize = (
   currentWidth: number,
   breakpoints: BreakpointConfiguration
 ): Size => {
-  if (currentWidth <= breakpoints.sm) {
+  if (currentWidth < breakpoints.sm) {
     return "mobile";
-  } else if (currentWidth <= breakpoints.md) {
+  } else if (currentWidth < breakpoints.lg) {
     return "tablet";
   } else {
     return "desktop";
   }
 };
 
-const getResponsiveOutputFromWindow = (
+const getResponsiveOutput = (
+  currentWidth: number,
+  currentHeight: number,
   breakpoints: BreakpointConfiguration
 ): UseResponsiveOutput => {
-  const currentWidth = window.innerWidth;
-  const currentHeight = window.innerHeight;
   const currentBreakpoint = getCurrentBreakpoint(currentWidth, breakpoints);
   const currentSize = getCurrentSize(currentWidth, breakpoints);
 

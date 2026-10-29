@@ -1,141 +1,145 @@
-import { useCallback, useRef } from "react";
-import { InputFieldProps } from "../inputField";
-import { NumericInputFieldProps } from "./numericInputField";
+import { useEffect, useRef } from "react";
+import type { InputFieldProps } from "../inputField";
+import type { NumericInputFieldProps } from "./numericInputField";
+
+const sanitizeNumericValue = (
+  value: string,
+  allowDecimals: boolean,
+  allowNegatives: boolean,
+  decimalScale: number,
+) => {
+  let sanitized = value.replace(/[^0-9.-]/g, "");
+  const isNegative = allowNegatives && sanitized.startsWith("-");
+  sanitized = sanitized.replace(/-/g, "");
+
+  if (!allowDecimals) {
+    sanitized = sanitized.replace(/\./g, "");
+  } else {
+    const decimalIndex = sanitized.indexOf(".");
+    if (decimalIndex !== -1) {
+      const integerPart = sanitized.slice(0, decimalIndex);
+      const decimalPart = sanitized
+        .slice(decimalIndex + 1)
+        .replace(/\./g, "")
+        .slice(0, decimalScale);
+      sanitized = `${integerPart || "0"}.${decimalPart}`;
+    }
+  }
+
+  return `${isNegative ? "-" : ""}${sanitized}`;
+};
+
+const getNumericPattern = (
+  allowDecimals: boolean,
+  allowNegatives: boolean,
+  decimalScale: number,
+) => {
+  const signPattern = allowNegatives ? "-?" : "";
+
+  if (!allowDecimals || decimalScale === 0) {
+    return `^${signPattern}[0-9]+$`;
+  }
+
+  return `^${signPattern}(?:[0-9]+(?:\\.[0-9]{0,${decimalScale}})?|\\.[0-9]{1,${decimalScale}})$`;
+};
 
 export const useNumericInputFieldHelper = (props: NumericInputFieldProps) => {
-  const prevValue = useRef<string>("");
+  const {
+    allowDecimals = true,
+    allowNegatives = true,
+    decimalScale = 2,
+    min,
+    max,
+    maxLength,
+    value,
+    initialValue,
+    onInput,
+  } = props;
+  const effectiveDecimalScale = Number.isFinite(decimalScale)
+    ? Math.max(0, Math.floor(decimalScale))
+    : 0;
+  const previousValue = useRef(value ?? initialValue ?? "");
 
-  const handleNegatives = useCallback(
-    (val: string): string => {
-      if (props.allowNegatives) {
-        // Only allow one -
-        val = val.replace(/-/g, (match, offset) => (offset === 0 ? "-" : ""));
-        if (val.indexOf("-") > 0) {
-          val = val.replace(/-/g, "");
-          val = "-" + val;
-        }
-      } else {
-        // remove all -
-        val = val.replace(/-/g, "");
-      }
+  useEffect(() => {
+    previousValue.current = value ?? initialValue ?? "";
+  }, [initialValue, value]);
 
-      return val;
-    },
-    [props]
-  );
+  const handleOnInput: NonNullable<InputFieldProps["onInput"]> = (event) => {
+    const input = event.currentTarget;
+    const rawValue = input.value;
+    const selectionStart = input.selectionStart ?? rawValue.length;
+    const selectionEnd = input.selectionEnd ?? rawValue.length;
+    let nextValue = sanitizeNumericValue(
+      rawValue,
+      allowDecimals,
+      allowNegatives,
+      effectiveDecimalScale,
+    );
 
-  const handleDecimals = useCallback(
-    (val: string) => {
-      if (props.allowDecimals) {
-        // If it starts with ".", make it "0."
-        if (val.startsWith(".")) {
-          val = "0" + val;
-        }
+    const numericValue =
+      nextValue === "" || nextValue === "-"
+        ? Number.NaN
+        : Number(nextValue);
+    const effectiveMax =
+      max ??
+      (maxLength && maxLength > 0
+        ? Number("9".repeat(maxLength))
+        : undefined);
 
-        // If the first char is a minus, the second char cant be a dot
-        if (val.length === 2 && val[0] === "-" && val[1] === ".") {
-          val = "-";
-        }
+    if (
+      Number.isFinite(numericValue) &&
+      ((min !== undefined && numericValue < min) ||
+        (effectiveMax !== undefined && numericValue > effectiveMax))
+    ) {
+      nextValue = previousValue.current;
+    } else {
+      previousValue.current = nextValue;
+    }
 
-        // Only the first .
-        const firstDot = val.indexOf(".");
-        if (firstDot !== -1) {
-          val =
-            val.slice(0, firstDot + 1) +
-            val.slice(firstDot + 1).replace(/\./g, "");
-        }
+    const sanitizedSelectionStart = sanitizeNumericValue(
+      rawValue.slice(0, selectionStart),
+      allowDecimals,
+      allowNegatives,
+      effectiveDecimalScale,
+    ).length;
+    const sanitizedSelectionEnd = sanitizeNumericValue(
+      rawValue.slice(0, selectionEnd),
+      allowDecimals,
+      allowNegatives,
+      effectiveDecimalScale,
+    ).length;
 
-        // Allow only one dot
-        const [intPart, ...decParts] = val.split(".");
-        const [_, ...prevDecParts] = prevValue.current.split(".");
+    input.value = nextValue;
+    input.setSelectionRange(
+      Math.min(sanitizedSelectionStart, nextValue.length),
+      Math.min(sanitizedSelectionEnd, nextValue.length),
+    );
 
-        let decimal = decParts.join("");
-        let prevDecimal = prevDecParts.join("");
+    onInput?.(event);
+  };
 
-        if (props.decimalScale !== undefined) {
-          if (decimal.length > props.decimalScale) {
-            decimal = prevDecimal;
-          } else {
-            decimal = decimal.slice(0, props.decimalScale);
-          }
-        }
-
-        // Allow to end with dot
-        val = decimal || val.endsWith(".") ? `${intPart}.${decimal}` : intPart;
-      } else {
-        val = val.replace(/\./g, "");
-      }
-
-      return val;
-    },
-    [props]
-  );
-
-  const handleMinAndMax = useCallback(
-    (val: string) => {
-      const num = Number(val);
-
-      var maxFinal = props.max;
-
-      if (maxFinal === undefined) {
-        maxFinal = props.maxLength
-          ? Number("9".repeat(props.maxLength))
-          : undefined;
-      }
-
-      if (!isNaN(num)) {
-        if (
-          (props.min !== undefined && num < props.min) ||
-          (maxFinal !== undefined && num > maxFinal)
-        ) {
-          return prevValue.current ?? val;
-        }
-      }
-      return val;
-    },
-    [props]
-  );
-
-  const handleOnInput = useCallback(
-    (e: React.FormEvent<HTMLInputElement>) => {
-      const target = e.target as HTMLInputElement;
-
-      // Memorize cursor position
-      const selectionStart = target.selectionStart ?? 0;
-      const selectionEnd = target.selectionEnd ?? 0;
-
-      let val = target.value;
-
-      val = val.replace(/[^0-9\.\-]/g, ""); // remove invalid chars
-
-      val = handleNegatives(val);
-      val = handleDecimals(val);
-      val = handleMinAndMax(val);
-
-      // Calculated the difference in length between the previous value and the new
-      const diff = val.length - target.value.length;
-
-      // Updates the input
-      target.value = val;
-
-      // Reposition the cursor
-      target.setSelectionRange(selectionStart + diff, selectionEnd + diff);
-
-      prevValue.current = val;
-    },
-    [handleNegatives, handleDecimals, handleMinAndMax]
-  );
-
-  const getManipulatedProps = useCallback((): InputFieldProps => {
-    return {
-      ...props,
-      type: "text",
-      pattern: "^-?[0-9]*.?[0-9]*$",
-      onInput: handleOnInput,
-    };
-  }, [props, handleOnInput]);
+  const {
+    allowDecimals: _allowDecimals,
+    allowNegatives: _allowNegatives,
+    decimalScale: _decimalScale,
+    min: _min,
+    max: _max,
+    ...inputProps
+  } = props;
 
   return {
-    props: getManipulatedProps(),
+    props: {
+      ...inputProps,
+      type: "text" as const,
+      inputMode:
+        inputProps.inputMode ??
+        (allowDecimals && effectiveDecimalScale > 0 ? "decimal" : "numeric"),
+      pattern: getNumericPattern(
+        allowDecimals,
+        allowNegatives,
+        effectiveDecimalScale,
+      ),
+      onInput: handleOnInput,
+    },
   };
 };

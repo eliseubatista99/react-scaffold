@@ -1,36 +1,41 @@
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { InputFieldProps } from "./inputField";
 
 export const useInputFieldHelper = (props: InputFieldProps) => {
   const debounceRef = useRef<number | null>(null);
 
+  useEffect(
+    () => () => {
+      if (debounceRef.current !== null) {
+        window.clearTimeout(debounceRef.current);
+      }
+    },
+    [],
+  );
+
   const onValueChanged = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
 
-    // If there is no delay
     if (!props.onChangeDelayInMilliseconds) {
       props.onChange?.(value);
       return;
     }
 
-    // Clear timer
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+    if (debounceRef.current !== null) {
+      window.clearTimeout(debounceRef.current);
     }
 
-    // Create new timer
     debounceRef.current = window.setTimeout(() => {
+      debounceRef.current = null;
       props.onChange?.(value);
     }, props.onChangeDelayInMilliseconds);
   };
 
-  const handleOnFocus = (
-    event: React.FocusEvent<HTMLInputElement, Element>,
-  ) => {
+  const handleOnFocus = () => {
     props.onFocus?.();
   };
 
-  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement, Element>) => {
+  const handleOnBlur = () => {
     props.onBlur?.();
   };
 

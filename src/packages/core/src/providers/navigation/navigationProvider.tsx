@@ -1,6 +1,15 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { NavigationProviderContext } from "./navigationContext";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
+import {
+  NavigationHistoryContext,
+  type NavigationHistoryTracker,
+} from "./navigationHistoryContext";
 
 export interface NavigationProviderRoute {
   path: string;
@@ -13,70 +22,90 @@ export interface NavigationProviderInputProps {
   children?: React.ReactNode;
 }
 
-export const NavigationProvider = ({
+export type NavigationRoutesProps = NavigationProviderInputProps;
+
+export const NavigationRoutes = ({
   isReady = true,
   routes,
   children,
-}: NavigationProviderInputProps) => {
-  const historyRef = React.useRef<string[]>([]);
-  const [history, setHistory] = React.useState<string[]>([]);
+}: NavigationRoutesProps) => {
+  const location = useLocation();
+  const navigationType = useNavigationType();
+  const [historyTracker, setHistoryTracker] =
+    React.useState<NavigationHistoryTracker>(() => ({
+      entries: [
+        {
+          key: location.key,
+          path: `${location.pathname}${location.search}${location.hash}`,
+        },
+      ],
+      index: 0,
+    }));
+  const lastHandledKey = React.useRef(location.key);
 
-  const updateHistory = React.useCallback((value: string[]) => {
-    historyRef.current = value;
-    setHistory(value);
-  }, []);
-
-  const addToHistory = (entry: string, replace = false) => {
-    let newHistory = [...historyRef.current];
-
-    if (replace) {
-      newHistory = newHistory.slice(0, newHistory.length - 1);
+  React.useEffect(() => {
+    if (lastHandledKey.current === location.key) {
+      return;
     }
 
-    newHistory = [...newHistory, entry];
+    lastHandledKey.current = location.key;
 
-    updateHistory(newHistory);
-  };
+    setHistoryTracker((current) => {
+      const currentEntry = {
+        key: location.key,
+        path: `${location.pathname}${location.search}${location.hash}`,
+      };
 
-  const popFromHistory = (count: number) => {
-    let newLocation = "";
-    let newHistory: string[] = [];
+      if (navigationType === "PUSH") {
+        const entries = current.entries.slice(0, current.index + 1);
+        entries.push(currentEntry);
+        return { entries, index: entries.length - 1 };
+      }
 
-    if (historyRef.current.length === 0 || historyRef.current.length < count) {
-      return "/";
-    }
+      if (navigationType === "REPLACE") {
+        const entries = [...current.entries];
+        entries[current.index] = currentEntry;
+        return { entries, index: current.index };
+      }
 
-    newHistory = historyRef.current.slice(0, historyRef.current.length - count);
+      const previousIndex = current.entries.findIndex(
+        (entry) => entry.key === location.key,
+      );
 
-    newLocation = newHistory[newHistory.length - 1];
+      if (previousIndex >= 0) {
+        return { ...current, index: previousIndex };
+      }
 
-    updateHistory(newHistory);
-    return newLocation;
-  };
+      return { entries: [currentEntry], index: 0 };
+    });
+  }, [
+    location.hash,
+    location.key,
+    location.pathname,
+    location.search,
+    navigationType,
+  ]);
 
-  const replaceHistory = (entries: string[]) => {
-    updateHistory(entries);
-  };
-
-  const routesList = routes.map((route) => (
-    <Route path={route.path} element={route.render} />
+  const routesList = routes.map((route, index) => (
+    <Route
+      key={`${route.path}-${index}`}
+      path={route.path}
+      element={route.render}
+    />
   ));
 
   return (
-    <NavigationProviderContext.Provider
-      value={{
-        history,
-        addToHistory,
-        popFromHistory,
-        replaceHistory,
-      }}
-    >
-      <BrowserRouter>
-        <>
-          {isReady && <Routes>{routesList}</Routes>}
-          {children}
-        </>
-      </BrowserRouter>
-    </NavigationProviderContext.Provider>
+    <NavigationHistoryContext.Provider value={historyTracker}>
+      {isReady && <Routes>{routesList}</Routes>}
+      {children}
+    </NavigationHistoryContext.Provider>
+  );
+};
+
+export const NavigationProvider = (props: NavigationProviderInputProps) => {
+  return (
+    <BrowserRouter>
+      <NavigationRoutes {...props} />
+    </BrowserRouter>
   );
 };

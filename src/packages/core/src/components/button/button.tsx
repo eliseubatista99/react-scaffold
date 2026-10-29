@@ -1,14 +1,17 @@
-import React, { type CSSProperties } from "react";
+import React from "react";
 
-export type ButtonProps = {
-  onClick: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  children?: React.ReactNode;
-  styles?: CSSProperties;
-};
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const Button = ({ children, onClick, styles }: ButtonProps) => {
+export const Button = ({
+  children,
+  style,
+  type = "button",
+  ...buttonProps
+}: ButtonProps) => {
   return (
     <button
+      {...buttonProps}
+      type={type}
       style={{
         border: "none",
         borderRadius: "1000px",
@@ -20,10 +23,7 @@ export const Button = ({ children, onClick, styles }: ButtonProps) => {
         justifyContent: "center",
         display: "flex",
         flexDirection: "row",
-        ...styles,
-      }}
-      onClick={(e) => {
-        onClick?.(e);
+        ...style,
       }}
     >
       {children}

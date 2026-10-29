@@ -2,25 +2,28 @@
 
 ## package.json
 
-- `name`: `@eliseubatista99/react-scaffold-core`, `version`: `1.2.7`, `private: false`, `publishConfig.access: public`, `license: MIT`, `author: eliseubatista99`.
-- `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
+- `name`: `@eliseubatista99/react-scaffold-core`, `version`: `1.2.12`, `private: false`, `publishConfig.access: public`, `license: MIT`, `author: eliseubatista99`.
+- `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `style`: `dist/react-scaffold-core.css`, `files`: `["dist/"]`.
 - Keywords: `react`, `scaffold`. Repository/homepage/bugs → `github.com/eliseubatista99/react-scaffold`.
-- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
-- `peerDependencies`: `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `slick-carousel ^1.8.1`, `dayjs ^1.11.19`.
-- `devDependencies`: `@emotion/styled ^11.14.1`, `@eslint/js`, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `eslint ^9.30.1`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, `rimraf ^3.0.2`, `typescript ~5.8.3`, `typescript-eslint`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`.
-- No `dependencies` field.
+- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `typecheck` = `tsc --noEmit -p tsconfig.app.json`, `preview` = `vite preview`, `test` = `vitest run --environment jsdom`, `test:package` = build then smoke-test the package bundle with the consumer's `MemoryRouter`.
+- `peerDependencies`: `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `dayjs ^1.11.19`.
+- `dependencies`: `lodash ^4.18.1`.
+- `devDependencies`: `@emotion/styled ^11.14.1` (bundled into the output), `slick-carousel ^1.8.1` (its CSS is bundled into the package stylesheet), `@testing-library/react`, `@eslint/js`, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `eslint ^9.30.1`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, `jsdom`, `rimraf ^3.0.2`, `typescript ~5.8.3`, `typescript-eslint`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`, `vitest`.
+
+The test suite can be run with `npm test` from this package directory. The package-specific `eslint.config.mjs` supports ESLint 9 and `npm run lint`.
 
 ## vite.config.ts
 
 - Plugins: `@vitejs/plugin-react`, `vite-plugin-dts({ insertTypesEntry: true })`.
-- `build.lib`: entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, `fileName: (format) => index.${format}.js`.
-- `rollupOptions.external`: `["react", "react-dom"]` only (globals `React`, `ReactDOM`).
+- `build.lib`: entry `src/index.ts`, formats `["es", "cjs"]`, `fileName: (format) => index.${format}.js`.
+- `rollupOptions.external`: React and React Router imports, `react-slick`, `dayjs` (including subpaths), and `lodash/isEqual`. React Router must stay external so the package and consuming application share the same router context. `@emotion/styled` is intentionally bundled to keep the CommonJS build compatible with its ESM-only export shape.
+- The generated `dist/react-scaffold-core.css` bundles Slick's CSS; import it once in the consuming application.
 - `outDir`: `dist`.
 
 ## TypeScript
 
 - `tsconfig.json` (build): `target/module: ESNext`, `jsx: react-jsx`, `declaration: true`, `declarationDir: dist`, `emitDeclarationOnly: true`, `strict: true`, `esModuleInterop: true`, `moduleResolution: Node`, `skipLibCheck: true`, include `src`.
-- `tsconfig.app.json`: ES2020, bundler resolution, strict, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
+- `tsconfig.app.json`: ES2021/DOM libraries, bundler resolution, strict, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
 - `tsconfig.node.json`: for `vite.config.ts`.
 
 ## Folder conventions
@@ -50,7 +53,7 @@ components/<name>/
 
 ## Styling approach
 
-- Default visual style defined with inline `CSSProperties`; consumers override via `styles` (root) and specialised props (`containerStyles`, `inputStyles`, `checkboxStyles`, `checkedStyles`, `barStyles`, `backgroundStyles`, `contentStyles`, `childrenStyles`, `pageStyles`). Overrides are spread **after** defaults.
+- Default visual style defined with inline `CSSProperties`; components expose native `style` props for root styling when appropriate, alongside specialised props (`containerStyles`, `inputStyles`, `checkboxStyles`, `checkedStyles`, `barStyles`, `backgroundStyles`, `contentStyles`, `childrenStyles`, `pageStyles`). Overrides are applied **after** defaults.
 - `@emotion/styled` is used when pseudo-selectors/nested selectors are required:
   - `Carousel` (`.slick-*` overrides), `InputField` (focus/autofill), `TextAreaField` (scrollbar), `Form` (`SubmitButton`), `PageLayout` (page container).
 - Default palette: black borders `#000000`, grey `#969696ff`/`#d6d6d6ff`, overlay backdrop `#00000068`, progress fill `#f58b00ff`, toast `#534a4aff`.
@@ -91,6 +94,6 @@ components/<name>/
 
 - `README.md` (package): install `npm i @eliseubatista99/react-scaffold-core`; overview of Providers, Hooks, Helpers, Components.
 - `src/components/README.md`: documents only `Drawer`.
-- `src/helpers/README.md`: documents only `TextHelper` (`getPascalCase`, `isEqual`).
+- `src/helpers/README.md`: documents all exported helpers and their current behavior.
 - `src/hooks/README.md`: documents only `useFetch` (outdated usage `await fetch<SomeType>(url)`).
 - `src/providers/README.md`: documents Navigation/Feedback providers but is partly outdated (see known-issues).

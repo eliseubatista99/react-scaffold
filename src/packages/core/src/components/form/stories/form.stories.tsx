@@ -17,8 +17,8 @@ const meta = {
         <InputField
           name="card-number"
           label="Card Number"
-          placeHolder="Card Number"
-          styles={{ maxWidth: undefined }}
+          placeholder="Card Number"
+          style={{ maxWidth: undefined }}
           containerStyles={{ marginTop: "15px" }}
           inputStyles={{ padding: "10px" }}
         />
@@ -43,8 +43,8 @@ const meta = {
               <InputField
                 name="expiration-month"
                 type="number"
-                placeHolder="MM"
-                styles={{ width: undefined, overflow: "hidden" }}
+                placeholder="MM"
+                style={{ width: undefined, overflow: "hidden" }}
                 containerStyles={{
                   maxWidth: "96%",
                   marginTop: "15px",
@@ -60,8 +60,8 @@ const meta = {
               <InputField
                 name="expiration-year"
                 type="number"
-                placeHolder="YYYY"
-                styles={{
+                placeholder="YYYY"
+                style={{
                   // maxWidth: "96%",
                   width: undefined,
                   overflow: "hidden",
@@ -84,8 +84,8 @@ const meta = {
             <InputField
               name="security"
               label="Security Code"
-              placeHolder="Security Code"
-              styles={{ width: undefined, overflow: "hidden" }}
+              placeholder="Security Code"
+              style={{ width: undefined, overflow: "hidden" }}
               containerStyles={{
                 maxWidth: "96%",
                 marginTop: "15px",
@@ -102,8 +102,8 @@ const meta = {
         <InputField
           name="name"
           label="Card Holder"
-          placeHolder="Card Holder"
-          styles={{ maxWidth: undefined }}
+          placeholder="Card Holder"
+          style={{ maxWidth: undefined }}
           containerStyles={{ marginTop: "15px" }}
           inputStyles={{ padding: "10px" }}
         />
@@ -124,24 +124,14 @@ const meta = {
     },
     submitSection: {
       submitButton: {
-        content: (
-          <Button
-            onClick={() => {
-              //click
-            }}
-          >
-            Submit
-          </Button>
-        ),
-        styles: {
+        content: <span>Submit</span>,
+        style: {
           marginTop: "auto",
         },
       },
     },
-    onSubmit: async (_) => {
-      //
-    },
-    styles: { boxSizing: "border-box", width: "90%", padding: "20px" },
+    onSubmit: async () => {},
+    style: { boxSizing: "border-box", width: "90%", padding: "20px" },
   },
 } satisfies Meta<typeof Form>;
 
@@ -165,16 +155,8 @@ export const WithAnotherButton: Story = {
         </Button>
       ),
       submitButton: {
-        content: (
-          <Button
-            onClick={() => {
-              //click
-            }}
-          >
-            Submit
-          </Button>
-        ),
-        styles: {
+        content: <span>Submit</span>,
+        style: {
           marginTop: "auto",
         },
       },

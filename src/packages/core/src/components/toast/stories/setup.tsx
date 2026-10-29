@@ -2,7 +2,7 @@ import { FeedbackProvider, useFeedback } from "../../../providers";
 import { Toast, ToastProps } from "../toast";
 
 const ToastStoriesSetupInnerContent = (props: ToastProps) => {
-  const { isItemVisible, showItem, hideItem } = useFeedback();
+  const { isItemVisible, showItem } = useFeedback();
 
   return (
     <>

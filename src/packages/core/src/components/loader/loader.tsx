@@ -3,10 +3,10 @@ import { useFeedback } from "../../providers";
 export interface LoaderProps {
   id: string;
   children?: React.ReactNode;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
-export const Loader = ({ id, styles, children }: LoaderProps) => {
+export const Loader = ({ id, style, children }: LoaderProps) => {
   const { isItemVisible } = useFeedback();
 
   return (
@@ -24,7 +24,7 @@ export const Loader = ({ id, styles, children }: LoaderProps) => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            ...styles,
+            ...style,
           }}
         >
           {children}

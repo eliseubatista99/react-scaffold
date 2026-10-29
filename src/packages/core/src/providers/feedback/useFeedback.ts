@@ -1,25 +1,26 @@
 import { useContext } from "react";
-import { FeedbackProviderContext } from "./feedbackContext";
+import {
+  FeedbackActionsContext,
+  FeedbackStateContext,
+} from "./feedbackContext";
 
 export const useFeedback = () => {
-  const feedbackContext = useContext(FeedbackProviderContext);
+  const stateContext = useContext(FeedbackStateContext);
+  const actionsContext = useContext(FeedbackActionsContext);
 
-  const isItemVisible = (id: string) => {
-    return feedbackContext.visibleItems.some((item) => item === id);
-  };
+  if (!stateContext || !actionsContext) {
+    throw new Error("useFeedback must be used within a FeedbackProvider.");
+  }
 
-  const showItem = (id: string) => {
-    feedbackContext.showItem(id);
-  };
+  return { ...stateContext, ...actionsContext };
+};
 
-  const hideItem = (id: string) => {
-    feedbackContext.hideItem(id);
-  };
+export const useFeedbackActions = () => {
+  const actionsContext = useContext(FeedbackActionsContext);
 
-  return {
-    visibleItems: feedbackContext.visibleItems,
-    isItemVisible,
-    showItem,
-    hideItem,
-  };
+  if (!actionsContext) {
+    throw new Error("useFeedbackActions must be used within a FeedbackProvider.");
+  }
+
+  return actionsContext;
 };
