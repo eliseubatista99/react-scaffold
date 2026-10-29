@@ -10,7 +10,7 @@ const meta = {
   tags: ["autodocs"],
   args: {
     name: "example-text-area-field",
-    placeHolder: "This is an example text area field",
+    placeholder: "This is an example text area field",
     onFocus: () => {
       console.debug("TextArea > OnFocus");
     },

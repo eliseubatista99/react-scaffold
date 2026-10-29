@@ -283,23 +283,31 @@ type SvgImageProps = {
 File: `components/textAreaField/textAreaField.tsx`
 ```ts
 interface TextAreaFieldProps {
+  ref?: React.Ref<HTMLTextAreaElement>;
   name: string;
   label?: React.ReactNode;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   bottomMessage?: React.ReactNode;
   placeholder?: string;
-  value?: string;
-  initialValue?: string;
+  value?: string;                          // controlled
+  initialValue?: string;                   // uncontrolled (defaultValue)
+  disabled?: boolean;
+  required?: boolean;
+  rows?: number;
+  maxLength?: number;
+  "aria-describedby"?: string;
   onChange?: (value: string) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
+  onFocus?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
   inputStyles?: CSSProperties;
   containerStyles?: CSSProperties;
-  styles?: CSSProperties;
+  style?: CSSProperties;
 }
 ```
-- Same layout as `InputField` with a `<textarea>`; emotion styles a thin webkit scrollbar (5px, track `#f0f0f0`, thumb `#888`, hover `#555`). No debounce support.
+- Supports native textarea attributes such as `placeholder`, `required`, `disabled`, `rows`, and `aria-*`. Generates an ID when one is not supplied and associates the label and bottom message. When `value` is provided, it is controlled; otherwise, `initialValue` sets its initial value, so both modes are never passed to the DOM together.
+- `onChange` receives the text value. `onFocus` and `onBlur` receive the native focus event. `style` customizes the outer wrapper; `containerStyles` and `inputStyles` customize the row and textarea.
+- The row displays a visible outline while the textarea or its controls have focus. Emotion styles a thin WebKit scrollbar (5px, track `#f0f0f0`, thumb `#888`, hover `#555`). No debounce support.
 
 ## Toast (Feedback)
 File: `components/toast/toast.tsx`
