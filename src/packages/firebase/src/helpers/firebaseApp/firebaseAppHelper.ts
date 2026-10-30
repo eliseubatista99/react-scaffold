@@ -11,10 +11,15 @@ export class FirebaseAppHelper {
   static initializeApp = (options: FirebaseOptions): FirebaseApp => {
     const app = this.getApp();
     if (app) {
-      const optionsMatch = Object.entries(options).every(
-        ([key, value]) =>
-          app.options[key as keyof FirebaseOptions] === value,
-      );
+      const optionsMatch =
+        Object.entries(app.options).every(
+          ([key, value]) =>
+            options[key as keyof FirebaseOptions] === value,
+        ) &&
+        Object.entries(options).every(
+          ([key, value]) =>
+            app.options[key as keyof FirebaseOptions] === value,
+        );
 
       if (!optionsMatch) {
         throw new Error(

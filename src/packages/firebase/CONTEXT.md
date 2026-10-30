@@ -18,7 +18,7 @@ Thin React wrappers around the Firebase modular SDK (v12):
 - **App and services**: `FirebaseProvider` initializes or reuses the default Firebase app from consumer configuration and creates Auth before rendering children.
 - **Auth**: `useFirebaseAuth` provides email/password sign-up, login, logout, password reset, email/password/display-name updates and current-user state. `useDidMountWithFirebaseAuth` waits for the same provider's authenticated user.
 - **Firestore**: `useFirestore` CRUD helpers on top-level collections.
-- **Storage**: `FirebaseStorageHelper` uploads files/images using the same initialized app and returns download URLs.
+- **Storage**: `FirebaseStorageHelper` uploads files/images using the same initialized app and returns tokenized download URLs; anyone who obtains a URL can access its file.
 
 ## Public API (exported from `src/index.ts`)
 
@@ -30,9 +30,10 @@ Thin React wrappers around the Firebase modular SDK (v12):
 | `FirebaseAuthProvider`, `FirebaseAuthProviderInputProps` | Advanced provider | Wraps an explicitly supplied `Auth` instance; [context/providers.md](context/providers.md) |
 | `FirebaseAuthSignUpResult`, `useFirebaseAuth` | Auth type and hook | [context/providers.md](context/providers.md) |
 | `FirebaseAppHelper`, `FirebaseStorageHelper` | Static helpers | [context/helpers.md](context/helpers.md) |
+| `FirebaseStorageUploadInput` | Storage upload input type | Used by `FirebaseStorageHelper.uploadImage` and `uploadFile`; [context/helpers.md](context/helpers.md) |
 | `useFirestore`, `FirestoreItem<T>`, `FirestoreDataParser<T>`, `FirestoreQueryOptions<T>`, `useDidMountWithFirebaseAuth` | Hooks and types | [context/hooks.md](context/hooks.md) |
 
-Not exported: `FirebaseAuthProviderContext`, `FirebaseAuthContextData`, `UploadFileInput`.
+Not exported: `FirebaseAuthProviderContext`, `FirebaseAuthContextData`.
 
 ## Folder structure
 
