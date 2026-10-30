@@ -69,4 +69,47 @@ describe("FirebaseAppHelper", () => {
       "The default Firebase app is already initialized with different options.",
     );
   });
+
+  it("does not return a default app after Firebase has removed it", async () => {
+    const app = {
+      name: "[DEFAULT]",
+      options: { apiKey: "api-key", projectId: "project-id" },
+    } as FirebaseApp;
+    firebaseAppMocks.getApps.mockReturnValue([app]);
+
+    const { FirebaseAppHelper } = await import(
+      "../src/helpers/firebaseApp/firebaseAppHelper"
+    );
+
+    expect(FirebaseAppHelper.getApp()).toBe(app);
+
+    firebaseAppMocks.getApps.mockReturnValue([]);
+
+    expect(FirebaseAppHelper.getApp()).toBeNull();
+  });
+
+  it("initializes a new default app after the previous app was removed", async () => {
+    const oldApp = {
+      name: "[DEFAULT]",
+      options: { apiKey: "api-key", projectId: "project-id" },
+    } as FirebaseApp;
+    const newApp = {
+      name: "[DEFAULT]",
+      options: { apiKey: "api-key", projectId: "project-id" },
+    } as FirebaseApp;
+    const options = { apiKey: "api-key", projectId: "project-id" };
+    firebaseAppMocks.getApps.mockReturnValue([oldApp]);
+
+    const { FirebaseAppHelper } = await import(
+      "../src/helpers/firebaseApp/firebaseAppHelper"
+    );
+
+    expect(FirebaseAppHelper.getApp()).toBe(oldApp);
+
+    firebaseAppMocks.getApps.mockReturnValue([]);
+    firebaseAppMocks.initializeApp.mockReturnValue(newApp);
+
+    expect(FirebaseAppHelper.initializeApp(options)).toBe(newApp);
+    expect(firebaseAppMocks.initializeApp).toHaveBeenCalledWith(options);
+  });
 });

@@ -6,8 +6,6 @@ import {
 } from "firebase/app";
 
 export class FirebaseAppHelper {
-  private static app: FirebaseApp | null = null;
-
   static initializeApp = (options: FirebaseOptions): FirebaseApp => {
     const app = this.getApp();
     if (app) {
@@ -30,16 +28,11 @@ export class FirebaseAppHelper {
       return app;
     }
 
-    this.app = initializeApp(options);
-    return this.app;
+    return initializeApp(options);
   };
 
   static getApp = (): FirebaseApp | null => {
-    if (this.app === null) {
-      this.app = getApps().find((app) => app.name === "[DEFAULT]") ?? null;
-    }
-
-    return this.app;
+    return getApps().find((app) => app.name === "[DEFAULT]") ?? null;
   };
 
   static isAppInitialized = (): boolean => {

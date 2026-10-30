@@ -49,10 +49,18 @@ export class FirebaseStorageHelper {
     const storage = getStorage(app);
     const fileName = input.fileName ?? input.file.name;
 
-    const safeName = fileName
+    const normalizedName = fileName
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[\\/\u0000-\u001f\u007f]/g, "-")
+      .replace(/[\u0300-\u036f]/g, "");
+    const safeName = Array.from(normalizedName, (character) =>
+      character === "/" ||
+      character === "\\" ||
+      character.charCodeAt(0) <= 0x1f ||
+      character.charCodeAt(0) === 0x7f
+        ? "-"
+        : character,
+    )
+      .join("")
       .replace(/\s+/g, "-");
 
     const webCrypto = globalThis.crypto;

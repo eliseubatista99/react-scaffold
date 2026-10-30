@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
@@ -32,7 +32,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npm --prefix ../core test -- --root ../firebase --pool=threads --maxWorkers=1 tests",
+    "test": "vitest run --environment jsdom --pool=threads --maxWorkers=1 tests",
     "start": "vite"
   },
   "devDependencies": {
@@ -43,12 +43,15 @@
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "firebase": "^12.19.0",
     "globals": "^16.3.0",
+    "jsdom": "^29.1.1",
     "rimraf": "^3.0.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "firebase": "^12.19.0",

@@ -13,7 +13,7 @@ The repository root is **not** a library itself: it is a Vite + Storybook worksp
 | core     | `@eliseubatista99/react-scaffold-core`     | 1.2.12  | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
 | pdf      | `@eliseubatista99/react-scaffold-pdf`      | 1.0.1   | PDF generation (`@react-pdf/renderer`), PDF preview and rendering (`react-pdf`)                 | [src/packages/pdf/context.md](src/packages/pdf/context.md)           |
 | cv       | `@eliseubatista99/react-scaffold-cv`       | 1.0.1   | CV/résumé PDF templates (Classic, Modern, Timeline), CV generator hooks, multi-language CV data | [src/packages/cv/context.md](src/packages/cv/context.md)             |
-| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.16  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |
+| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.18  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |
 
 ## 2. Package dependency graph
 
@@ -53,7 +53,7 @@ graph LR
 ├── package.json          Root workspace manifest (Storybook + all peer deps as devDeps)
 ├── vite.config.ts        Minimal: `plugins: [react()]`
 ├── tsconfig*.json        Project references (app + node)
-├── .eslintrc.cjs         Flat-config style ESLint (typescript-eslint, react-hooks, react-refresh)
+├── eslint.config.js      ESLint flat config (typescript-eslint, react-hooks, react-refresh)
 ├── yarn.lock / package-lock.json   Both lockfiles present
 └── .yarnrc.yml           `nodeLinker: node-modules`
 ```
@@ -123,9 +123,9 @@ src/packages/<name>/
 
 ### Package build (Vite library mode — same pattern in every package)
 
-- Entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, files `dist/index.es.js` / `dist/index.cjs.js`.
+- Entry `src/index.ts`, formats `["es", "cjs"]`, files `dist/index.es.js` / `dist/index.cjs.js`; `pdf` and `cv` use the placeholder library name, while Firebase uses `ReactScaffoldFirebase`.
 - `vite-plugin-dts({ insertTypesEntry: true })` generates `dist/index.d.ts`.
-- `rollupOptions.external`: core externalizes `react`, `react-dom`, and `react-router-dom`; firebase also externalizes all `firebase/*` modules. Core keeps React Router external so its exported navigation APIs share the consuming application's router context.
+- `rollupOptions.external`: core externalizes `react`, `react-dom`, and `react-router-dom`; Firebase externalizes React and its JSX runtimes plus the modular Firebase modules it imports. Core keeps React Router external so its exported navigation APIs share the consuming application's router context.
 - `pdf` and `cv` additionally use `vite-plugin-static-copy` to copy `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` into `dist/`, and `assetsInclude: ["**/*.pdf"]`.
 - `package.json`: `main: dist/index.cjs.js`, `module: dist/index.es.js`, `types: dist/index.d.ts`, `files: ["dist/"]`, `publishConfig.access: public`, MIT license.
 

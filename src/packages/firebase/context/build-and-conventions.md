@@ -1,18 +1,18 @@
 # Firebase — Build, Configuration and Conventions
 
 ## package.json
-- `name`: `@eliseubatista99/react-scaffold-firebase`, `version`: `1.0.16`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
+- `name`: `@eliseubatista99/react-scaffold-firebase`, `version`: `1.0.18`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
 - Scripts: `dev` = `tsc && vite`, `start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `test` = provider and hook tests via Vitest, `preview` = `vite preview`.
 - `peerDependencies`: `firebase ^12.19.0`, `react ^19.1.0`, `react-dom ^19.1.0`.
-- `devDependencies`: eslint stack, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `rimraf`, `typescript ~5.8.3`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`.
-- `firebase` is not in devDependencies (must be installed separately to build locally); it is also absent from the root workspace `package.json`.
+- `devDependencies`: Firebase SDK (matching its peer range), Vitest, jsdom, eslint stack, React types, Vite and TypeScript tooling.
+- `test` runs the package's own Vitest/jsdom installation rather than delegating to the sibling `core` package.
 
 ## vite.config.ts
 - Plugins: `@vitejs/plugin-react`, `vite-plugin-dts({ insertTypesEntry: true })`.
-- `build.lib`: entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, `index.<format>.js`, `outDir: dist`.
-- `rollupOptions.external`: `react`, `react-dom`, `firebase/app`, `firebase/firestore`, `firebase/auth`, `firebase/storage`, `firebase/functions`, and the `firebase/compat/*` equivalents → the Firebase SDK is never bundled (correctly treated as a peer).
-- `optimizeDeps.include`: modular `firebase/*` entries; `optimizeDeps.exclude`: `firebase/compat/*`.
+- `build.lib`: entry `src/index.ts`, `name: "ReactScaffoldFirebase"`, formats `["es", "cjs"]`, `index.<format>.js`, `outDir: dist`.
+- `rollupOptions.external`: `react`, `react-dom`, both React JSX runtimes, and the modular Firebase modules used by this package. Peer dependencies are not bundled.
+- `optimizeDeps.include`: the modular Firebase modules used by this package.
 
 ## TypeScript
 - `tsconfig.json`: ESNext, `jsx: react-jsx`, `declaration`, `declarationDir: dist`, `emitDeclarationOnly`, `strict`, `esModuleInterop`, `moduleResolution: Node`, `skipLibCheck`.
@@ -28,4 +28,4 @@
 
 ## README
 - `README.md`: install `npm i @eliseubatista99/react-scaffold-firebase` (duplicated section); lists Providers, Hooks, Helpers.
-- `src/providers/README.md` is a copy of core's providers README (Navigation/Feedback) and does not describe Firebase.
+- `src/providers/README.md` documents the Firebase providers.

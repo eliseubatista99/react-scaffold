@@ -30,9 +30,6 @@ export const FirebaseAuthProvider = ({
   const [authSnapshot, setAuthSnapshot] = React.useState<
     { auth: Auth; user: User | null } | undefined
   >(undefined);
-  const [userProfileRevision, setUserProfileRevision] = React.useState(0);
-  const currentUser =
-    authSnapshot?.auth === auth ? authSnapshot.user : undefined;
 
   React.useEffect(() => {
     let isActive = true;
@@ -49,7 +46,14 @@ export const FirebaseAuthProvider = ({
   }, [auth]);
 
   const value = React.useMemo<FirebaseAuthContextData>(() => {
+    const currentUser =
+      authSnapshot?.auth === auth ? authSnapshot.user : undefined;
     const isInitialized = currentUser !== undefined;
+    const refreshCurrentUser = () => {
+      setAuthSnapshot((snapshot) =>
+        snapshot?.auth === auth ? { ...snapshot } : snapshot,
+      );
+    };
 
     const requireCurrentUser = () => {
       const user = auth.currentUser;
@@ -79,7 +83,7 @@ export const FirebaseAuthProvider = ({
         await updateProfile(userCredential.user, {
           displayName: username,
         });
-        setUserProfileRevision((revision) => revision + 1);
+        refreshCurrentUser();
       } catch (profileError) {
         return {
           userCredential,
@@ -122,7 +126,7 @@ export const FirebaseAuthProvider = ({
       await updateProfile(user, {
         displayName: name,
       });
-      setUserProfileRevision((revision) => revision + 1);
+      refreshCurrentUser();
 
       return user;
     };
@@ -138,7 +142,7 @@ export const FirebaseAuthProvider = ({
       updatePassword: updateUserPassword,
       updateName: updateUserName,
     };
-  }, [auth, currentUser, userProfileRevision]);
+  }, [auth, authSnapshot]);
 
   return (
     <FirebaseAuthProviderContext.Provider

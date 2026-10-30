@@ -1,10 +1,5 @@
 import type { Firestore, QueryConstraint } from "firebase/firestore";
-import {
-  collection,
-  doc,
-  getDoc,
-  getFirestore,
-} from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFirestore } from "../src/hooks/useFirestore/useFirestore.hook";
 
