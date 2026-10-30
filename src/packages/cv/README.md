@@ -1,22 +1,99 @@
-<h1 align="center">CV</h1>
+# @eliseubatista99/react-scaffold-cv
 
----
+Create and preview résumé PDFs from typed CV data. The package includes three
+A4 layouts — Classic, Modern, and Timeline — with English and Portuguese
+template labels.
 
-A library which provides CV related components and utilities, that allow you to build a readable and useful CV.
+## Requirements
 
+The package declares these peer dependencies:
 
-@eliseubatista99/react-scaffold-cv is a React library that provides CV related components and utilities, that allow you to build a readable and useful CV.
+| Peer dependency | Version |
+| --- | --- |
+| `@eliseubatista99/react-scaffold-core` | `^1.1.0` |
+| `@eliseubatista99/react-scaffold-pdf` | `^1.0.1` |
+| `@react-pdf/renderer` | `^4.3.0` |
+| `react` | `^19.1.0` |
+| `react-dom` | `^19.1.0` |
+| `react-pdf` | `^10.0.1` |
+| `react-router-dom` | `^7.6.3` |
+| `react-to-pdf` | `^2.0.1` |
 
-This library must be used together with the [@eliseubatista99/react-scaffold-pdf](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf) package.
+Install compatible Core and PDF versions along with the other peer dependencies
+used by your application. The package's peer version ranges are authoritative.
 
-## Content
+## Installation
 
-- [Components](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/components): Useful to preview your CV in a basic pdf embedded reader
+```sh
+npm install @eliseubatista99/react-scaffold-cv \
+  @eliseubatista99/react-scaffold-core@^1.1.0 \
+  @eliseubatista99/react-scaffold-pdf@^1.0.1 \
+  @react-pdf/renderer@^4.3.0 react@^19.1.0 react-dom@^19.1.0 \
+  react-pdf@^10.0.1 react-router-dom@^7.6.3 react-to-pdf@^2.0.1
+```
 
-- [Hooks](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/hooks): Hooks that handle the creation of the CV document, alongside with the possibility of previewing it or downloading it.
+## Quick start
 
-- [Templates](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv/src/templates): Contains the available CV templates, that you can use to render on your own PDF previewer.
+`CurriculumVitae` renders a preview using one of the package's templates:
 
-## Change Log
+```tsx
+import {
+  CurriculumVitae,
+  type CvData,
+} from "@eliseubatista99/react-scaffold-cv";
 
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
+const data: CvData = {
+  personalInfo: {
+    name: "Jane Doe",
+    city: "Lisbon",
+    postalCode: "1000-001",
+    email: "jane@example.com",
+    countryCode: "+351",
+    phone: "910000000",
+    desiredRole: { en: "Software Developer", pt: "Programadora" },
+  },
+  resume: {
+    en: "Software developer focused on accessible web applications.",
+    pt: "Programadora focada em aplicações web acessíveis.",
+  },
+};
+
+export function CVExample() {
+  return (
+    <CurriculumVitae
+      template="modern"
+      language="en"
+      data={data}
+      theme={{ color: "#0f766e" }}
+    />
+  );
+}
+```
+
+## Public API
+
+- `CurriculumVitae` — render a CV preview.
+- `useCVGenerator` — generate, download, or preview a CV PDF.
+- `useGetCVDocument` — create a PDF document from CV data and a template.
+- `CvTemplates` — access the Classic, Modern, and Timeline templates.
+- `CvData` and related exported types — describe CV content and template
+  configuration.
+
+CV fields that support translations accept language-to-string objects, for
+example `{ en: "Developer", pt: "Programador" }`. The templates use A4 pages;
+layout and PDF document options can be customized through the component and
+generator props.
+
+## Development
+
+Run these commands from `src/packages/cv`:
+
+```sh
+npm ci
+npm run build
+npm run lint
+```
+
+## License
+
+[MIT](../../../LICENSE)
