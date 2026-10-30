@@ -25,7 +25,10 @@ export const CVTemplateClassic = (props: CvTemplateProps) => {
   ].filter(Boolean);
 
   return (
-    <BaseCVTemplate>
+    <BaseCVTemplate
+      title={props.title}
+      documentConfigs={props.documentConfigs}
+    >
       <Page size="A4" style={styles.page} {...props.pageConfigs}>
         {data.personalInfo && (
           <View style={styles.header}>
@@ -187,18 +190,18 @@ export const CVTemplateClassic = (props: CvTemplateProps) => {
                     </Text>
                     <Text style={styles.dateRange}>
                       {edu.startMonth || edu.startYear
-                        ? edu.status == "completed"
+                        ? edu.status === "progress"
                           ? `${i18n.global.time.month(edu.startMonth || "")}${
+                              edu.startMonth && edu.startYear ? "/" : ""
+                            }${edu.startYear || ""} - ${
+                              i18n.global.time.current
+                            }`
+                          : `${i18n.global.time.month(edu.startMonth || "")}${
                               edu.startMonth && edu.startYear ? "/" : ""
                             }${edu.startYear || ""} - ${i18n.global.time.month(
                               edu.endMonth || ""
                             )}${edu.endMonth && edu.endYear ? "/" : ""}${
                               edu.endYear || ""
-                            }`
-                          : `${i18n.global.time.month(edu.startMonth || "")}${
-                              edu.startMonth && edu.startYear ? "/" : ""
-                            }${edu.startYear || ""} - ${
-                              i18n.global.time.current
                             }`
                         : ""}
                     </Text>

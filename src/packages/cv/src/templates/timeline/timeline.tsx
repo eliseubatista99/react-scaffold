@@ -1,4 +1,5 @@
 import { Link, Page, Text, View } from "@react-pdf/renderer";
+import { Fragment } from "react";
 import { CvTemplateProps } from "../../types";
 import { BaseCVTemplate } from "../baseTemplate";
 import { useTemplateHelper } from "../templates.hook";
@@ -12,32 +13,43 @@ export const CVTemplateTimeline = (props: CvTemplateProps) => {
   });
 
   const styles = getStyles(props.theme);
+  const contactItems = [
+    [data.personalInfo?.city, data.personalInfo?.postalCode]
+      .filter(Boolean)
+      .join(" • "),
+    formatPhone(
+      data.personalInfo?.countryCode || "",
+      data.personalInfo?.phone || ""
+    ),
+    data.personalInfo?.email,
+  ].filter(Boolean);
 
   return (
-    <BaseCVTemplate>
+    <BaseCVTemplate
+      title={props.title}
+      documentConfigs={props.documentConfigs}
+    >
       <Page size="A4" style={styles.page} {...props.pageConfigs}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.name}>{data.personalInfo?.name}</Text>
           {data.personalInfo?.desiredRole && (
-            <Text style={[styles.desiredRole, styles.desiredRole]}>
+            <Text style={styles.desiredRole}>
               {data.personalInfo.desiredRole}
             </Text>
           )}
-          <View style={styles.contactRow}>
-            <Text style={styles.contactItem}>
-              {data.personalInfo?.city}{" "}
-              {data.personalInfo?.postalCode
-                ? `• ${data.personalInfo.postalCode}`
-                : ""}
-            </Text>
-            <Text style={styles.separator}>|</Text>
-            <Text style={styles.contactItem}>
-              {data.personalInfo?.countryCode} {data.personalInfo?.phone}
-            </Text>
-            <Text style={styles.separator}>|</Text>
-            <Text style={styles.contactItem}>{data.personalInfo?.email}</Text>
-          </View>
+          {contactItems.length > 0 && (
+            <View style={styles.contactRow}>
+              {contactItems.map((item, index) => (
+                <Fragment key={index}>
+                  <Text style={styles.contactItem}>{item}</Text>
+                  {index < contactItems.length - 1 && (
+                    <Text style={styles.separator}>|</Text>
+                  )}
+                </Fragment>
+              ))}
+            </View>
+          )}
           {data.links && data.links.length > 0 && (
             <View style={styles.linksRow}>
               {data.links.map((l, i) => (

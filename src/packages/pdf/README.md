@@ -2,7 +2,7 @@
 
 ---
 
-A library which provides pdf related components and utilities to easily integrate PDFs in your application and avoid repeating the usual code..
+A library which provides PDF-related components and utilities to easily integrate PDFs in your application and avoid repeating the usual code.
 
 ## Installation
 
@@ -15,12 +15,6 @@ npm i @eliseubatista99/react-scaffold-pdf
 It helps you write applications that behave consistently and are easy to test.
 
 Using this library with other PDF libraries is not recommended and can cause issues.
-
-## Installation
-
-```
-npm i @eliseubatista99/react-scaffold-pdf
-```
 
 ## Content
 

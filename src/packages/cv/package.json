@@ -1,8 +1,8 @@
 {
   "name": "@eliseubatista99/react-scaffold-cv",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "private": false,
-  "description": "A library of cv templates.",
+  "description": "CV templates and PDF generation utilities for React.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "vite",
     "build": "rimraf dist && vite build",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite"

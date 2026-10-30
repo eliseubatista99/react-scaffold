@@ -2,9 +2,9 @@
 
 ## package.json
 - `name`: `@eliseubatista99/react-scaffold-pdf`, `version`: `1.0.1`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
-- Description: "A library of pdf utilites for React projects." (typo "utilites").
+- Description: "PDF utilities for React projects."
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
-- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
+- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rimraf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
 - `dependencies`: `{}`.
 - `peerDependencies`: `@react-pdf/renderer ^4.3.0`, `react ^19.1.0`, `react-dom ^19.1.0`, `react-pdf ^10.0.1`, `react-router-dom ^7.6.3`, `react-to-pdf ^2.0.1`.
 - `devDependencies`: eslint stack, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `rimraf`, `typescript ~5.8.3`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`, `vite-plugin-static-copy ^3.1.1`.
@@ -17,8 +17,8 @@
   - `vite-plugin-dts({ insertTypesEntry: true })`
   - `viteStaticCopy` → copies `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` to the root of `dist/`.
 - `assetsInclude: ["**/*.pdf"]` (used by stories importing `example.pdf`).
-- `build.lib`: entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, `index.<format>.js`.
-- `rollupOptions.external`: `["react", "react-dom"]` only → `@react-pdf/renderer`, `react-pdf` and the pdf.js worker URL are bundled/processed into `dist`.
+- `build.lib`: entry `src/index.ts`, `name: "ReactScaffoldPdf"`, formats `["es", "cjs"]`, `index.<format>.js`.
+- `rollupOptions.external`: `react`, `react-dom`, `@react-pdf/renderer` and `react-pdf` are externalized; React subpath imports are externalized as well.
 - Comments in the config are in Portuguese.
 
 ## TypeScript

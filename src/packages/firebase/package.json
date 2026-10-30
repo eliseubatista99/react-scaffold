@@ -1,11 +1,11 @@
 {
   "name": "@eliseubatista99/react-scaffold-firebase",
-  "version": "1.0.19",
+  "version": "2.0.0",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
-  "description": "A library of firebase utilites for React projects.",
+  "description": "Firebase utilities for React projects.",
   "keywords": [
     "react",
     "scaffold"
@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "tsc && vite",
     "build": "rimraf dist && vite build",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run --environment jsdom --pool=threads --maxWorkers=1 tests",

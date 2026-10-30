@@ -255,13 +255,13 @@ __metadata:
   linkType: hard
 
 "@eliseubatista99/react-scaffold-firebase@npm:*":
-  version: 1.0.16
-  resolution: "@eliseubatista99/react-scaffold-firebase@npm:1.0.16"
+  version: 1.0.19
+  resolution: "@eliseubatista99/react-scaffold-firebase@npm:1.0.19"
   peerDependencies:
     firebase: ^12.19.0
     react: ^19.1.0
     react-dom: ^19.1.0
-  checksum: 10c0/8f60450951357d141f911825847e5ba98c05afef1fca9ff81b0fbf517bec131e501aa54a74cde04ca35083295a6314da7f6b21f502e69c28fc80b8a73ccbd92c
+  checksum: 10c0/c9c0e73baa221e9dd3a173ed399011d2dc8126b5221129f4d008ce90e7212b71bc106b2f9a6b92e5613de0e5aa0107020ca23d89044094318283bca1647b0459
   languageName: node
   linkType: hard
 
@@ -2916,9 +2916,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.464":
-  version: 1.5.467
-  resolution: "electron-to-chromium@npm:1.5.467"
-  checksum: 10c0/6bd9ae721c5cbe3e01e0194a6af84be5dcb5961fec1a01149e67c95d6de2f2308ec21cfcdedd3b3d12eac8e3774628f2216f852eb5468575b827cf6ad517ea82
+  version: 1.5.468
+  resolution: "electron-to-chromium@npm:1.5.468"
+  checksum: 10c0/30249fc08bd3787661a784f7e8c434fd6294c79999899555f67c121dc0c3ff6e97b649d133dae1b1f2b4e09c82fd75275948e5453b0ca4fc919f606e5706e49a
   languageName: node
   linkType: hard
 
@@ -4813,9 +4813,9 @@ __metadata:
   linkType: hard
 
 "node-releases@npm:^2.0.60":
-  version: 2.0.61
-  resolution: "node-releases@npm:2.0.61"
-  checksum: 10c0/51181a3743e68366547404f8fa04760e31675c11b00ed6a11462e5bb6d0c61ed0ae459cc905c25597c03355c565468db35af48e06ab62e93956d6659a581e713
+  version: 2.0.62
+  resolution: "node-releases@npm:2.0.62"
+  checksum: 10c0/9959dd3fa2bd9cc6251ae7adc598f6ba1df676ab2943521ba4872aa3e20d948cf127696adcb80465d903ff334317ace1a5f519e78d15754ed0b7f4f22f794f6b
   languageName: node
   linkType: hard
 
@@ -5747,9 +5747,9 @@ __metadata:
   linkType: hard
 
 "set-cookie-parser@npm:^3.0.1":
-  version: 3.2.1
-  resolution: "set-cookie-parser@npm:3.2.1"
-  checksum: 10c0/7028565bb86b36255bf28025d9cb56e77c1b1ce076ad956c732d2e8aef422e640244e6bc31a048c1af4efc11106a3c3d4f6d795631a68093cc3382b1e9aee309
+  version: 3.2.2
+  resolution: "set-cookie-parser@npm:3.2.2"
+  checksum: 10c0/0fe6b3786e13fe5ba19611ee617bb112c09fd77500a950f86fc124f95bbd78987be0aed1f3a1afc403e4d61b0c18659258891867456e0edc01119d10d48f3e70
   languageName: node
   linkType: hard
 

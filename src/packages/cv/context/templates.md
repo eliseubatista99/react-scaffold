@@ -14,7 +14,7 @@ File: `templates/baseTemplate.tsx`
   {...documentConfigs}
 >{children}</Document>
 ```
-- Templates render `<BaseCVTemplate>` **without** passing `title` or `documentConfigs`, so the PDF metadata title is always `"CV"` and `documentConfigs` has no effect.
+- Templates forward `title` and `documentConfigs` to `<BaseCVTemplate>`. The document title defaults to `"CV"`; values in `documentConfigs` are spread last and can override the title and other document properties.
 
 ## useTemplateHelper (internal)
 File: `templates/templates.hook.ts`
@@ -38,7 +38,8 @@ useTemplateHelper({ data, language, translations }) => {
   - no protocol: `linkedin` → `https://www.linkedin.com/in/value`, `github` → `https://github.com/value`, others → `https://value`;
   - otherwise returned unchanged.
 - `formatPhone(countryCode, phone)`: if both exist → `"<text inside parentheses or countryCode> <phone>"`; else `phone`.
-- `data` is computed via `useCallback([data])` but called on every render.
+- Missing `personalInfo` remains `undefined` in the resolved data; a supplied object has its `desiredRole` translated.
+- `formatPhone(countryCode, phone)` uses the supplied arguments and returns the phone unchanged when either is missing.
 
 ---
 

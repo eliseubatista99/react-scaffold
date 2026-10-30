@@ -2,21 +2,23 @@
   "name": "react-scaffold-eliseubatista99",
   "private": true,
   "version": "0.0.0",
-  "description": "Starter template to get up and running quickly with React and Storybook",
-  "author": "Chromatic <https://chromatic.com/>",
+  "description": "Reusable React components, hooks, utilities, and providers.",
+  "author": "eliseubatista99",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chromaui/intro-storybook-react-template"
+    "url": "https://github.com/eliseubatista99/react-scaffold.git"
   },
   "bugs": {
-    "url": "https://github.com/chromaui/intro-storybook-react-template/issues"
+    "url": "https://github.com/eliseubatista99/react-scaffold/issues"
   },
   "license": "MIT",
   "scripts": {
-    "start": "tsc && storybook dev -p 6006",
+    "start": "npm run typecheck && npm run typecheck:packages && storybook dev -p 6006",
     "dev": "vite",
-    "build": "vite build & storybook build",
+    "build": "vite build && storybook build",
+    "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
+    "typecheck:packages": "tsc -p src/packages/core/tsconfig.app.json && tsc -p src/packages/core/tsconfig.node.json && tsc -p src/packages/pdf/tsconfig.app.json && tsc -p src/packages/pdf/tsconfig.node.json && tsc -p src/packages/cv/tsconfig.app.json && tsc -p src/packages/cv/tsconfig.node.json && tsc -p src/packages/firebase/tsconfig.app.json && tsc -p src/packages/firebase/tsconfig.node.json",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

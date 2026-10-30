@@ -23,6 +23,7 @@ Generates CV / résumé PDFs with `@react-pdf/renderer` from a typed, multi-lang
 |---|---|---|
 | `CurriculumVitae`, `CurriculumVitaeProps` | Component (in-browser PDF preview) | [context/hooks-and-components.md](context/hooks-and-components.md) |
 | `useCVGenerator` (folder/file `useGenerateCV`) | Hook: `generateCV`, `downloadCV`, `previewCV` | [context/hooks-and-components.md](context/hooks-and-components.md) |
+| `GenerateCVOutput` | Result type for `generateCV` | [context/hooks-and-components.md](context/hooks-and-components.md) |
 | `useGetCVDocument` | Hook: `getDocument(props)` → template JSX | [context/hooks-and-components.md](context/hooks-and-components.md) |
 | `CvTemplates` | `{ Classic, Modern, Timeline }` template components | [context/templates.md](context/templates.md) |
 | `CvData`, `PersonalInfo`, `Link`, `Experience`, `Education`, `Language`, `Certification`, `Project`, `Volunteer`, `CVTemplateType`, `LinkType`, `Month`, `EducationType`, `EducationStatus`, `LanguageLevel`, `BaseCVTemplateProps`, `CvTemplateProps`, `CvTheme` | Types | [context/types.md](context/types.md) |

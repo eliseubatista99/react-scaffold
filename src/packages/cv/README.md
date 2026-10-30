@@ -4,21 +4,10 @@
 
 A library which provides CV related components and utilities, that allow you to build a readable and useful CV.
 
-## Installation
-
-```shell
-npm i @eliseubatista99/react-scaffold-cv
-```
 
 @eliseubatista99/react-scaffold-cv is a React library that provides CV related components and utilities, that allow you to build a readable and useful CV.
 
 This library must be used together with the [@eliseubatista99/react-scaffold-pdf](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf) package.
-
-## Installation
-
-```
-npm i @eliseubatista99/react-scaffold-cv
-```
 
 ## Content
 

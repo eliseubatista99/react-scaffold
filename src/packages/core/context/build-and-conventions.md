@@ -2,10 +2,10 @@
 
 ## package.json
 
-- `name`: `@eliseubatista99/react-scaffold-core`, `version`: `1.2.12`, `private: false`, `publishConfig.access: public`, `license: MIT`, `author: eliseubatista99`.
+- `name`: `@eliseubatista99/react-scaffold-core`, `version`: `2.0.1`, `private: false`, `publishConfig.access: public`, `license: MIT`, `author: eliseubatista99`.
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `style`: `dist/react-scaffold-core.css`, `files`: `["dist/"]`.
 - Keywords: `react`, `scaffold`. Repository/homepage/bugs → `github.com/eliseubatista99/react-scaffold`.
-- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `typecheck` = `tsc --noEmit -p tsconfig.app.json`, `preview` = `vite preview`, `test` = `vitest run --environment jsdom`, `test:package` = build then smoke-test the package bundle with the consumer's `MemoryRouter`.
+- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rimraf dist`, `lint` = `eslint .`, `typecheck` = `tsc --noEmit -p tsconfig.app.json`, `preview` = `vite preview`, `test` = `vitest run --environment jsdom`, `test:package` = build then smoke-test the package bundle with the consumer's `MemoryRouter`.
 - `peerDependencies`: `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `dayjs ^1.11.19`.
 - `dependencies`: `lodash ^4.18.1`.
 - `devDependencies`: `@emotion/styled ^11.14.1` (bundled into the output), `slick-carousel ^1.8.1` (its CSS is bundled into the package stylesheet), `@testing-library/react`, `@eslint/js`, `@types/react ^19.1.8`, `@types/react-dom ^19.1.6`, `@vitejs/plugin-react ^4.6.0`, `eslint ^9.30.1`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, `jsdom`, `rimraf ^3.0.2`, `typescript ~5.8.3`, `typescript-eslint`, `vite ^7.0.4`, `vite-plugin-dts ^4.5.4`, `vitest`.
@@ -95,5 +95,5 @@ components/<name>/
 - `README.md` (package): install `npm i @eliseubatista99/react-scaffold-core`; overview of Providers, Hooks, Helpers, Components.
 - `src/components/README.md`: documents only `Drawer`.
 - `src/helpers/README.md`: documents all exported helpers and their current behavior.
-- `src/hooks/README.md`: documents only `useFetch` (outdated usage `await fetch<SomeType>(url)`).
+- `src/hooks/README.md`: documents the supported hooks; `useFetch` supports an optional `AbortSignal` as the final argument to each method.
 - `src/providers/README.md`: documents Navigation/Feedback providers but is partly outdated (see known-issues).

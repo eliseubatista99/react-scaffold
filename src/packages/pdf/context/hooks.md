@@ -4,7 +4,7 @@
 File: `hooks/usePdfGenerator/usePdfGenerator.hook.tsx`. External: `pdf` from `@react-pdf/renderer`.
 
 ```ts
-interface GeneratePdfOutput {   // not exported
+export interface GeneratePdfOutput {
   error?: string;
   url?: string;   // Blob object URL (blob:...)
   size?: number;  // bytes
@@ -26,6 +26,6 @@ usePdfGenerator(): {
 | `previewPdf(url)` | Creates an `<a href target="_blank" rel="noopener noreferrer">` and clicks it (may be blocked by pop-up blockers if not triggered by a user gesture). |
 
 Notes:
-- The hook is stateless; it creates new functions each render (no `useCallback`).
+- The hook is stateless; its methods have stable identities between renders.
 - Object URLs created by `generatePdf`/`generateBase64Pdf` are **not** revoked by the hook; the caller is responsible (`URL.revokeObjectURL`). `PdfPreview` revokes its own URL.
 - Used by `cv`'s `useCVGenerator` and by `PdfPreview`.

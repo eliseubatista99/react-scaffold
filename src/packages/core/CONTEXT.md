@@ -7,7 +7,7 @@
 | Field | Value |
 |---|---|
 | npm name | `@eliseubatista99/react-scaffold-core` |
-| Version | `1.2.12` |
+| Version | `2.0.1` |
 | Location | `src/packages/core` |
 | Entry | `src/index.ts` → `dist/index.es.js`, `dist/index.cjs.js`, `dist/index.d.ts` |
 | Peer deps | `react ^19.1.0`, `react-dom ^19.1.0`, `react-router-dom ^7.6.3`, `react-slick ^0.31.0`, `dayjs ^1.11.19` |

@@ -1,37 +1,34 @@
-<h1 align="center">React Scaffold By eliseubatista99</h1>
+<h1 align="center">React Scaffold</h1>
 
 ---
 
-A library of packages used for React projects.
+Reusable React libraries for application components, hooks, utilities, providers, PDF workflows, CV templates, and Firebase integration.
 
-- [Core](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic application components and functionalities;
+A collection of independently published React packages. Install only the packages your application needs and follow each package README for peer dependencies and setup.
 
----
+## Overview
 
-A library of packages which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
+The root workspace develops and documents the packages with Vite and Storybook.
 
-## Installation
+## Packages
 
-React Scaffold is a group of multiple React libraries that provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
+- [Core](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): UI components, hooks, helpers, navigation, feedback, forms, and translations.
 
-It helps you write applications that behave consistently and are easy to test.
+- [CV](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/cv): Résumé data types and Classic, Modern, and Timeline PDF templates.
 
-You can use this library together with any other library. The Redux core is tiny (2kB, including dependencies), and has a rich ecosystem of addons.
+- [Firebase](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/firebase): Firebase Auth, Firestore, and Storage helpers.
 
-## Content
+- [PDF](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf): PDF generation, preview, and rendering utilities.
 
-- [Core](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic application components and functionalities;
+## Development
 
-- [CV](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with a CV generator and CV templates, to easily build a readable and useful CV.
+```shell
+yarn install
+yarn storybook
+```
 
-- [Firebase](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic firebase authentication and database utilities.
-
-- [Pdf](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with a Pdf generator and pdf related utilities.
-
-## Change Log
-
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
+See [context.md](context.md) for workspace structure and package workflows. Release notes and migration instructions are documented in [GitHub Releases](https://github.com/eliseubatista99/react-scaffold/releases).
 
 ## License
 
-[MIT](LICENSE.md)
+This project is licensed under the [MIT License](LICENSE).

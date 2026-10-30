@@ -1,9 +1,9 @@
 # Firebase — Build, Configuration and Conventions
 
 ## package.json
-- `name`: `@eliseubatista99/react-scaffold-firebase`, `version`: `1.0.18`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
+- `name`: `@eliseubatista99/react-scaffold-firebase`, `version`: `1.0.19`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`.
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
-- Scripts: `dev` = `tsc && vite`, `start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `test` = provider and hook tests via Vitest, `preview` = `vite preview`.
+- Scripts: `dev` = `tsc && vite`, `start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rimraf dist`, `lint` = `eslint .`, `test` = provider and hook tests via Vitest, `preview` = `vite preview`.
 - `peerDependencies`: `firebase ^12.19.0`, `react ^19.1.0`, `react-dom ^19.1.0`.
 - `devDependencies`: Firebase SDK (matching its peer range), Vitest, jsdom, eslint stack, React types, Vite and TypeScript tooling.
 - `test` runs the package's own Vitest/jsdom installation rather than delegating to the sibling `core` package.

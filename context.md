@@ -10,10 +10,10 @@ The repository root is **not** a library itself: it is a Vite + Storybook worksp
 
 | Package  | npm name                                   | Version | Purpose                                                                                         | Context                                                              |
 | -------- | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| core     | `@eliseubatista99/react-scaffold-core`     | 1.2.12  | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
+| core     | `@eliseubatista99/react-scaffold-core`     | 2.0.1   | Base UI components, hooks, helpers, providers (navigation, feedback), i18n, forms               | [src/packages/core/context.md](src/packages/core/context.md)         |
 | pdf      | `@eliseubatista99/react-scaffold-pdf`      | 1.0.1   | PDF generation (`@react-pdf/renderer`), PDF preview and rendering (`react-pdf`)                 | [src/packages/pdf/context.md](src/packages/pdf/context.md)           |
 | cv       | `@eliseubatista99/react-scaffold-cv`       | 1.0.1   | CV/résumé PDF templates (Classic, Modern, Timeline), CV generator hooks, multi-language CV data | [src/packages/cv/context.md](src/packages/cv/context.md)             |
-| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.18  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |
+| firebase | `@eliseubatista99/react-scaffold-firebase` | 1.0.19  | Firebase app init, Auth provider, Firestore CRUD hook, Storage upload helper                    | [src/packages/firebase/context.md](src/packages/firebase/context.md) |
 
 ## 2. Package dependency graph
 
@@ -81,7 +81,7 @@ src/packages/<name>/
 ### Root workspace
 
 - **Package manager:** `yarn@4.10.3` (`packageManager` field) with `nodeLinker: node-modules`. A `package-lock.json` also exists.
-- **Root `package.json`:** name `react-scaffold-eliseubatista99`, private, `type: module`. Description/author/repository fields are leftovers from the Chromatic `intro-storybook-react-template`.
+- **Root `package.json`:** name `react-scaffold-eliseubatista99`, private, `type: module`; metadata points to this repository.
 - **Root devDependencies** include every runtime peer of the packages (react 19, react-dom 19, react-router-dom 7, react-slick, slick-carousel, dayjs, @emotion/react, @emotion/styled, @react-pdf/renderer 4, react-pdf 10, react-to-pdf 2, msw 2, msw-storybook-addon) and the four scaffold packages with version `"*"` (installed from npm).
 - `firebase` is **not** in the root devDependencies (no firebase stories exist).
 - `resolutions`: `jackspeak@2.1.1`.
@@ -90,18 +90,20 @@ src/packages/<name>/
 
 | Script            | Command                        | Notes                                                         |
 | ----------------- | ------------------------------ | ------------------------------------------------------------- |
-| `start`           | `tsc && storybook dev -p 6006` | Type-check, then Storybook                                    |
+| `start`           | `npm run typecheck && npm run typecheck:packages && storybook dev -p 6006` | Type-check root and package projects, then Storybook |
 | `dev`             | `vite`                         | Runs the default boilerplate App                              |
-| `build`           | `vite build & storybook build` | `&` runs in background on POSIX / sequentially on Windows cmd |
+| `build`           | `vite build && storybook build` | Builds the Vite app, then Storybook only if the first build succeeds |
 | `preview`         | `vite preview`                 |                                                               |
 | `storybook`       | `storybook dev -p 6006`        | Main development workflow                                     |
 | `build-storybook` | `storybook build`              | Outputs `storybook-static/`                                   |
+| `typecheck`       | `tsc -p tsconfig.app.json && tsc -p tsconfig.node.json` | Type-check the root app and Vite config |
+| `typecheck:packages` | Explicit app/node typechecks for all four packages | Keeps each library's TypeScript settings isolated |
 | `init-msw`        | `msw init public/`             | MSW worker (not currently used by stories)                    |
 | `clean-vite`      | `vite --force`                 | Forces dependency re-optimization                             |
 
 ### Package scripts (identical in all packages)
 
-`dev`/`start`: `vite` (firebase `dev` = `tsc && vite`), `build`: `rimraf dist && vite build`, `clean`: `rm -rf dist`, `lint`: `eslint .`, `preview`: `vite preview`.
+`dev`/`start`: `vite` (firebase `dev` = `tsc && vite`), `build`: `rimraf dist && vite build`, `clean`: `rimraf dist`, `lint`: `eslint .`, `preview`: `vite preview`.
 
 ### Storybook (v9, `@storybook/react-vite`)
 
@@ -118,7 +120,7 @@ src/packages/<name>/
 
 ### TypeScript
 
-- Root: `tsconfig.json` references `tsconfig.app.json` (ES2020, bundler resolution, `noEmit`, strict, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, `jsx: react-jsx`, include `src`) and `tsconfig.node.json`.
+- Root: `tsconfig.json` references `tsconfig.app.json` (ES2020, bundler resolution, `noEmit`, strict, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, `jsx: react-jsx`, includes only the root Vite app files) and `tsconfig.node.json`. Package sources are checked with their own `tsconfig.app.json` and `tsconfig.node.json` files.
 - Packages: `tsconfig.json` with `target/module: ESNext`, `jsx: react-jsx`, `declaration`, `declarationDir: dist`, `emitDeclarationOnly`, `strict`, `moduleResolution: Node`, `skipLibCheck`.
 
 ### Package build (Vite library mode — same pattern in every package)
@@ -126,7 +128,7 @@ src/packages/<name>/
 - Entry `src/index.ts`, formats `["es", "cjs"]`, files `dist/index.es.js` / `dist/index.cjs.js`; `pdf` and `cv` use the placeholder library name, while Firebase uses `ReactScaffoldFirebase`.
 - `vite-plugin-dts({ insertTypesEntry: true })` generates `dist/index.d.ts`.
 - `rollupOptions.external`: core externalizes `react`, `react-dom`, and `react-router-dom`; Firebase externalizes React and its JSX runtimes plus the modular Firebase modules it imports. Core keeps React Router external so its exported navigation APIs share the consuming application's router context.
-- `pdf` and `cv` additionally use `vite-plugin-static-copy` to copy `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` into `dist/`, and `assetsInclude: ["**/*.pdf"]`.
+- `pdf` uses `vite-plugin-static-copy` to copy `pdfjs-dist/cmaps` and `pdfjs-dist/standard_fonts` into `dist/`, and `assetsInclude: ["**/*.pdf"]` for its PDF story asset. CV does not use pdf.js directly.
 - `package.json`: `main: dist/index.cjs.js`, `module: dist/index.es.js`, `types: dist/index.d.ts`, `files: ["dist/"]`, `publishConfig.access: public`, MIT license.
 
 ## 5. Cross-package conventions
@@ -152,8 +154,6 @@ src/packages/<name>/
 
 ## 7. Known repository-level issues
 
-- Root `package.json` metadata (description, author, repository, bugs) still points to the Chromatic template.
-- README links for CV, Firebase and Pdf all point to `.../src/packages/core`; README license link points to `LICENSE.md` but the file is `LICENSE`; README mentions "The Redux core is tiny" (copy-paste leftover).
 - `src/App.tsx` / `src/main.tsx` are untouched Vite boilerplate.
 - `msw` / `msw-storybook-addon` are installed but not wired into Storybook.
 - Both `yarn.lock` and `package-lock.json` exist at the root.

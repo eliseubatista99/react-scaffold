@@ -25,7 +25,10 @@ export const CVTemplateModern = (props: CvTemplateProps) => {
   ].filter(Boolean);
 
   return (
-    <BaseCVTemplate>
+    <BaseCVTemplate
+      title={props.title}
+      documentConfigs={props.documentConfigs}
+    >
       <Page size="A4" style={styles.page} {...props.pageConfigs}>
         {/* Header Section */}
         <View style={styles.header}>

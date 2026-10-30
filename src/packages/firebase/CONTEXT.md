@@ -7,7 +7,7 @@
 | Field | Value |
 |---|---|
 | npm name | `@eliseubatista99/react-scaffold-firebase` |
-| Version | `1.0.18` |
+| Version | `1.0.19` |
 | Location | `src/packages/firebase` |
 | Entry | `src/index.ts` → `dist/index.es.js`, `dist/index.cjs.js`, `dist/index.d.ts` |
 | Peer deps | `firebase ^12.19.0`, `react ^19.1.0`, `react-dom ^19.1.0` |

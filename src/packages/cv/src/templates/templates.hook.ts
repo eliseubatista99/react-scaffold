@@ -2,7 +2,6 @@ import {
   TranslationList,
   useTranslations,
 } from "@eliseubatista99/react-scaffold-core";
-import React from "react";
 import {
   CvTemplateProps,
   EducationStatus,
@@ -33,11 +32,17 @@ export const useTemplateHelper = ({
         link: (type: LinkType) => t(`link.${type}`),
         time: {
           current: t("time.current"),
-          month: (index: Month) => t(`time.months.${index}`),
+          month: (index: Month) =>
+            index ? t(`time.months.${index}`) : "",
         },
         education: {
           type: (type: EducationType) => t(`education.type.${type}`),
-          status: (status: EducationStatus) => t(`education.status.${status}`),
+          status: (status: EducationStatus) =>
+            t(
+              status === "progress"
+                ? "education.status.in.progress"
+                : `education.status.${status}`
+            ),
         },
         language: {
           level: (value: LanguageLevel) => t(`language.level.${value}`),
@@ -129,17 +134,19 @@ export const useTemplateHelper = ({
   };
 
   const formatPhone = (countryCode: string, phone: string) => {
-    return data.personalInfo?.countryCode && data.personalInfo?.phone
+    return countryCode && phone
       ? `${countryCode.match(/\(([^)]+)\)/)?.[1] || countryCode} ${phone}`
       : phone;
   };
 
-  const getData = React.useCallback(() => {
+  const getData = () => {
     return {
-      personalInfo: {
-        ...data.personalInfo,
-        desiredRole: getTranslation(data.personalInfo?.desiredRole),
-      },
+      personalInfo: data.personalInfo
+        ? {
+            ...data.personalInfo,
+            desiredRole: getTranslation(data.personalInfo.desiredRole),
+          }
+        : undefined,
       links: data.links,
       resume: getTranslation(data.resume),
       experiences: data.experiences?.map((item) => {
@@ -188,7 +195,7 @@ export const useTemplateHelper = ({
         };
       }),
     };
-  }, [data]);
+  };
 
   return {
     getTranslation,

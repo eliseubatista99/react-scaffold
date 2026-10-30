@@ -39,6 +39,8 @@ function UserExample() {
 
 `get` and `delete` serialize options as query parameters; array values become repeated parameters. `post`, `put` and `patch` serialize options as a JSON body and default to `Content-Type: application/json`, which can be overridden with the `headers` argument. Existing query strings and URL fragments are preserved.
 
+All methods accept an optional `AbortSignal` as the final argument, after `headers`, so callers can cancel requests with `AbortController` without changing the existing argument order.
+
 Responses are parsed as JSON. Empty responses (including `204 No Content`) return `result: undefined` without a parsing error. Non-empty invalid JSON is reported through `error`; network failures reject the promise. HTTP error statuses do not reject automatically—check `statusCode`.
 
 ## useResponsive
