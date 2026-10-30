@@ -76,17 +76,18 @@ export const useFirestore = () => {
 
   const getItems = async <TOutput extends object>(
     collectionName: string,
-    options: FirestoreQueryOptions<TOutput>,
+    options?: Partial<FirestoreQueryOptions<TOutput>>,
   ): Promise<FirestoreItem<TOutput>[]> => {
-    const { constraints, parse, predicate } = options;
+    const { constraints, parse, predicate } = options ?? {};
     const collectionRef = collection(firestore(), collectionName);
     const snapshot = await getDocs(applyConstraints(collectionRef, constraints));
+    const parseData = parse ?? ((value: unknown) => value as TOutput);
 
     const items = snapshot.docs
       .filter((document) => document.exists())
       .map((document): FirestoreItem<TOutput> => ({
         id: document.id,
-        data: parse(document.data()),
+        data: parseData(document.data()),
       }));
 
     return predicate

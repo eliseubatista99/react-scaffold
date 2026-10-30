@@ -158,6 +158,25 @@ describe("useFirestore", () => {
     expect(items).toEqual([{ id: "user-1", data: userData }]);
   });
 
+  it("returns raw documents when getItems is called without options", async () => {
+    const userData = { name: "Ada" };
+    firestoreMocks.getDocs.mockResolvedValue({
+      docs: [
+        {
+          exists: () => true,
+          id: "user-1",
+          data: () => userData,
+        },
+      ],
+    });
+
+    const { getItems } = useFirestore();
+    const items = await getItems<{ name: string }>("users");
+
+    expect(firestoreMocks.getDocs).toHaveBeenCalledWith(collectionReference);
+    expect(items).toEqual([{ id: "user-1", data: userData }]);
+  });
+
   it("applies Firestore constraints before updating matching items", async () => {
     const queryConstraint = {} as QueryConstraint;
     const documentReference = { id: "user-1" };

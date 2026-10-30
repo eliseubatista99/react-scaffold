@@ -15,7 +15,7 @@ export type FirestoreQueryOptions<T> = {
 useFirestore(): {
   addItem:         <T extends object>(collectionName: string, path: string, item: T) => Promise<void>;
   getItem:         <T extends object>(collectionName: string, path: string, parse: FirestoreDataParser<T>) => Promise<FirestoreItem<T> | null>;
-  getItems:        <T extends object>(collectionName: string, options: FirestoreQueryOptions<T>) => Promise<FirestoreItem<T>[]>;
+  getItems:        <T extends object>(collectionName: string, options?: Partial<FirestoreQueryOptions<T>>) => Promise<FirestoreItem<T>[]>;
   updateItem:      <T extends object>(collectionName: string, path: string, newValues: UpdateData<T>) => Promise<void>;
   deleteItem:      (collectionName: string, path: string) => Promise<void>;
   updateManyItems: <T extends object>(collectionName: string, options: FirestoreQueryOptions<T>, newValues: UpdateData<T>) => Promise<number>;
@@ -28,7 +28,7 @@ useFirestore(): {
 |---|---|
 | `addItem` | `setDoc(docRef, { ...item })` — creates or **overwrites** the document with that id |
 | `getItem` | Reads with `getDoc`; passes the raw document data to the required `parse` function, then returns `{ id, data }` or `null` |
-| `getItems` | Applies `constraints` through Firestore `query()` before `getDocs`; parses each result and optionally applies `predicate` in memory. Without constraints, the whole collection is read. |
+| `getItems` | Applies `constraints` through Firestore `query()` before `getDocs`; parses each result when `parse` is provided and optionally applies `predicate` in memory. Without options or constraints, the whole collection is read and returned data is trusted as `T` without runtime validation. |
 | `updateItem` | `updateDoc(docRef, newValues)` using Firestore's `UpdateData<T>` type; fails if the document does not exist |
 | `deleteItem` | `deleteDoc(docRef)` |
 | `updateManyItems` | Applies Firestore `constraints` before reading, parses results and optionally filters in memory. Requires a parser and either a predicate or at least one constraint. Commits sequential batches of at most 500 writes; if a later batch fails, earlier batches remain committed. |
