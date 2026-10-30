@@ -1,6 +1,6 @@
 {
   "name": "@eliseubatista99/react-scaffold-core",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": false,
   "description": "A library which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.",
   "main": "dist/index.cjs.js",
@@ -30,7 +30,7 @@
   "scripts": {
     "dev": "vite",
     "build": "rimraf dist && vite build",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite",

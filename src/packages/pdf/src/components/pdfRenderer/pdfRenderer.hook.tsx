@@ -4,7 +4,7 @@ import { PdfRendererProps } from "./pdfRenderer";
 export type PdfPageConfig = {
   pageNum: number;
   width?: number;
-  heigth?: number;
+  height?: number;
 };
 
 export const usePdfRendererHelper = ({
@@ -15,8 +15,8 @@ export const usePdfRendererHelper = ({
   const numPagesRef = React.useRef<number>(0);
   const [pages, setPages] = React.useState<PdfPageConfig[]>([]);
 
-  const createPageConfigs = () => {
-    var pagesArray = Array.from(
+  const createPageConfigs = React.useCallback(() => {
+    let pagesArray = Array.from(
       { length: numPagesRef.current },
       (_, i) => i + 1
     );
@@ -31,28 +31,39 @@ export const usePdfRendererHelper = ({
         return {
           pageNum: p,
           width: containerRef.current?.clientWidth,
-          heigth: containerRef.current?.clientHeight,
+          height: containerRef.current?.clientHeight,
         };
       })
     );
-  };
-
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    numPagesRef.current = numPages;
-
-    onDocumentLoaded?.(numPages);
-    createPageConfigs();
-  };
-
-  React.useEffect(() => {
-    if (containerRef.current) {
-      createPageConfigs();
-    }
-  }, [containerRef]);
-
-  React.useEffect(() => {
-    createPageConfigs();
   }, [currentPage]);
+
+  const onDocumentLoadSuccess = React.useCallback(
+    ({ numPages }: { numPages: number }) => {
+      numPagesRef.current = numPages;
+
+      onDocumentLoaded?.(numPages);
+      createPageConfigs();
+    },
+    [createPageConfigs, onDocumentLoaded]
+  );
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(createPageConfigs);
+      observer.observe(container);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener("resize", createPageConfigs);
+    return () => window.removeEventListener("resize", createPageConfigs);
+  }, [createPageConfigs]);
+
+  React.useEffect(() => {
+    createPageConfigs();
+  }, [createPageConfigs]);
 
   return {
     containerRef,

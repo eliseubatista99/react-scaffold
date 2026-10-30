@@ -5,12 +5,12 @@ import { usePdfGenerator } from "../../hooks";
 import { PdfPreviewProps } from "./pdfPreview";
 
 export const usePdfPreviewHelper = (props: PdfPreviewProps) => {
-  const { content, tryAgainDisplay, errorDisplay, loadingDisplay } = props;
+  const { content } = props;
 
-  const pdfGenerator = usePdfGenerator();
+  const { generatePdf } = usePdfGenerator();
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [pdfSize, setPdfSize] = useState<number>(0);
@@ -25,43 +25,53 @@ export const usePdfPreviewHelper = (props: PdfPreviewProps) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Generate PDF whenever the modal is shown or any relevant data changes
   useEffect(() => {
-    generatePdf();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let isCurrent = true;
+    let generatedUrl: string | null = null;
 
-  const generatePdf = async () => {
     setLoading(true);
     setError(null);
-    try {
-      // Generate a PDF blob from the document
-      const result = await pdfGenerator.generatePdf(content);
-      setPdfSize(result.size!);
-      setPdfUrl(result.url!);
 
-      if (result.error) {
-        throw result.error;
-      }
-    } catch (error) {
-      setError(
-        `Error generating PDF: ${
-          error instanceof Error ? error.message : "Unknown"
-        }`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    const createPdf = async () => {
+      try {
+        const result = await generatePdf(content);
 
-  // Cleanup the PDF URL when the component unmounts or URL changes
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
+        if (!isCurrent) {
+          if (result.url) URL.revokeObjectURL(result.url);
+          return;
+        }
+
+        if (result.error || !result.url) {
+          if (result.url) URL.revokeObjectURL(result.url);
+          setError(`Error generating PDF: ${result.error ?? "Unknown"}`);
+          return;
+        }
+
+        generatedUrl = result.url;
+        setPdfUrl(result.url);
+        setPdfSize(result.size ?? 0);
+      } catch (caught) {
+        if (isCurrent) {
+          setError(
+            `Error generating PDF: ${
+              caught instanceof Error ? caught.message : String(caught)
+            }`
+          );
+        }
+      } finally {
+        if (isCurrent) setLoading(false);
       }
     };
-  }, [pdfUrl]);
+
+    setPdfUrl(null);
+    setPdfSize(0);
+    void createPdf();
+
+    return () => {
+      isCurrent = false;
+      if (generatedUrl) URL.revokeObjectURL(generatedUrl);
+    };
+  }, [content, generatePdf]);
 
   return {
     pdfUrl,

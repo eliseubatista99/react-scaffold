@@ -2,7 +2,7 @@ import { usePdfGenerator } from "@eliseubatista99/react-scaffold-pdf";
 import { CurriculumVitaeProps } from "../../components";
 import { useGetCVDocument } from "../useGetCVDocument";
 
-interface GenerateCVOutput {
+export interface GenerateCVOutput {
   error?: string;
   url?: string;
   size?: number;

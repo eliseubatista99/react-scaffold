@@ -31,7 +31,7 @@ export const PdfRenderer = (props: PdfRendererProps) => {
       key={p.pageNum}
       pageNumber={p.pageNum}
       width={p.width}
-      height={p.heigth}
+      height={p.height}
     />
   ));
 

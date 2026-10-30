@@ -1,35 +1,87 @@
-<h1 align="center">Firebase</h1>
+# @eliseubatista99/react-scaffold-firebase
 
----
+React providers, hooks, and helpers for Firebase Authentication, Cloud
+Firestore, and Cloud Storage, using the modular Firebase SDK.
 
-A library which provides firebase related authentication and database utilities to easily build a integration with the firebase services and avoid repeating the usual code..
+## Requirements
 
-## Installation
-
-```shell
-npm i @eliseubatista99/react-scaffold-firebase
-```
-
-@eliseubatista99/react-scaffold-firebase is a React library that provides basic providers, hooks, and helpers to easily integrate your React application with the firebase services and avoid repeating the usual code.
-
-It helps you write applications that behave consistently and are easy to test.
-
-You can use this library together with any other library.
+| Peer dependency | Version |
+| --- | --- |
+| `firebase` | `^12.19.0` |
+| `react` | `^19.1.0` |
+| `react-dom` | `^19.1.0` |
 
 ## Installation
 
+```sh
+npm install @eliseubatista99/react-scaffold-firebase \
+  firebase@^12.19.0 react@^19.1.0 react-dom@^19.1.0
 ```
-npm i @eliseubatista99/react-scaffold-firebase
+
+## Quick start
+
+Initialize Firebase once at the application root. In a Vite application,
+configuration values can be read from environment variables prefixed with
+`VITE_`:
+
+```tsx
+import { FirebaseProvider } from "@eliseubatista99/react-scaffold-firebase";
+
+const firebaseOptions = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+export function Root() {
+  return (
+    <FirebaseProvider options={firebaseOptions}>
+      <App />
+    </FirebaseProvider>
+  );
+}
 ```
 
-## Content
+`FirebaseProvider` initializes or reuses the default Firebase app and makes
+Auth available to descendants. Keep the `options` object stable for the
+provider's lifetime. If an existing default app has conflicting options,
+initialization throws an error.
 
-- [Providers](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/firebase/src/providers): Useful providers to handle the authentication state and actions.
+## Public API
 
-- [Hooks](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/firebase/src/hooks): Useful hooks to handle the communication with the firebase firestore.
+- `FirebaseProvider` — initialize the default app and provide Firebase Auth.
+- `FirebaseAuthProvider` — provide an `Auth` instance initialized by your
+  application.
+- `useFirebaseAuth` — access authentication state and email/password actions.
+- `useFirestore` — access typed collection CRUD helpers.
+- `useDidMountWithFirebaseAuth` — run an action after an authenticated user is
+  available.
+- `FirebaseAppHelper` and `FirebaseStorageHelper` — app access and file upload
+  helpers.
 
-- [Helpers](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/firebase/src/helpers): Classes to help with the firebase app initialization.
+## Security notes
 
-## Change Log
+- Firebase client configuration is included in client-side application code;
+  it is not a substitute for Firebase Security Rules.
+- Configure and test Authentication, Firestore, and Storage rules for your
+  application. The helper APIs do not enforce your authorization policy.
+- Storage upload helpers return tokenized download URLs. Anyone who obtains a
+  URL may access its file; treat it as a bearer credential.
+- Never commit service account credentials or other server-side secrets.
 
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
+## Development
+
+Run these commands from `src/packages/firebase`:
+
+```sh
+npm ci
+npm run build
+npm test
+npm run lint
+```
+
+## License
+
+[MIT](../../../LICENSE)

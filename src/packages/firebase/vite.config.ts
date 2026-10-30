@@ -6,12 +6,12 @@ import dts from "vite-plugin-dts";
 export default defineConfig({
   plugins: [
     react(),
-    dts({ insertTypesEntry: true }), // Gera ficheiros .d.ts,
+    dts({ insertTypesEntry: true }),
   ],
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "MyComponentLibrary",
+      name: "ReactScaffoldFirebase",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },
@@ -19,17 +19,13 @@ export default defineConfig({
       external: [
         "react",
         "react-dom",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
         "firebase/app",
         "firebase/firestore",
         "firebase/auth",
         "firebase/storage",
-        "firebase/functions",
-        "firebase/compat/app",
-        "firebase/compat/firestore",
-        "firebase/compat/auth",
-        "firebase/compat/storage",
-        "firebase/compat/functions",
-      ], // evita que estas libs sejam incluídas no bundle
+      ],
       output: {
         globals: {
           react: "React",
@@ -45,14 +41,6 @@ export default defineConfig({
       "firebase/firestore",
       "firebase/auth",
       "firebase/storage",
-      "firebase/functions",
-    ],
-    exclude: [
-      "firebase/compat/app",
-      "firebase/compat/firestore",
-      "firebase/compat/auth",
-      "firebase/compat/storage",
-      "firebase/compat/functions",
     ],
   },
 });

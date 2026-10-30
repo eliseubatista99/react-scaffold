@@ -67,6 +67,7 @@ export const useFetch = () => {
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
     headers?: HeadersInit,
     body?: BodyInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
     const requestHeaders = new Headers(headers);
     if (
@@ -80,6 +81,7 @@ export const useFetch = () => {
       method,
       headers: requestHeaders,
       body,
+      signal,
     });
 
     return parseFetchResult<OutputType>(result);
@@ -89,44 +91,67 @@ export const useFetch = () => {
     endpointUrl: string,
     options?: FetchOptions,
     headers?: HeadersInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
-    return runFetch(fetchUrl, "GET", headers);
+    return runFetch(fetchUrl, "GET", headers, undefined, signal);
   };
 
   const fetchPost = async <OutputType>(
     endpointUrl: string,
     options?: FetchOptions,
     headers?: HeadersInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
-    return runFetch(endpointUrl, "POST", headers, JSON.stringify(options));
+    return runFetch(
+      endpointUrl,
+      "POST",
+      headers,
+      JSON.stringify(options),
+      signal,
+    );
   };
 
   const fetchPut = async <OutputType>(
     endpointUrl: string,
     options?: FetchOptions,
     headers?: HeadersInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
-    return runFetch(endpointUrl, "PUT", headers, JSON.stringify(options));
+    return runFetch(
+      endpointUrl,
+      "PUT",
+      headers,
+      JSON.stringify(options),
+      signal,
+    );
   };
 
   const fetchPatch = async <OutputType>(
     endpointUrl: string,
     options?: FetchOptions,
     headers?: HeadersInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
-    return runFetch(endpointUrl, "PATCH", headers, JSON.stringify(options));
+    return runFetch(
+      endpointUrl,
+      "PATCH",
+      headers,
+      JSON.stringify(options),
+      signal,
+    );
   };
 
   const fetchDelete = async <OutputType>(
     endpointUrl: string,
     options?: FetchOptions,
     headers?: HeadersInit,
+    signal?: AbortSignal,
   ): Promise<FetchOutput<OutputType>> => {
     const fetchUrl = buildUrl(endpointUrl, options);
 
-    return runFetch(fetchUrl, "DELETE", headers);
+    return runFetch(fetchUrl, "DELETE", headers, undefined, signal);
   };
 
   return {

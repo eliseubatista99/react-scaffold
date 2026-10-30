@@ -1,18 +1,18 @@
 # CV — Build, Configuration and Conventions
 
 ## package.json
-- `name`: `@eliseubatista99/react-scaffold-cv`, `version`: `1.0.1`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`. Description: "A library of cv templates."
+- `name`: `@eliseubatista99/react-scaffold-cv`, `version`: `1.0.1`, `private: false`, `publishConfig.access: public`, MIT, author `eliseubatista99`. Description: "CV templates and PDF generation utilities for React."
 - `main`: `dist/index.cjs.js`, `module`: `dist/index.es.js`, `types`: `dist/index.d.ts`, `files`: `["dist/"]`.
-- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rm -rf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
+- Scripts: `dev`/`start` = `vite`, `build` = `rimraf dist && vite build`, `clean` = `rimraf dist`, `lint` = `eslint .`, `preview` = `vite preview`.
 - `dependencies`: `{}`.
 - `peerDependencies`: `@eliseubatista99/react-scaffold-core ^1.1.0`, `@eliseubatista99/react-scaffold-pdf ^1.0.1`, `@react-pdf/renderer ^4.3.0`, `react ^19.1.0`, `react-dom ^19.1.0`, `react-pdf ^10.0.1`, `react-router-dom ^7.6.3`, `react-to-pdf ^2.0.1`.
-- `devDependencies`: same tooling as other packages (`vite ^7.0.4`, `vite-plugin-dts ^4.5.4`, `vite-plugin-static-copy ^3.1.1`, `typescript ~5.8.3`, eslint stack, `@types/react ^19.1.8`, `rimraf`) plus `@eliseubatista99/react-scaffold-core ^1.1.0` and `@eliseubatista99/react-scaffold-pdf ^1.0.1` (installed from npm, not linked to local sources).
+- `devDependencies`: same tooling as other packages (`vite ^7.0.4`, `vite-plugin-dts ^4.5.4`, `vite-plugin-static-copy ^3.1.1`, `typescript ~5.8.3`, eslint stack, `@types/react ^19.1.8`, `rimraf`) plus `@eliseubatista99/react-scaffold-core ^1.1.0` and `@eliseubatista99/react-scaffold-pdf ^1.0.1` (installed from npm, not linked to local sources). `vite-plugin-static-copy` is no longer used by the CV build.
 
 ## vite.config.ts
-- **Copied from the pdf package**: resolves `pdfjs-dist` and uses `viteStaticCopy` to copy `cmaps/` and `standard_fonts/` into `dist/`; `assetsInclude: ["**/*.pdf"]`. The cv source does not use pdf.js directly.
-- Plugins: `@vitejs/plugin-react`, `vite-plugin-dts({ insertTypesEntry: true })`, `viteStaticCopy`.
-- `build.lib`: entry `src/index.ts`, `name: "MyComponentLibrary"`, formats `["es", "cjs"]`, `index.<format>.js`, `outDir: dist`.
-- `rollupOptions.external`: `["react", "react-dom"]` only → `@eliseubatista99/react-scaffold-core`, `@eliseubatista99/react-scaffold-pdf` and `@react-pdf/renderer` are bundled into the output.
+- Plugins: `@vitejs/plugin-react` and `vite-plugin-dts({ insertTypesEntry: true })`.
+- `build.lib`: entry `src/index.ts`, `name: "ReactScaffoldCv"`, formats `["es", "cjs"]`, `index.<format>.js`, `outDir: dist`.
+- `rollupOptions.external`: React and runtime peer dependencies `@eliseubatista99/react-scaffold-core`, `@eliseubatista99/react-scaffold-pdf` and `@react-pdf/renderer` are externalized.
+- CV does not use pdf.js directly and no longer copies pdf.js character maps or standard fonts.
 
 ## TypeScript
 - `tsconfig.json`: ESNext, `jsx: react-jsx`, `declaration`, `declarationDir: dist`, `emitDeclarationOnly`, `strict`, `esModuleInterop`, `moduleResolution: Node`, `skipLibCheck`, include `src`.
@@ -40,4 +40,4 @@
 | `CV/Hooks/useCVGenerator` | `UseCVGeneratorStoriesSetup` (`hooks/useGenerateCV/stories/setup.tsx`) | `Classic`, `Modern`, `Timeline`. Setup renders Generate / Download / Preview buttons; args `{ data: { template, data: ExampleCvContent } }` |
 
 ## README
-- Install `npm i @eliseubatista99/react-scaffold-cv` (section duplicated). States it must be used together with `@eliseubatista99/react-scaffold-pdf`. Lists Components, Hooks, Templates.
+- Install `npm i @eliseubatista99/react-scaffold-cv`. States it must be used together with `@eliseubatista99/react-scaffold-pdf`. Lists Components, Hooks, Templates.

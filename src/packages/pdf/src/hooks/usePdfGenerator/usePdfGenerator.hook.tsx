@@ -1,13 +1,14 @@
+import { useCallback } from "react";
 import { pdf } from "@react-pdf/renderer";
 
-interface GeneratePdfOutput {
+export interface GeneratePdfOutput {
   error?: string;
   url?: string;
   size?: number;
 }
 
 export const usePdfGenerator = () => {
-  const generatePdf = async (
+  const generatePdf = useCallback(async (
     content: JSX.Element
   ): Promise<GeneratePdfOutput> => {
     try {
@@ -29,20 +30,19 @@ export const usePdfGenerator = () => {
         size: undefined,
       };
     }
-  };
+  }, []);
 
-  const generateBase64Pdf = async (
+  const generateBase64Pdf = useCallback(async (
     content: string
   ): Promise<GeneratePdfOutput> => {
     try {
       const byteCharacters = atob(content);
-      const byteNumbers = new Array(byteCharacters.length);
+      const byteArray = new Uint8Array(byteCharacters.length);
 
       for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+        byteArray[i] = byteCharacters.charCodeAt(i);
       }
 
-      const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "application/pdf" });
 
       const url = URL.createObjectURL(blob);
@@ -58,24 +58,24 @@ export const usePdfGenerator = () => {
         size: undefined,
       };
     }
-  };
+  }, []);
 
-  const downloadPdf = async (url: string, name?: string) => {
+  const downloadPdf = useCallback(async (url: string, name?: string) => {
     const output = document.createElement("a");
     output.href = url;
     output.download = `${name ?? "file"}.pdf`;
 
     output.click();
-  };
+  }, []);
 
-  const previewPdf = async (url: string) => {
+  const previewPdf = useCallback(async (url: string) => {
     const output = document.createElement("a");
     output.href = url;
     output.target = "_blank";
     output.rel = "noopener noreferrer";
 
     output.click();
-  };
+  }, []);
 
   return {
     generateBase64Pdf,

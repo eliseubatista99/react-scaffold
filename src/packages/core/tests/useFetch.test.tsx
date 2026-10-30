@@ -105,4 +105,23 @@ describe("useFetch", () => {
       result.current.get("https://example.com/items"),
     ).rejects.toBe(networkError);
   });
+
+  it("forwards an optional abort signal for every HTTP method", async () => {
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () => new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const { result } = renderHook(() => useFetch());
+    const signal = new AbortController().signal;
+
+    await result.current.get("https://example.com/items", undefined, undefined, signal);
+    await result.current.post("https://example.com/items", {}, undefined, signal);
+    await result.current.put("https://example.com/items/1", {}, undefined, signal);
+    await result.current.patch("https://example.com/items/1", {}, undefined, signal);
+    await result.current.delete("https://example.com/items/1", undefined, undefined, signal);
+
+    expect(fetchMock.mock.calls.map(([, request]) => request?.signal)).toEqual(
+      Array(5).fill(signal),
+    );
+  });
 });

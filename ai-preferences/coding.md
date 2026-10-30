@@ -7,7 +7,7 @@
 
 ## Quality and design
 
-- Follow current, established best practices for the project's language, framework, and ecosystem.
+- Always favor the best current, well-supported practices for the project's language, framework, and ecosystem. Check authoritative, up-to-date documentation when APIs or tooling may have changed, avoid deprecated patterns, and do not adopt newness without a clear benefit.
 - Prefer precise, complete changes that solve the root problem without unrelated refactoring.
 - Keep code maintainable and scalable; use abstractions only when they make the solution clearer or easier to extend.
 - Prioritize security, safe defaults, input validation, and explicit error handling.

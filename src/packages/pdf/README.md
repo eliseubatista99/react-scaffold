@@ -1,33 +1,90 @@
-<h1 align="center">PDF</h1>
+# @eliseubatista99/react-scaffold-pdf
 
----
+PDF utilities for React applications: generate PDFs from
+`@react-pdf/renderer` documents, preview generated documents, and render
+existing PDF files.
 
-A library which provides pdf related components and utilities to easily integrate PDFs in your application and avoid repeating the usual code..
+## Requirements
+
+The package declares these peer dependencies. Install the ones required by your
+application and keep them within the supported ranges:
+
+| Peer dependency | Version |
+| --- | --- |
+| `@react-pdf/renderer` | `^4.3.0` |
+| `react` | `^19.1.0` |
+| `react-dom` | `^19.1.0` |
+| `react-pdf` | `^10.0.1` |
+| `react-router-dom` | `^7.6.3` |
+| `react-to-pdf` | `^2.0.1` |
 
 ## Installation
 
-```shell
-npm i @eliseubatista99/react-scaffold-pdf
+```sh
+npm install @eliseubatista99/react-scaffold-pdf \
+  @react-pdf/renderer@^4.3.0 react@^19.1.0 react-dom@^19.1.0 \
+  react-pdf@^10.0.1 react-router-dom@^7.6.3 react-to-pdf@^2.0.1
 ```
 
-@eliseubatista99/react-scaffold-pdf is a React library that provides pdf related components and utilities to easily integrate PDFs in your React application and avoid repeating the usual code.
+## Quick start
 
-It helps you write applications that behave consistently and are easy to test.
+`PdfPreview` generates a preview from a `Document` created with
+`@react-pdf/renderer`. Provide a mobile fallback because the component uses a
+download/open UI instead of an embedded viewer on narrow screens:
 
-Using this library with other PDF libraries is not recommended and can cause issues.
+```tsx
+import { Document, Page, Text } from "@react-pdf/renderer";
+import { PdfPreview } from "@eliseubatista99/react-scaffold-pdf";
 
-## Installation
+const document = (
+  <Document>
+    <Page size="A4">
+      <Text>Hello from a PDF.</Text>
+    </Page>
+  </Document>
+);
 
+export function PdfExample() {
+  return (
+    <PdfPreview
+      content={document}
+      mobileDownloadDisplay={(url) => (
+        <a href={url} download="example.pdf">
+          Download PDF
+        </a>
+      )}
+    />
+  );
+}
 ```
-npm i @eliseubatista99/react-scaffold-pdf
+
+## Public API
+
+All exports are available from the package root:
+
+- `usePdfGenerator` — generate a PDF or raw-base64 PDF, download it, or open it
+  in a new tab.
+- `PdfPreview` — generate and preview a PDF document.
+- `PdfRenderer` — render pages from an existing PDF URL or asset.
+
+`usePdfGenerator().generatePdf()` returns a Blob object URL. Revoke URLs
+created directly by the hook with `URL.revokeObjectURL()` when they are no
+longer needed. `PdfPreview` manages and revokes its own URL.
+
+`PdfRenderer` configures PDF.js assets using the package's copied `cmaps/` and
+`standard_fonts/` files. If your deployment changes the base path, verify that
+the `/cmaps/` and `/standard_fonts/` paths used by PDF.js are served correctly.
+
+## Development
+
+Run these commands from `src/packages/pdf`:
+
+```sh
+npm ci
+npm run build
+npm run lint
 ```
 
-## Content
+## License
 
-- [Components](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf/src/components): Useful components to preview and render pdf files or pdf contents.
-
-- [Hooks](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/pdf/src/hooks): Useful hooks to generate a pdf file or a base64 pdf.
-
-## Change Log
-
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
+[MIT](../../../LICENSE)

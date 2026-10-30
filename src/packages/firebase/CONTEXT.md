@@ -7,7 +7,7 @@
 | Field | Value |
 |---|---|
 | npm name | `@eliseubatista99/react-scaffold-firebase` |
-| Version | `1.0.16` |
+| Version | `1.0.19` |
 | Location | `src/packages/firebase` |
 | Entry | `src/index.ts` → `dist/index.es.js`, `dist/index.cjs.js`, `dist/index.d.ts` |
 | Peer deps | `firebase ^12.19.0`, `react ^19.1.0`, `react-dom ^19.1.0` |
@@ -15,25 +15,25 @@
 | Storybook stories | None |
 
 Thin React wrappers around the Firebase modular SDK (v12):
-- **App**: singleton initialisation (`FirebaseAppHelper`).
-- **Auth**: `FirebaseAuthProvider` + `useFirebaseAuth` (email/password sign-up, login, logout, reset password, update email/password/display name, current user state) and `useDidMountWithFirebaseAuth`.
+- **App and services**: `FirebaseProvider` initializes or reuses the default Firebase app from consumer configuration and creates Auth before rendering children.
+- **Auth**: `useFirebaseAuth` provides email/password sign-up, login, logout, password reset, email/password/display-name updates and current-user state. `useDidMountWithFirebaseAuth` waits for the same provider's authenticated user.
 - **Firestore**: `useFirestore` CRUD helpers on top-level collections.
-- **Storage**: `FirebaseStorageHelper` uploads files/images and returns download URLs.
+- **Storage**: `FirebaseStorageHelper` uploads files/images using the same initialized app and returns tokenized download URLs; anyone who obtains a URL can access its file.
 
 ## Public API (exported from `src/index.ts`)
 
-`src/index.ts` re-exports `./helpers`, `./hooks`, `./providers`.
+`src/index.ts` re-exports `./helpers`, `./hooks`, and `./providers`.
 
 | Export | Kind | Details |
 |---|---|---|
-| `FirebaseAppHelper` | Static class | [context/helpers.md](context/helpers.md) |
-| `FirebaseStorageHelper` | Static class | [context/helpers.md](context/helpers.md) |
-| `useFirestore`, `FirestoreItem<T>` | Hook + type | [context/hooks.md](context/hooks.md) |
-| `useDidMountWithFirebaseAuth` | Hook | [context/hooks.md](context/hooks.md) |
-| `FirebaseAuthProvider`, `FirebaseAuthProviderInputProps` | Provider | [context/providers.md](context/providers.md) |
-| `useFirebaseAuth` | Hook | [context/providers.md](context/providers.md) |
+| `FirebaseProvider`, `FirebaseProviderInputProps` | Root provider | Initializes app and Auth from `FirebaseOptions`; [context/providers.md](context/providers.md) |
+| `FirebaseAuthProvider`, `FirebaseAuthProviderInputProps` | Advanced provider | Wraps an explicitly supplied `Auth` instance; [context/providers.md](context/providers.md) |
+| `FirebaseAuthSignUpResult`, `useFirebaseAuth` | Auth type and hook | [context/providers.md](context/providers.md) |
+| `FirebaseAppHelper`, `FirebaseStorageHelper` | Static helpers | [context/helpers.md](context/helpers.md) |
+| `FirebaseStorageUploadInput` | Storage upload input type | Used by `FirebaseStorageHelper.uploadImage` and `uploadFile`; [context/helpers.md](context/helpers.md) |
+| `useFirestore`, `FirestoreItem<T>`, `FirestoreDataParser<T>`, `FirestoreQueryOptions<T>`, `useDidMountWithFirebaseAuth` | Hooks and types | [context/hooks.md](context/hooks.md) |
 
-Not exported: `FirebaseAuthProviderContext`, `FirebaseAuthContextData`, `UploadFileInput`.
+Not exported: `FirebaseAuthProviderContext`, `FirebaseAuthContextData`.
 
 ## Folder structure
 
@@ -47,37 +47,57 @@ src/
 │   ├── useDidMountWithFirebaseAuth/useDidMountWithFirebaseAuth.ts
 │   └── useFirestore/useFirestore.hook.tsx
 └── providers/
-    ├── README.md                    (copy of core's providers README — not about Firebase)
-    └── firebase/ firebaseAuthContext.ts, firebaseAuthProvider.tsx, useFirebaseAuth.ts
+    ├── README.md
+    └── firebase/
+        ├── firebaseProvider.tsx
+        ├── firebaseAuthContext.ts
+        ├── firebaseAuthProvider.tsx
+        └── useFirebaseAuth.ts
 ```
 
-## Required setup order
+## Setup
 
 ```tsx
-import { FirebaseAppHelper, FirebaseAuthProvider } from "@eliseubatista99/react-scaffold-firebase";
+import { createRoot } from "react-dom/client";
+import {
+  FirebaseProvider,
+  useFirebaseAuth,
+  useFirestore,
+} from "@eliseubatista99/react-scaffold-firebase";
 
-// 1. Once, before rendering anything that uses Firebase (module scope / main.tsx)
-FirebaseAppHelper.initializeApp({ apiKey: "...", authDomain: "...", projectId: "...", storageBucket: "...", appId: "..." });
+const firebaseOptions = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
 
-// 2. Wrap the app
+function App() {
+  const { currentUser, isInitialized, logIn } = useFirebaseAuth();
+  const { getItems, addItem } = useFirestore();
+
+  return null;
+}
+
+const root = document.getElementById("root");
+if (!root) throw new Error("Root element was not found.");
+
 createRoot(root).render(
-  <FirebaseAuthProvider>
+  <FirebaseProvider options={firebaseOptions}>
     <App />
-  </FirebaseAuthProvider>
+  </FirebaseProvider>,
 );
-
-// 3. Use hooks
-const { currentUser, isInitialized, logIn } = useFirebaseAuth();
-const { getItems, addItem } = useFirestore();
 ```
-`FirebaseAuthProvider`, `useDidMountWithFirebaseAuth` **throw** if `FirebaseAppHelper.initializeApp` was not called first. Firebase config values must come from environment variables (e.g. `import.meta.env.VITE_FIREBASE_*`), never hard-coded secrets in the repo.
+
+The consumer supplies Firebase configuration once. `FirebaseProvider` initializes or reuses the default app, creates Auth before rendering children, and lets Firestore and Storage resolve services from that same app. Keep `options` stable for the provider's lifetime. A conflicting configuration for an already-initialized default app throws. Store configuration values in environment variables; never hard-code secrets.
 
 ## Detailed context files
 
 | File | Content |
 |---|---|
-| [context/build-and-conventions.md](context/build-and-conventions.md) | package.json, Vite (firebase externals), TS config, conventions |
-| [context/providers.md](context/providers.md) | `FirebaseAuthProvider`, context, `useFirebaseAuth` |
+| [context/build-and-conventions.md](context/build-and-conventions.md) | package.json, Vite (Firebase externals), TypeScript and conventions |
+| [context/providers.md](context/providers.md) | `FirebaseProvider`, `FirebaseAuthProvider`, context and auth hook |
 | [context/hooks.md](context/hooks.md) | `useFirestore`, `useDidMountWithFirebaseAuth` |
 | [context/helpers.md](context/helpers.md) | `FirebaseAppHelper`, `FirebaseStorageHelper` |
 | [context/known-issues.md](context/known-issues.md) | Bugs, quirks and inconsistencies |

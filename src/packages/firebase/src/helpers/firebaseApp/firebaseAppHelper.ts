@@ -1,19 +1,41 @@
-import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
+import {
+  type FirebaseApp,
+  type FirebaseOptions,
+  getApps,
+  initializeApp,
+} from "firebase/app";
 
 export class FirebaseAppHelper {
-  private static app: FirebaseApp | null = null;
+  static initializeApp = (options: FirebaseOptions): FirebaseApp => {
+    const app = this.getApp();
+    if (app) {
+      const optionsMatch =
+        Object.entries(app.options).every(
+          ([key, value]) =>
+            options[key as keyof FirebaseOptions] === value,
+        ) &&
+        Object.entries(options).every(
+          ([key, value]) =>
+            app.options[key as keyof FirebaseOptions] === value,
+        );
 
-  static initializeApp = (options: FirebaseOptions) => {
-    if (this.app === null) {
-      this.app = initializeApp(options);
+      if (!optionsMatch) {
+        throw new Error(
+          "The default Firebase app is already initialized with different options.",
+        );
+      }
+
+      return app;
     }
+
+    return initializeApp(options);
   };
 
   static getApp = (): FirebaseApp | null => {
-    return this.app;
+    return getApps().find((app) => app.name === "[DEFAULT]") ?? null;
   };
 
   static isAppInitialized = (): boolean => {
-    return this.app !== null;
+    return this.getApp() !== null;
   };
 }

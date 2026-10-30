@@ -1,15 +1,36 @@
-<h1 align="center">Core | Components</h1>
+# Core Components
 
-Basic, customizable components with pre-configured styles and behaviors.
+The Core package exports reusable React UI components from its package entry
+point:
 
-## Drawer
-
-The drawer is a dynamic panel that appears from any of the screen limits (usally bottom or left/right), and can be hidden by swipping it back to that screen limit.
-
-This drawer component handle the logic of showing, hiding and dragging, and can receive any content as children.
-
-```js
-import { Drawer } from "@react-scaffold-eliseubatista99/core/components";
-
-<Drawer></Drawer>;
+```tsx
+import {
+  Button,
+  Checkbox,
+  Form,
+  InputField,
+  Modal,
+  Typography,
+} from "@eliseubatista99/react-scaffold-core";
 ```
+
+The component set includes:
+
+- **Inputs and forms:** `Checkbox`, `Form`, `InputField`,
+  `NumericInputField`, `RadioButton`, and `TextAreaField`.
+- **Layout and display:** `Carousel`, `Image`, `PageLayout`, `ProgressBar`,
+  `SvgImage`, and `Typography`.
+- **Actions and feedback:** `Button`, `Drawer`, `Loader`, `Modal`, and `Toast`.
+
+Import the package stylesheet once in the application entry point to load the
+styles used by `Carousel`:
+
+```ts
+import "@eliseubatista99/react-scaffold-core/dist/react-scaffold-core.css";
+```
+
+`Modal`, `Drawer`, `Toast`, and `Loader` use the shared feedback state and must
+be rendered beneath `FeedbackProvider`. Give `Modal` and `Drawer` an accessible
+name with `aria-label` or `aria-labelledby`. Use the
+[Core README](../../README.md) for setup and the
+[component reference](../../context/components.md) for props and behavior.

@@ -1,37 +1,91 @@
-<h1 align="center">React Scaffold By eliseubatista99</h1>
+# React Scaffold
 
----
+Reusable React and TypeScript libraries for common application UI, navigation,
+PDF generation, CV templates, and Firebase workflows.
 
-A library of packages used for React projects.
+This repository contains four independently published npm packages. The
+repository root is a development workspace for their Storybook stories; it is
+not itself an application starter or published package.
 
-- [Core](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic application components and functionalities;
+## Packages
 
----
+| Package | What it provides | Documentation |
+| --- | --- | --- |
+| `@eliseubatista99/react-scaffold-core` | UI components, hooks, helpers, forms, feedback, and navigation | [Core README](src/packages/core/README.md) |
+| `@eliseubatista99/react-scaffold-pdf` | PDF generation, preview, and rendering | [PDF README](src/packages/pdf/README.md) |
+| `@eliseubatista99/react-scaffold-cv` | CV data types, templates, preview, and PDF generation | [CV README](src/packages/cv/README.md) |
+| `@eliseubatista99/react-scaffold-firebase` | React providers and helpers for Firebase Auth, Firestore, and Storage | [Firebase README](src/packages/firebase/README.md) |
 
-A library of packages which provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
+Install only the package or packages your application needs. The CV package
+builds on the Core and PDF packages; see its README for the compatible peer
+dependency versions.
+
+## Requirements
+
+- React 19
+- A package manager that supports the dependencies listed by the package you
+  use
+- Compatible peer dependencies for that package (documented in its README)
 
 ## Installation
 
-React Scaffold is a group of multiple React libraries that provides basic components, hooks, helpers and providers to easily build a React application and avoid repeating the usual code.
+For example, to add the Core package to an existing React application:
 
-It helps you write applications that behave consistently and are easy to test.
+```sh
+npm install @eliseubatista99/react-scaffold-core
+```
 
-You can use this library together with any other library. The Redux core is tiny (2kB, including dependencies), and has a rich ecosystem of addons.
+Follow the selected package's README for its complete peer dependency list,
+setup instructions, and usage examples.
 
-## Content
+## Development
 
-- [Core](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic application components and functionalities;
+The root workspace uses Yarn 4.10.3. From the repository root:
 
-- [CV](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with a CV generator and CV templates, to easily build a readable and useful CV.
+```sh
+corepack enable
+yarn install
+yarn storybook
+```
 
-- [Firebase](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with the basic firebase authentication and database utilities.
+Storybook runs at `http://localhost:6006` and includes stories from the
+packages. The root-level Vite application is retained as workspace boilerplate;
+the library stories are the main showcase.
 
-- [Pdf](https://github.com/eliseubatista99/react-scaffold/tree/main/src/packages/core): The package with a Pdf generator and pdf related utilities.
+Useful root scripts:
 
-## Change Log
+```sh
+yarn typecheck             # Type-check the root app and Vite configuration
+yarn typecheck:packages    # Type-check all four package projects
+yarn build                 # Build the root Vite app and Storybook
+yarn build-storybook       # Build Storybook only
+```
 
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/eliseubatista99/react-scaffold/releases) page.
+Each package is also a standalone project with its own `package.json` and
+lockfile. To work on one package, change to its directory, install its
+dependencies, and run the scripts declared in that package:
+
+```sh
+cd src/packages/core
+npm ci
+npm run build
+npm test
+```
+
+The Core and Firebase packages define test scripts. Check the package
+`package.json` before running a script in another package.
+
+## Contributing
+
+1. Fork the repository and create a branch for your change.
+2. Make changes in the relevant package and update its documentation or stories
+   when behavior or public APIs change.
+3. Run the relevant type checks, tests, and build.
+4. Open a pull request with a concise summary and verification details.
+
+For questions or bug reports, use
+[GitHub Issues](https://github.com/eliseubatista99/react-scaffold/issues).
 
 ## License
 
-[MIT](LICENSE.md)
+This project is distributed under the [MIT License](LICENSE).

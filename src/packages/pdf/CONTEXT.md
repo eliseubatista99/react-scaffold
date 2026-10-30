@@ -29,9 +29,9 @@ The README warns that using this library together with other PDF libraries is no
 |---|---|---|
 | `PdfPreview`, `PdfPreviewProps` | Component | [context/components.md](context/components.md) |
 | `PdfRenderer`, `PdfRendererProps` | Component | [context/components.md](context/components.md) |
-| `usePdfGenerator` | Hook | [context/hooks.md](context/hooks.md) |
+| `usePdfGenerator`, `GeneratePdfOutput` | Hook and result type | [context/hooks.md](context/hooks.md) |
 
-Internal (not exported): `usePdfPreviewHelper`, `usePdfRendererHelper`, `PdfPageConfig`, `GeneratePdfOutput`.
+Internal (not exported): `usePdfPreviewHelper`, `usePdfRendererHelper`, `PdfPageConfig`.
 
 ## Folder structure
 

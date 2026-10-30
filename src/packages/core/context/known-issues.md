@@ -18,5 +18,4 @@ Use this list before changing behaviour: some quirks may be relied upon by consu
 
 ## Outdated documentation
 - `src/providers/README.md` contains outdated navigation examples and feedback items with `type`/`content` and `getVisibleItemsOfType` — those feedback APIs do not exist.
-- `src/hooks/README.md` shows `await fetch<SomeType>(url)` instead of `useFetch().get<SomeType>(url)`.
 - `src/components/README.md` covers only `Drawer`.

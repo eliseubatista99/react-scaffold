@@ -1,34 +1,34 @@
-import { getAuth, User } from "firebase/auth";
 import React from "react";
-import { FirebaseAppHelper } from "../../helpers";
+import { useFirebaseAuth } from "../../providers/firebase/useFirebaseAuth";
 
-export const useDidMountWithFirebaseAuth = (action: () => void) => {
+export const useDidMountWithFirebaseAuth = (
+  action: () => void | Promise<void>,
+  onError?: (error: unknown) => void,
+) => {
+  const { currentUser, isInitialized } = useFirebaseAuth();
+  const hasRunAction = React.useRef(false);
+
   React.useEffect(() => {
-    if (!FirebaseAppHelper.isAppInitialized()) {
-      throw new Error(
-        "useDidMountWithFirebaseAuth > Firebase app is not initialized.",
-      );
-    }
+    if (isInitialized && currentUser && !hasRunAction.current) {
+      hasRunAction.current = true;
 
-    const firebaseApp = FirebaseAppHelper.getApp();
-    const auth = getAuth(firebaseApp!);
+      const reportError = (error: unknown) => {
+        if (onError) {
+          onError(error);
+          return;
+        }
 
-    if (!auth) {
-      throw new Error(
-        "useDidMountWithFirebaseAuth > Firebase Auth is not initialized",
-      );
-    }
+        console.error("useDidMountWithFirebaseAuth action failed.", error);
+      };
 
-    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
-      console.debug("useDidMountWithFirebaseAuth > AuthStateChanged > ", {
-        user,
-      });
-
-      if (user) {
-        action();
+      try {
+        const result = action();
+        if (result !== undefined) {
+          void Promise.resolve(result).catch(reportError);
+        }
+      } catch (error) {
+        reportError(error);
       }
-    });
-
-    return unsubscribe;
-  }, []);
+    }
+  }, [action, currentUser, isInitialized, onError]);
 };

@@ -1,33 +1,79 @@
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { FirebaseAppHelper } from "../firebaseApp";
 
-type UploadFileInput = {
+export type FirebaseStorageUploadInput = {
   file: File;
   path?: string;
   fileName?: string;
 };
 
 export class FirebaseStorageHelper {
-  static uploadImage = async (input: UploadFileInput): Promise<string> => {
+  static uploadImage = async (
+    input: FirebaseStorageUploadInput,
+  ): Promise<string> => {
     if (!input.file.type.startsWith("image/")) {
       throw new Error("File must be an image");
     }
 
-    input.path = input.path ?? "images";
-
-    return await this.uploadFile(input);
+    return await this.uploadFile({
+      ...input,
+      path: input.path ?? "images",
+    });
   };
 
-  static uploadFile = async (input: UploadFileInput): Promise<string> => {
-    const storage = getStorage();
-    const fileName = input.fileName ?? input.file.name;
+  static uploadFile = async (
+    input: FirebaseStorageUploadInput,
+  ): Promise<string> => {
     const path = input.path ?? "files";
+    const pathSegments = path.split("/");
+    if (
+      path.startsWith("/") ||
+      path.endsWith("/") ||
+      path.includes("\\") ||
+      pathSegments.some(
+        (segment) => segment === "" || segment === "." || segment === "..",
+      )
+    ) {
+      throw new Error(
+        "Storage path must contain non-empty relative folder segments.",
+      );
+    }
 
-    const safeName = fileName
+    const app = FirebaseAppHelper.getApp();
+    if (!app) {
+      throw new Error(
+        "Wrap the application in FirebaseProvider before using Firebase Storage.",
+      );
+    }
+
+    const storage = getStorage(app);
+    const fileName = input.fileName ?? input.file.name;
+
+    const normalizedName = fileName
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "");
+    const safeName = Array.from(normalizedName, (character) =>
+      character === "/" ||
+      character === "\\" ||
+      character.charCodeAt(0) <= 0x1f ||
+      character.charCodeAt(0) === 0x7f
+        ? "-"
+        : character,
+    )
+      .join("")
       .replace(/\s+/g, "-");
 
-    const fileRef = ref(storage, `${path}/${crypto.randomUUID()}-${safeName}`);
+    const webCrypto = globalThis.crypto;
+    if (!webCrypto?.randomUUID) {
+      throw new Error(
+        "File uploads require crypto.randomUUID(), which is only available in secure contexts.",
+      );
+    }
+
+    const fileRef = ref(
+      storage,
+      `${path}/${webCrypto.randomUUID()}-${safeName}`,
+    );
 
     await uploadBytes(fileRef, input.file);
 

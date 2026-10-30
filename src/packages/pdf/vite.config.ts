@@ -17,6 +17,12 @@ const standardFontsDir = normalizePath(
     "standard_fonts"
   )
 );
+const externalPeerDependencies = [
+  "@react-pdf/renderer",
+  "react",
+  "react-dom",
+  "react-pdf",
+];
 
 export default defineConfig({
   plugins: [
@@ -39,12 +45,18 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
-      name: "MyComponentLibrary",
+      name: "ReactScaffoldPdf",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["react", "react-dom"], // evita que estas libs sejam incluídas no bundle
+      external: (id) =>
+        externalPeerDependencies.some(
+          (dependency) =>
+            id === dependency ||
+            ((dependency === "react" || dependency === "react-dom") &&
+              id.startsWith(`${dependency}/`))
+        ),
       output: {
         globals: {
           react: "React",
